@@ -35,12 +35,15 @@ class Field:
         Permission -- 'Access contents information'
         """
 
-    def get_value(id):
+    def get_value(id, **kw):
         """    
         Get property value for an id. Call override if override is
         defined, otherwise use property value. Alternatively the
         dictionary interface can also be used ('__getitem__()').
-    
+
+        Keywords arguments can optionally be passed, which will end up
+        in the namespace of any TALES expression that gets called.
+        
         Permission -- 'Access contents information'
         """
 
@@ -111,7 +114,7 @@ class Field:
 
         Permission -- 'View'
         """
-
+        
     def render_from_request(REQUEST):
         """
         A convenience method to render the field widget using
@@ -162,7 +165,13 @@ class Field:
         Permission -- 'View'
         """
 
-    
+    def render_view(value):
+        """
+        Render supplied value for viewing, not editing. This can be used
+        to show form results, for instance.
+
+        Permission -- 'View'
+        """
 
 
 
