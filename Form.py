@@ -15,6 +15,12 @@ from FieldRegistry import FieldRegistry
 from Widget import render_tag
 from DummyField import fields
 
+# FIXME: manage_renameObject hack needs these imports
+from Acquisition import aq_base
+from App.Dialogs import MessageDialog
+from OFS.CopySupport import CopyError, eNotSupported
+import sys
+
 class FormValidationError(Exception):
     __allow_access_to_unprotected_subobjects__ = 1
     
@@ -500,6 +506,36 @@ class ZMIForm(ObjectManager, Item, Form):
         this method (original defined in ObjectManager).
         """
         return self._meta_types
+
+    def manage_renameObject(self, id, new_id, REQUEST=None):
+        """Rename a particular sub-object, the *old* way.
+        FIXME: hack that could be removed once Zope 2.4.x
+        goes back to a useful semantics..."""
+        try: self._checkId(new_id)
+        except: raise CopyError, MessageDialog(
+                      title='Invalid Id',
+                      message=sys.exc_info()[1],
+                      action ='manage_main')
+        ob=self._getOb(id)
+        if not ob.cb_isMoveable():
+            raise CopyError, eNotSupported % id            
+        self._verifyObjectPaste(ob)
+        try:    ob._notifyOfCopyTo(self, op=1)
+        except: raise CopyError, MessageDialog(
+                      title='Rename Error',
+                      message=sys.exc_info()[1],
+                      action ='manage_main')
+        self._delObject(id)
+        ob = aq_base(ob)
+        ob._setId(new_id)
+        
+        # Note - because a rename always keeps the same context, we
+        # can just leave the ownership info unchanged.
+        self._setObject(new_id, ob, set_owner=0)
+
+        if REQUEST is not None:
+            return self.manage_main(self, REQUEST, update_menu=1)
+        return None
 
     #security.declareProtected('View', 'get_fields_raw')
     #def get_fields_raw(self):
