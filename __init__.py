@@ -26,7 +26,7 @@ def initialize(context):
     FieldRegistry.registerField(StandardFields.FloatField,
                                 'www/FloatField.gif')
     FieldRegistry.registerField(StandardFields.DateTimeField,
-                                'www/StringField.gif')
+                                'www/DateTimeField.gif')
     
     # some helper fields
     FieldRegistry.registerField(HelperFields.ListTextAreaField)
