@@ -108,7 +108,7 @@ class Form:
 
     security.declareProtected('Change Formulator Forms', 'move_field_group')
     def move_field_group(self, field_ids, from_group, to_group):
-        """Moves a fields from one group to the other.
+        """Moves a field from one group to the other.
         """
         if len(field_ids) == 0:
             return 0
