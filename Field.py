@@ -8,7 +8,7 @@ from Errors import ValidationError
 from Products.Formulator.Widget import MultiItemsWidget
 
 try:
-    from Products.PlacelessTranslationService import translate, getLanguages
+    from Products.PlacelessTranslationService import translate
     have_pts = 1
 except ImportError:
     have_pts = 0
@@ -127,13 +127,10 @@ class Field:
         
         # check if an i18n id exist
         if id in ['title', 'description'] and have_pts:
-            i18n_domain, i18n = self.get_i18n_info()
-            if i18n_domain and i18n:
-                msgid = "%s_%s_%s" % (i18n, self.id, id)
-                msgstr = translate(i18n_domain, msgid, context=self.REQUEST,
-                    as_unicode=self.get_unicode_mode())
-                if msgstr is not None:
-                    return msgstr
+            msgstr = self.i18n_translate(id)
+            if msgstr is not None:
+                return msgstr
+                
 
         # if normal value is a callable itself, wrap it
         if callable(value):
@@ -147,7 +144,20 @@ class Field:
             return self.aq_parent.get_i18n_info()
         except AttributeError:
             return '', ''
+    
+    def i18n_translate(self, appendstr):
+        """creates msgid and translates it
+        """
+        i18n_domain, i18n = self.get_i18n_info()
+        if i18n_domain and i18n:
+            msgid = "%s_%s_%s" % (i18n, self.id, appendstr)
+            msgstr = translate(i18n_domain, msgid, context=self.REQUEST,
+                as_unicode=self.get_unicode_mode())
+            return msgstr
         
+        return None
+
+            
     security.declareProtected('View management screens', 'get_override')
     def get_override(self, id):
         """Get override method for id (not wrapped)."""
@@ -194,7 +204,12 @@ class Field:
     security.declareProtected('View management screens', 'get_error_message')
     def get_error_message(self, name):
         try:
-            return self.message_values[name]
+            message = self.message_values[name]
+            if have_pts:
+                msgstr = self.i18n_translate(name)
+                if msgstr is not None:
+                   message = msgstr
+            return message
         except KeyError:
             if name in self.validator.message_names:
                 return getattr(self.validator, name)
