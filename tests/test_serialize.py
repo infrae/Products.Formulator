@@ -263,13 +263,13 @@ class SerializeTestCase(unittest.TestCase):
         form.manage_addField('multi_field', 'Test Checkbox Field', 'MultiCheckBoxField')
         form.manage_addField('link_field', 'Test Link Field', 'LinkField')
         form.manage_addField('empty_field', 'Test Empty Field', 'StringField')
-        int_field   = getattr(form, 'int_field')
-        float_field = getattr(form, 'float_field')
-        date_field  = getattr(form, 'date_field')
-        list_field  = getattr(form, 'list_field')
-        multi_field = getattr(form, 'multi_field')
-        link_field = getattr(form, 'link_field')
-        empty_field = getattr(form, 'empty_field')
+        int_field   = form.int_field
+        float_field = form.float_field
+        date_field  = form.date_field
+        list_field  = form.list_field
+        multi_field = form.multi_field
+        link_field  = form.link_field
+        empty_field = form.empty_field
 
         # XXX editing fields by messing with a fake request
         # -- any better way to do this?
