@@ -9,6 +9,8 @@ from Products.Formulator.Widget import MultiItemsWidget
 from helpers import is_sequence, convert_unicode
 from Products.Formulator.i18n import translate as _
 
+from Products.PageTemplates.Expressions import SecureModuleImporter
+
 class Field:
     """Base class of all fields.
     A field is an object consisting of a widget and a validator.
@@ -109,6 +111,7 @@ class Field:
             if not kw.has_key('here'):
                 kw['here'] = self.aq_parent
             kw['request'] = self.REQUEST
+            kw['modules'] = SecureModuleImporter
             value = tales_expr.__of__(self)(
                 field=self,
                 form=self.aq_parent, **kw)

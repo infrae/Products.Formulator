@@ -1,5 +1,9 @@
 Formulator changes
 
+    Features Added
+
+      - Added the 'modules' namespace for TALES expresions.
+
     Bugs Fixed
 
      - Fixed issue for render_view of list fields with no default
