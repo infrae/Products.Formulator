@@ -1,5 +1,6 @@
 import string
 from DummyField import fields
+from DocumentTemplate.DT_Util import html_quote
 
 class Widget:
     """A field widget that knows how to display itself as HTML.
@@ -243,7 +244,7 @@ class TextAreaWidget(Widget):
                               css_class=field.get_value('css_class'),
                               cols=width,
                               rows=height,
-                              contents=value,
+                              contents=html_quote(value),
                               extra=field.get_value('extra'))
             
 TextAreaWidgetInstance = TextAreaWidget()
@@ -490,7 +491,7 @@ def render_tag(tag, **kw):
     for key, value in kw.items():
         if value == None:
             value = key
-        attr_list.append('%s="%s"' % (key, value))
+        attr_list.append('%s="%s"' % (key, html_quote(str(value))))
             
     attr_str = string.join(attr_list, " ")
     return "<%s %s %s" % (tag, attr_str, extra)
