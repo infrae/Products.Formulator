@@ -285,17 +285,17 @@ class SelectionValidator(StringBaseValidator):
         if value == "" and not field.get_value('required'):
             return value
 
-        items = field.get_value('items')
-        
-        # we want the string representation of all possible values,
-        # just in case we're getting something else, because the user
-        # form input will always be a string representation
-        values = map(lambda element: str(element[1]), items)
-        
-        if value in values:
-            return value
-        else:
-            self.raise_error('unknown_selection', field)
+        # get the name and the value from the list of items
+        for item_name, item_value in field.get_value('items'):
+            # check if the value is equal to the *string* version of
+            # item_value; if that's the case, we can return the *original*
+            # value in the list (not the submitted value). This way, integers
+            # will remain integers.
+            if str(item_value) == value:
+                return item_value
+            
+        # if we didn't find the value, return error
+        self.raise_error('unknown_selection', field)
             
 SelectionValidatorInstance = SelectionValidator()
 

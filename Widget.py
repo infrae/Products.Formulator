@@ -262,8 +262,9 @@ class ListWidget(Widget):
         "to the user from the true value. If no | is supplied, the "
         "shown value for the list item is identical to the true value. "
         "After validation this returns a list of tuples, "
-        "where each tuple represents one list element, and consists "
-        "of two strings, one for the displayed value and one for the "
+        "where each tuple represents one list element. "
+        "The first element of the tuple is a string that is the displayed "
+        "name of the list element. The second element of tuple is the "
         "value that will be submitted. If you want to override this "
         "property you will therefore have to create a method that "
         "returns such a list."), 
@@ -288,9 +289,6 @@ class ListWidget(Widget):
         # check if we want to select first item
         if not value and field.get_value('first_item') and len(items) > 0:
             value = items[0][1]
-
-        # we always need a string value
-        value = str(value)
         
         # FIXME: what if we run into multiple items with same value?
         options = []
@@ -349,8 +347,8 @@ class RadioWidget(Widget):
                                      description=(
         "List items in the field. Each row should contain a list "
         "item. Use the | (pipe) character to separate what is shown "
-        "to the user from the true value. If no | is supplied, the "
-        "shown value for the list item is identical to the true value."
+        "to the user from the actual value. If no | is supplied, the "
+        "shown value for the list item is identical to the actual value."
         "Override this property the same way you'd override "
         "the items property of a ListField."), 
                                      default=[],
@@ -375,9 +373,6 @@ class RadioWidget(Widget):
         # check if we want to select first item
         if not value and field.get_value('first_item') and len(items) > 0:
             value = items[0][1]
-
-        # we always need a string value
-        value = str(value)
 
         css_class = field.get_value('css_class')
         # FIXME: what if we run into multiple items with same value?

@@ -1,5 +1,12 @@
 Formulator changes
 
+  0.9.5
+
+    Bugs Fixed
+
+      - Made ListField and RadioField more tolerant of integer
+        (and possibly other) values, not only strings.
+
   0.9.4
 
     Features Added
