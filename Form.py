@@ -16,6 +16,7 @@ from Errors import ValidationError, FormValidationError
 from FieldRegistry import FieldRegistry
 from Widget import render_tag
 from DummyField import fields
+from FormToXML import formToXML
 
 # FIXME: manage_renameObject hack needs these imports
 from Acquisition import aq_base
@@ -380,6 +381,12 @@ class Form:
         """Closing form tag.
         """
         return "</form>"
+
+    security.declareProtected('Change Formulator Forms', 'get_xml')
+    def get_xml(self):
+        """Get this form in XML serialization.
+        """
+        return formToXML(self)
     
 Globals.InitializeClass(Form)
 
@@ -509,6 +516,8 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
          'help':('Formulator', 'formOrder.txt')},
         {'label':'Settings', 'action':'formSettings',
          'help':('Formulator', 'formSettings.txt')},
+        {'label':'XML', 'action':'formXML',
+        'help':('Formulator', 'formXML.txt')},
         ) +
         PropertyManager.manage_options +
         RoleManager.manage_options +
@@ -621,6 +630,9 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
     security.declareProtected('View management screens', 'formOrder')
     formOrder = DTMLFile('dtml/formOrder', globals())
 
+    security.declareProtected('View management screens', 'formXML')
+    formXML = DTMLFile('dtml/formXML', globals())
+    
     security.declareProtected('Change Formulator Forms', 'manage_settings')
     def manage_settings(self, REQUEST):
         """Change settings in settings screen.
