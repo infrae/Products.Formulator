@@ -92,7 +92,7 @@ Formulator HOWTO
     import into your Zope. In the examples, all the forms are called
     'form'.
 
-  Rendering a form manually with DTML
+  Rendering a form manually with DTML ('manual' folder)
 
     First, I will show how to use DTML to manually layout a form. This
     takes the most work, but also allows the most flexibility. In all
@@ -148,7 +148,7 @@ Formulator HOWTO
     This shows a form with the three fields. You can easily rearrange
     the layout just by changing the HTML.
 
-  Rendering a form automatically with DTML
+  Rendering a form automatically with DTML ('automatic' folder)
 
     For many simple forms you don't need to do the layout yourself all
     the time. We can use Formulator and acquisition to make layout a
@@ -208,5 +208,22 @@ Formulator HOWTO
     display automatically as well! If you have only simple forms on a
     site, this could be the only DTML Method you need.
 
+  Form validation ('validation' folder)
 
+    I will use the same 'index_html' as in the automatic form
+    rendering example and the 'animal/color/number' form to
+    demonstrate form validation.
 
+    I've set the 'Form action' property of the form to 'feedback'.
+    When the form is submitted it, Zope will access the 'feedback'
+    DTML Method. This method should do a number of things:
+
+      * validate all fields.
+  
+      * handle any validation errors.
+
+      * if there were no validation errors, do something with the
+        form results.
+
+   The form data will be coming into 'feedback' in the 'REQUEST'
+   object (more precisely the 'REQUEST.form' object). The
