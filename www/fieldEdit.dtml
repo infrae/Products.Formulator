@@ -25,11 +25,12 @@ Edit <dtml-var meta_type> properties here.
 <dtml-let current_field="this()">
 <dtml-in fields>
 <dtml-let field=sequence-item field_id="field.id"
-          value="current_field.get_value(field_id)">
+          value="current_field.get_orig_value(field_id)"
+          override="current_field.get_override(field_id)">
   <tr>
     <td align="left" valign="top">
     <div class="form-label">
-    <dtml-var "field.title()"><dtml-if "field.has_value('required') and field.get_value('required')">*</dtml-if>
+    <dtml-if "override">[</dtml-if><dtml-var "field.title()"><dtml-if "field.has_value('required') and field.get_value('required')">*</dtml-if><dtml-if "override">]</dtml-if>
     </div>
     </td>
     <td align="left" valign="top">

@@ -20,7 +20,6 @@ class MethodWidget(Widget.TextWidget):
                 method_name = value.method_name
             else:
                 method_name = ""
-                
         return Widget.TextWidget.render(self, field, key, method_name, REQUEST)
 
 MethodWidgetInstance = MethodWidget()
@@ -34,7 +33,7 @@ class Method(Persistent, Acquisition.Implicit):
     def __call__(self, *arg, **kw):
         # get method from acquisition path
         method = getattr(self, self.method_name)
-        # check if we have 'View' permission for this method\
+        # check if we have 'View' permission for this method
         # (raises error if not)
         getSecurityManager().checkPermission('View', method)
         # okay, execute it with supplied arguments

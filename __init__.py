@@ -18,7 +18,7 @@ def initialize(context):
     FieldRegistry.registerField(StandardFields.ListField,
                                 'www/ListField.gif')
     FieldRegistry.registerField(StandardFields.RadioField,
-                                'www/ListField.gif')
+                                'www/RadioField.gif')
     FieldRegistry.registerField(StandardFields.PasswordField,
                                 'www/PasswordField.gif')
     FieldRegistry.registerField(StandardFields.EmailField,

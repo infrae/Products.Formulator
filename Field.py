@@ -34,14 +34,18 @@ class Field:
 
     security.declareProtected('Change Formulator Fields', 'initialize_values')
     def initialize_values(self, dict):
-        """Initialize values for fields in associated form.
+        """Initialize values for properties, defined by fields in
+        associated form.
         """
         values = {}
+        overrides = {}
         for field in self.form.get_fields():
             id = field.id
             value = dict.get(id, field.get_value('default'))
             values[id] = value
+            overrides[id] = ""
         self.values = values
+        self.overrides = overrides
         
     security.declareProtected('Access contents information', 'has_value')
     def has_value(self, id):
@@ -52,23 +56,38 @@ class Field:
         else:
             return 0
 
+    security.declareProtected('Access contents information', 'get_orig_value')
+    def get_orig_value(self, id):
+        """Get value for id; don't do any override calculation.
+        """
+        if self.values.has_key(id):
+            return self.values[id]
+        else:
+            return self.form.get_field(id).get_value('default')
+        
     security.declareProtected('Access contents information', 'get_value')
     def get_value(self, id):
         """Get value for id."""
-        try:
-            value = self.values[id]
-        except KeyError:
-            # try to return default value in case of error
-            # this way fields can be smoothly upgraded with new
-            # property fields.
-            # this may fail too if there is no field with this name;
-            # in that case we want it to be an error
-            value = self.form.get_field(id).get_value('default')
-            
+        # FIXME: backwards compatibility hack
+        if not hasattr(self, 'overrides'):
+            self.overrides = {}
+        override = self.overrides.get(id, "")
+        if override:
+            # call wrapped method
+            value = override.__of__(self)()
+        else:
+            # get normal value
+            value = self.get_orig_value(id)
+        # if normal value is a callable itself, call it
         if callable(value):
             return value.__of__(self)
         else:
             return value
+        
+    security.declareProtected('Access contents information', 'get_override')
+    def get_override(self, id):
+        """Get override method for id (not wrapped)."""
+        return self.overrides.get(id, "")
     
     security.declareProtected('View management screens', 'get_error_names')
     def get_error_names(self):
@@ -179,6 +198,8 @@ class PythonField(
     manage_options = (
         {'label':'Edit',       'action':'manage_main',
          'help':('Formulator', 'fieldEdit.txt')},
+        {'label':'Override',    'action':'manage_overrideForm',
+         'help':('Formulator', 'fieldOverride.txt')},
         {'label':'Messages',   'action':'manage_messagesForm',
          'help':('Formulator', 'fieldMessages.txt')},
         {'label':'Test',       'action':'fieldTest',
@@ -234,6 +255,39 @@ class PythonField(
         # update group info in form
         if hasattr(item.aq_explicit, 'is_field'):
             container.field_added(item.id)
+
+    # methods screen
+    security.declareProtected('View management screens',
+                              'manage_overrideForm')
+    manage_overrideForm = DTMLFile('www/fieldOverride', globals())
+
+    security.declareProtected('Change Formulator Forms', 'manage_override')
+    def manage_override(self, REQUEST):
+        """Change override methods.
+        """
+        try:
+            # validate the form and get results
+            result = self.override_form.validate(REQUEST)
+        except ValidationError, err:
+            if REQUEST:
+                message = "Error: %s - %s" % (err.field.get_value('title'),
+                                              err.error_text)
+                return self.manage_overrideForm(self,REQUEST,
+                                                manage_tabs_message=message)
+            else:
+                raise
+
+        # update overrides of field with results
+        if not hasattr(self, "overrides"):
+            self.overrides = result
+        else:
+            self.overrides.update(result)
+            self.overrides = self.overrides
+        
+        if REQUEST:
+            message="Content changed."
+            return self.manage_overrideForm(self,REQUEST,
+                                            manage_tabs_message=message)
     
     # display test screen
     security.declareProtected('View management screens', 'fieldTest')
