@@ -267,6 +267,9 @@ class TextAreaWidget(Widget):
 TextAreaWidgetInstance = TextAreaWidget()
 
 class LinesTextAreaWidget(TextAreaWidget):
+    property_names = Widget.property_names +\
+                     ['width', 'height', 'view_separator', 'extra']
+    
     default = fields.LinesField('default',
                                 title='Default',
                                 description=(
@@ -274,6 +277,17 @@ class LinesTextAreaWidget(TextAreaWidget):
                                 default=[],
                                 width=20, height=3,
                                 required=0)
+
+    view_separator = fields.StringField('view_separator',
+                                        title='View separator',
+                                        description=(
+        "When called with render_view, this separator will be used to "
+        "render individual items."),
+                                        width=20,
+                                        default='<br />\n',
+                                        whitespace_preserve=1,
+                                        required=1)
+    
     def render(self, field, key, value, REQUEST):
         value = string.join(value, "\n")
         return TextAreaWidget.render(self, field, key, value, REQUEST)
@@ -281,7 +295,7 @@ class LinesTextAreaWidget(TextAreaWidget):
     def render_view(self, field, key, value):
         if value is None:
             return ''
-        return string.join(value, "<br />\n")
+        return string.join(value, field.get_value('view_separator'))
         
 LinesTextAreaWidgetInstance = LinesTextAreaWidget()
 

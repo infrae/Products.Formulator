@@ -86,20 +86,19 @@ class Field:
             return self.form.get_field(id).get_value('default')
         
     security.declareProtected('Access contents information', 'get_value')
-    def get_value(self, id):
-        """Get value for id."""
-        # FIXME: backwards compat hack to make sure tales dict exists
-        if not hasattr(self, 'tales'):
-            self.tales = {}
+    def get_value(self, id, **kw):
+        """Get value for id.
 
+        Optionally pass keyword arguments that get passed to TALES
+        expression.
+        """
         tales_expr = self.tales.get(id, "")
+        
         if tales_expr:
-            value = tales_expr.__of__(self)(field=self, form=self.aq_parent)
-        else:
-            # FIXME: backwards compat hack to make sure overrides dict exists
-            if not hasattr(self, 'overrides'):
-                self.overrides = {}
-                
+            value = tales_expr.__of__(self)(
+                field=self,
+                form=self.aq_parent, **kw)
+        else:   
             override = self.overrides.get(id, "")
             if override:
                 # call wrapped method to get answer
@@ -135,6 +134,16 @@ class Field:
         """Get error messages.
         """
         return self.validator.message_names
+
+    def generate_field_key(self, validation=0):
+        if self.field_record is None:
+            return 'field_%s' % self.id
+        elif validation:
+            return self.id
+        elif isinstance(self.widget, MultiItemsWidget):
+            return "%s.%s:record:list" % (self.field_record, self.id)
+        else:
+            return '%s.%s:record' % (self.field_record, self.id)
 
     security.declareProtected('View management screens', 'get_error_message')
     def get_error_message(self, name):
