@@ -21,6 +21,12 @@ Formulator changes
       - A new label field. Doesn't participate in validation, but
         does show its text as a label in the form.
 
+    Bugs Fixed
+
+      - The css_class value of a DateTime foeld has been ignored.
+        It is now properly passed down to its subfields, so all
+        subfield elements are rendered with the given css_class value.
+
   1.5.0
 
     Features Added
