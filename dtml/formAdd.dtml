@@ -38,9 +38,9 @@ Formulator Forms allow you to create solid web forms more easily.
     </td>
     <td align="left" valign="top">
     <div class="form-element">
-    <input class="form-element" type="submit" name="submit" 
+    <input class="form-element" type="submit" name="submit_add" 
      value=" Add " /> 
-    <input class="form-element" type="submit" name="submit" 
+    <input class="form-element" type="submit" name="submit_add_and_edit" 
      value=" Add and Edit " />
     </div>
     </td>
