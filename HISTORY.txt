@@ -19,6 +19,8 @@ Formulator changes
       - Made system not reregister help for Fields which already have
         help, to avoid ZODB writes on startup.
 
+      - Fixed singleton submit button that wasn't properly closed.
+
   1.6.2
 
     Bugs Fixed

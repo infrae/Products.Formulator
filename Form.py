@@ -315,7 +315,7 @@ class Form:
                 w('<td>%s</td>\n' % field.render(value, REQUEST))
                 w('</tr>\n')
             w('</table>\n')
-        w('<input type="submit" value=" OK ">\n')
+        w('<input type="submit" value=" OK " />\n')
         w(self.footer())
         return result.getvalue()
 
