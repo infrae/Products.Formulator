@@ -138,7 +138,7 @@ class DateTimeField(ZMIField):
             return value
         # if there is something in the request then return None
         # sub fields should pick up defaults themselves
-        if REQUEST.form.has_key('subfield_%s_%s' % (self.id, 'year')):
+        if REQUEST is not None and REQUEST.form.has_key('subfield_%s_%s' % (self.id, 'year')):
             return None
         else:
             return self.get_value('default')
