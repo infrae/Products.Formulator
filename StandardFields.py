@@ -156,7 +156,7 @@ class DateTimeField(ZMIField):
             self.sub_form = create_datetime_text_sub_form()
         elif value == 'list':
             self.sub_form = create_datetime_list_sub_form()
-            year_field = self.sub_form.get_field('year')
+            year_field = self.sub_form.get_field('year', include_disabled=1)
             year_field.overrides['items'] = BoundMethod(self,
                                                         'override_year_items')
         else:

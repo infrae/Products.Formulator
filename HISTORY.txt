@@ -23,6 +23,11 @@ Formulator changes
         allows for easier integration with Zope systems that use unicode
         internally, such as Silva.
  
+      - Disabling of fields. A field can now be disabled from being
+        displayed or validated by unchecking the 'Enabled' validator
+        property. This can be done dynamically as well using TALES
+        overrides.
+
     Bugs Fixed
 
       - The css_class value of a DateTime field had been ignored.  It

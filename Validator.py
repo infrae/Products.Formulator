@@ -10,9 +10,20 @@ from Errors import ValidationError
 class ValidatorBase:
     """Even more minimalistic base class for validators.
     """
-    property_names = []
+    property_names = ['enabled']
 
     message_names = []
+
+    enabled = fields.CheckBoxField('enabled',
+                                   title="Enabled",
+                                   description=(
+        "If a field is not enabled, it will considered to be not "
+        "in the form during rendering or validation. Be careful "
+        "when you change this state dynamically (in the TALES tab): "
+        "a user could submit a field that since got disabled, or "
+        "get a validation error as a field suddenly got enabled that "
+        "wasn't there when the form was drawn."),
+                                   default=1)
     
     def raise_error(self, error_key, field):
         raise ValidationError(error_key, field)

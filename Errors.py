@@ -25,3 +25,12 @@ class ValidationError(Exception):
         self.error_text = field.get_error_message(error_key)
 
 allow_class(ValidationError)
+
+class FieldDisabledError(AttributeError):
+
+    def __init__(self, error_key, field):
+        AttributeError.__init__(self, error_key)
+        self.field_id = field.id
+        self.field = field
+
+allow_class(FieldDisabledError)

@@ -16,7 +16,7 @@ def formToXML(form, prologue=1):
         write('<?xml version="1.0"?>\n\n')
     write('<form>\n')
     # export form settings
-    for field in form.settings_form.get_fields():
+    for field in form.settings_form.get_fields(include_disabled=1):
         id = field.id
         value = getattr(form, id)
         if id == 'title':
@@ -29,11 +29,11 @@ def formToXML(form, prologue=1):
         write('  <%s>%s</%s>\n' % (id, value, id))
     # export form groups
     write('  <groups>\n')
-    for group in form.get_groups():
+    for group in form.get_groups(include_empty=1):
         write('    <group>\n')
         write('      <title>%s</title>\n' % escape(group))
         write('      <fields>\n\n')
-        for field in form.get_fields_in_group(group):
+        for field in form.get_fields_in_group(group, include_disabled=1):
             write('      <field><id>%s</id> <type>%s</type>\n' % (field.id, field.meta_type))
             write('        <values>\n')
             items = field.values.items()

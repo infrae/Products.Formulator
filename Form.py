@@ -1,5 +1,6 @@
 import Globals, AccessControl
 import OFS
+from Acquisition import aq_base
 from Globals import DTMLFile, Persistent
 from AccessControl import ClassSecurityInfo
 from AccessControl.Role import RoleManager
@@ -12,7 +13,7 @@ import os
 import string
 from StringIO import StringIO
 
-from Errors import ValidationError, FormValidationError
+from Errors import ValidationError, FormValidationError, FieldDisabledError
 from FieldRegistry import FieldRegistry
 from Widget import render_tag
 from DummyField import fields
@@ -115,7 +116,7 @@ class Form:
         groups = self.groups
         from_list = groups[from_group]
         to_list = groups[to_group]
-        for field in self.get_fields_in_group(from_group)[:]:
+        for field in self.get_fields_in_group(from_group, include_disabled=1)[:]:
             if field.id in field_ids:
                 from_list.remove(field.id)
                 to_list.append(field.id)
@@ -203,31 +204,39 @@ class Form:
     
     # ACCESSORS
     security.declareProtected('View', 'get_fields')
-    def get_fields(self):
+    def get_fields(self, include_disabled=0):
         """Get all fields for all groups (in the display order).
         """
         result = []
-        for group in self.get_groups():
-            result.extend(self.get_fields_in_group(group))
+        for group in self.get_groups(include_empty=1):
+            result.extend(self.get_fields_in_group(group, include_disabled))
         return result
 
     security.declareProtected('View', 'get_field_ids')
-    def get_field_ids(self):
+    def get_field_ids(self, include_disabled=0):
         """Get all the ids of the fields in the form.
         """
         result = []
-        for field in self.get_fields():
+        for field in self.get_fields(include_disabled):
             result.append(field.id)
         return result
     
     security.declareProtected('View', 'get_fields_in_group')
-    def get_fields_in_group(self, group):
+    def get_fields_in_group(self, group, include_disabled=0):
         """Get all fields in a group (in the display order).
         """
-        return map(self.get_field, self.groups.get(group, []))
+        result = []
+        for field_id in self.groups.get(group, []):
+            try:
+                field = self.get_field(field_id, include_disabled)
+            except FieldDisabledError:
+                pass
+            else:
+                result.append(field)
+        return result
 
     security.declareProtected('View', 'has_field')
-    def has_field(self, id):
+    def has_field(self, id, include_disabled):
         """Check whether the form has a field of a certain id.
         """
         # define in subclass
@@ -241,11 +250,17 @@ class Form:
         pass
     
     security.declareProtected('View', 'get_groups')
-    def get_groups(self):
+    def get_groups(self, include_empty=0):
         """Get a list of all groups, in display order.
-        """
-        return self.group_list
 
+        If include_empty is false, suppress groups that do not have
+        enabled fields.
+        """
+        if include_empty:
+            return self.group_list
+        return [group for group in self.group_list
+                if self.get_fields_in_group(group)]
+ 
     security.declareProtected('View', 'get_form_encoding')
     def get_form_encoding(self):
         """Get the encoding the form is in. Should be the same as the
@@ -283,7 +298,10 @@ class Form:
                 else:
                     value = None
                 w('<tr>\n')
-                w('<td>%s</td>\n' % field.get_value('title'))
+                if not field.get_value('hidden'):
+                    w('<td>%s</td>\n' % field.get_value('title'))
+                else:
+                    w('<td></td>')
                 w('<td>%s</td>\n' % field.render(value, REQUEST))
                 w('</tr>\n')
             w('</table>\n')
@@ -315,7 +333,7 @@ class Form:
     
     security.declareProtected('View', 'validate')
     def validate(self, REQUEST):
-        """Validate all fields in this form. Stop validating and
+        """Validate all enabled fields in this form. Stop validating and
         pass up ValidationError if any occurs.
         """
         result = {}
@@ -343,7 +361,7 @@ class Form:
     
     security.declareProtected('View', 'validate_all')
     def validate_all(self, REQUEST):
-        """Validate all fields in this form, catch any ValidationErrors
+        """Validate all enabled fields in this form, catch any ValidationErrors
         if they occur and raise a FormValidationError in the end if any
         Validation Errors occured.
         """
@@ -522,20 +540,27 @@ class BasicForm(Persistent, Acquisition.Implicit, Form):
         self.fields = self.fields
 
     security.declareProtected('View', 'has_field')
-    def has_field(self, id):
+    def has_field(self, id, include_disabled=0):
         """Check whether the form has a field of a certain id.
+        If disabled fields are not included, pretend they're not there.
         """
-        return self.fields.has_key(id)
+        field = self.fields.get(id, None)
+        if field is None:
+            return 0
+        return include_disabled or field.get_value('enabled')
     
     security.declareProtected('View', 'get_field')
-    def get_field(self, id):
+    def get_field(self, id, include_disabled=0):
         """get a field of a certain id."""
-        return self.fields[id]
+        field = self.fields[id]
+        if include_disabled or field.get_value('enabled'):
+            return field
+        raise FieldDisabledError("Field %s is disabled" % id, field)
     
     def _realize_fields(self):
         """Make the fields in this form actual fields, not just dummy fields.
         """
-        for field in self.get_fields():
+        for field in self.get_fields(include_disabled=1):
             if hasattr(field, 'get_real_field'):
                 field = field.get_real_field()
             self.fields[field.id] = field
@@ -687,24 +712,24 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
     #                  self.objectValues())
 
     security.declareProtected('View', 'has_field')
-    def has_field(self, id):
+    def has_field(self, id, include_disabled=0):
         """Check whether the form has a field of a certain id.
         """
-        if hasattr(self, id):
-            field = getattr(self, id)
-            return hasattr(field, 'aq_explicit') and hasattr(field.aq_explicit, 'is_field')
-        else:
+        field = self._getOb(id, None)
+        if field is None or not hasattr(aq_base(field), 'is_field'):
             return 0
+        return include_disabled or field.get_value('enabled')
     
     security.declareProtected('View', 'get_field')
-    def get_field(self, id):
+    def get_field(self, id, include_disabled=0):
         """Get a field of a certain id
         """
-        field = getattr(self, id)
-        if hasattr(field.aq_explicit, 'is_field'):
-            return field
-        else:
+        field = self._getOb(id, None)
+        if field is None or not hasattr(aq_base(field), 'is_field'):
             raise AttributeError, "No field %s" % id
+        if include_disabled or field.get_value('enabled'):
+            return field
+        raise FieldDisabledError("Field %s disabled" % id, field)
 
     security.declareProtected('Change Formulator Forms', 'manage_addField')
     def manage_addField(self, id, title, fieldname, REQUEST=None):
@@ -805,7 +830,7 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
         """Get the checked field_ids that we're operating on
         """
         field_ids = []
-        for field in self.get_fields_in_group(group):
+        for field in self.get_fields_in_group(group, include_disabled=1):
             if REQUEST.form.has_key(field.id):
                 field_ids.append(field.id)
         return field_ids
@@ -816,7 +841,7 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
         """Get the groups in rows (for the order screen).
         """
         row_length = self.row_length
-        groups = self.get_groups()
+        groups = self.get_groups(include_empty=1)
         # get the amount of rows
         rows = len(groups) / row_length
         # if we would have extra groups not in a row, add a row
@@ -835,7 +860,7 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
         'order' screen user interface.
         """
         max = 0
-        for group in self.get_groups():
+        for group in self.get_groups(include_empty=1):
             fields = self.get_fields_in_group(group)
             if len(fields) > max:
                 max = len(fields)

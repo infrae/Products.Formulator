@@ -43,7 +43,7 @@ class Field:
         associated form.
         """
         values = {}
-        for field in self.form.get_fields():
+        for field in self.form.get_fields(include_disabled=1):
             id = field.id
             value = dict.get(id, field.get_value('default'))
             values[id] = value

@@ -249,20 +249,22 @@ class SerializeTestCase(unittest.TestCase):
         multi_field = getattr(form, 'multi_field')
         link_field = getattr(form, 'link_field')
         empty_field = getattr(form, 'empty_field')
-
-
-        # XXX editing fields by messing with a fake request -- any better way to do this?
+   
+        # XXX editing fields by messing with a fake request
+        # -- any better way to do this?
 
         default_values = {'field_title': 'Test Title',
                           'field_display_width': '92',
                           'field_required':'checked',
+                          'field_enabled':'checked',
                           }
         try:
             request = FakeRequest()
             request.update(default_values)
-            request.update( {'field_default':'42'})
+            request.update( {'field_default':'42',
+                             'field_enabled':'checked'})
             int_field.manage_edit(REQUEST=request)
-
+            
             request.clear()
             request.update(default_values)
             request.update( {'field_default':'1.7'})
@@ -314,8 +316,7 @@ class SerializeTestCase(unittest.TestCase):
         except ValidationError, e:
             self.fail('error when editing field %s; error message: %s' %
                        (e.field_id, e.error_text) )
-                     
-
+        
         form2 = ZMIForm('test2', 'ValueTest')
         
         xml = formToXML(form)
@@ -331,7 +332,6 @@ class SerializeTestCase(unittest.TestCase):
 
         # brute force compare ...
         self.assertEquals(form.render(), form2.render())
-        
         request.clear()
         request['field_int_field'] = '42'
         request['field_float_field'] = '2.71828'
@@ -356,7 +356,6 @@ class SerializeTestCase(unittest.TestCase):
             # XXX only render first error ...
             self.fail('error when editing form1, field %s; error message: %s' %
                        (e.errors[0].field_id, e.errors[0].error_text) )
-
         self.assertEquals(result1, result2)
         self.assertEquals(42, result2['int_field'])
         self.assertEquals(2.71828, result2['float_field'])
