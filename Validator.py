@@ -1,4 +1,4 @@
-import re
+import string, re
 import PatternChecker
 from DummyField import fields
 from DateTime import DateTime
@@ -6,7 +6,6 @@ from threading import Thread
 from urllib import urlopen
 from urlparse import urljoin
 from Errors import ValidationError
-from types import StringType, ListType
 
 class Validator:
     """Validates input and possibly transforms it to output.
@@ -53,10 +52,8 @@ class StringBaseValidator(Validator):
     required_not_found = 'Input is required but no input given.'
         
     def validate(self, field, key, REQUEST):
-        value = REQUEST.get(key, "")
-        if type(value) == StringType:
-            value = value.strip()
-        if field.get_value('required') and not value:
+        value = string.strip(REQUEST.get(key, ""))
+        if field.get_value('required') and value == "":
             self.raise_error('required_not_found', field)
         return value
     
@@ -114,7 +111,7 @@ class EmailValidator(StringValidator):
         if value == "" and not field.get_value('required'):
             return value
 
-        if self.pattern.search(value.lower()) == None:
+        if self.pattern.search(string.lower(value)) == None:
             self.raise_error('not_email', field)
         return value
 
@@ -274,9 +271,7 @@ class LinesValidator(StringBaseValidator):
         if max_length and len(value) > max_length:
             self.raise_error('too_long', field)
         # split input into separate lines
-        lines = value
-        if type(lines) == StringType:
-            lines = value.split('\n')
+        lines = string.split(value, "\n")
 
         # check whether we have too many lines
         max_lines = field.get_value('max_lines') or 0
@@ -288,8 +283,7 @@ class LinesValidator(StringBaseValidator):
         max_linelength = field.get_value('max_linelength') or 0
         result = []
         for line in lines:
-            if type(line) == StringType:
-                line = line.strip()
+            line = string.strip(line)
             if max_linelength and len(line) > max_linelength:
                 self.raise_error('line_too_long', field)
             result.append(line)
@@ -306,7 +300,7 @@ class TextValidator(LinesValidator):
             return ""
 
         # join everything into string again with \n and return
-        return value.join("\n")
+        return string.join(value, "\n")
 
 TextValidatorInstance = TextValidator()
 
