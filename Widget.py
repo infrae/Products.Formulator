@@ -41,13 +41,13 @@ class Widget:
         "contents of the hidden field will be the default value. "
         "Hidden fields are not visible but will be validated."),
                                   default=0)
-    
-    def render(self, field, key, value):
+
+    def render(self, field, key, value, REQUEST):
         """Renders this widget as HTML using property values in field.
         """
         return "[widget]"
-
-    def render_hidden(self, field, key, value):
+        
+    def render_hidden(self, field, key, value, REQUEST):
         """Renders this widget as a hidden field.
         """
         return render_element("input",
@@ -85,8 +85,8 @@ class TextWidget(Widget):
         "client side behavior only."),
                                            default=0,
                                            required=1)
-    
-    def render(self, field, key, value):
+
+    def render(self, field, key, value, REQUEST):
         """Render text input field.
         """
         display_maxwidth = field.get_value('display_maxwidth')
@@ -109,7 +109,7 @@ class TextWidget(Widget):
 TextWidgetInstance = TextWidget()
 
 class PasswordWidget(TextWidget):
-    def render(self, field, key, value):
+    def render(self, field, key, value, REQUEST):
         """Render password input field.
         """
         display_maxwidth = field.get_value('display_maxwidth')
@@ -142,7 +142,7 @@ class CheckBoxWidget(Widget):
         "(true or false)"),
                                    default=0)
     
-    def render(self, field, key, value):
+    def render(self, field, key, value, REQUEST):
         """Render checkbox.
         """
         if value:
@@ -187,7 +187,7 @@ class TextAreaWidget(Widget):
                                  default=5,
                                  required=1)
 
-    def render(self, field, key, value):
+    def render(self, field, key, value, REQUEST):
         width = field.get_value('width')
         height = field.get_value('height')
             
@@ -258,7 +258,7 @@ class ListWidget(Widget):
                                default=5,
                                required=1)
                           
-    def render(self, field, key, value):
+    def render(self, field, key, value, REQUEST):
         # we always need a string value
         value = str(value)
             
@@ -364,14 +364,28 @@ class DateTimeWidget(Widget):
                                      description=(
         "Display the date only, not the time."),
                                      default=0)
-    
-    def render(self, field, key, value):
-        if value == None:
-            year = ''
-            month = ''
-            day = ''
-            hour = ''
-            minute = ''
+
+    def get_sub_field_default(self, field, key, value):
+        if value is None:
+            return ''
+        if key == 'text_year':
+            return value.year()
+        elif key == 'text_month':
+            return value.month()
+        elif key == 'text_day':
+            return value.day()
+        elif key == 'hour':
+            return value.hour()
+        elif key == 'minute':
+            return value.minute()
+        
+    def render(self, field, key, value, REQUEST):
+        if value is None:
+            year = None
+            month = None
+            day = None
+            hour = None
+            minute = None
         else:
             year = value.year()
             month = value.month()
@@ -395,12 +409,12 @@ class DateTimeWidget(Widget):
         result = []
         for sub_field_name, sub_field_value in order:
             result.append(field.render_sub_field(sub_field_name,
-                                                 sub_field_value))
+                                                 sub_field_value, REQUEST))
         date_result = string.join(result, field.get_value('date_separator'))
         if not field.get_value('date_only'):
-            time_result = (field.render_sub_field('hour', hour) +
+            time_result = (field.render_sub_field('hour', hour, REQUEST) +
                            field.get_value('time_separator') +
-                           field.render_sub_field('minute', minute))
+                           field.render_sub_field('minute', minute, REQUEST))
             return date_result + '&nbsp;&nbsp;&nbsp;' + time_result
         else:
             return date_result

@@ -12,7 +12,7 @@ class MethodWidget(Widget.TextWidget):
                                  default="",
                                  required=0)
     
-    def render(self, field, key, value=None):
+    def render(self, field, key, value, REQUEST):
         if value == None:
             method_name = field.get_value('default')
         else:

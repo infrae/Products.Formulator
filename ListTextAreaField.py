@@ -9,14 +9,15 @@ class ListTextAreaWidget(Widget.TextAreaWidget):
                                        default=[],
                                        required=0)
 
-    def render(self, field, key, value=None):
-        if value == None:
+    def render(self, field, key, value, REQUEST):
+        if value is None:
             value = field.get_value('default')
         lines = []
         for element_text, element_value in value:
             lines.append("%s | %s" % (element_text, element_value))
         return Widget.TextAreaWidget.render(self, field, key,
-                                            string.join(lines, '\n'))
+                                            string.join(lines, '\n'),
+                                            REQUEST)
 
 ListTextAreaWidgetInstance = ListTextAreaWidget()
 

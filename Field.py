@@ -87,28 +87,37 @@ class Field:
                 return "Unknown error: %s" % name
     
     security.declarePrivate('_render_helper')
-    def _render_helper(self, key, value=None):
-        if value == None:
-            value = self.get_value('default')
+    def _render_helper(self, key, value, REQUEST):
+        value = self._get_default(key, value, REQUEST)
         if self.get_value('hidden'):
-            return self.widget.render_hidden(self, key, value)
+            return self.widget.render_hidden(self, key, value, REQUEST)
         else:
-            return self.widget.render(self, key, value)
-        
+            return self.widget.render(self, key, value, REQUEST)
+
+    security.declarePrivate('_get_default')
+    def _get_default(self, key, value, REQUEST):
+        if value is not None:
+            return value
+        elif REQUEST is not None and REQUEST.has_key(key):
+            return REQUEST[key]
+        else:
+            return self.get_value('default')
+
     security.declareProtected('View', 'render')
-    def render(self, value=None):
+    def render(self, value=None, REQUEST=None):
         """Render the field widget
         """
-        return self._render_helper("field_%s" % self.id, value)
+        return self._render_helper('field_%s' % self.id, value, REQUEST)
 
     security.declareProtected('View', 'render_sub_field')
-    def render_sub_field(self, id, value=None):
-        """Render a sub field of this field, as part of
-        complete rendering of widget in a form.
+    def render_sub_field(self, id, value=None, REQUEST=None):
+        """Render a sub field, as part of complete rendering of widget in
+        a form.
         """
         return self.sub_form.get_field(id)._render_helper(
-            "subfield_%s_%s" % (self.id, id), value)
-
+            "subfield_%s_%s" % (self.id, id),
+            value, REQUEST)
+    
     security.declarePrivate('_validate_helper')
     def _validate_helper(self, key, REQUEST):
         return self.validator.validate(self, key, REQUEST)
@@ -231,10 +240,10 @@ class PythonField(
                                             manage_tabs_message=message)
         
     security.declareProtected('View', 'index_html')
-    def index_html(self):
+    def index_html(self, REQUEST):
         """Render this field.
         """
-        return self.render()
+        return self.render(REQUEST=REQUEST)
 
 Globals.InitializeClass(PythonField)
 
