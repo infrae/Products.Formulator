@@ -30,8 +30,6 @@ Formulator changes
 
       - 'render_view' method on fields to render the value outside a
         widget.
-  
-      - Should fix XML export/import which currently is in latin1..
 
     Bugs Fixed
    

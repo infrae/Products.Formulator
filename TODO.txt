@@ -1,4 +1,6 @@
 Formulator TODO
+  
+  - Should fix XML export/import which currently is in latin1.
 
   - Make composite fields work well as hidden fields.
 
@@ -12,8 +14,5 @@ Formulator TODO
 
   - HTML filtering field?
 
-  - Add render_view() to widgets, so that fields can be displayed
-    view-only.
-
-  - Add unit tests!
+  - Add more unit tests.
 
