@@ -59,7 +59,7 @@ Many thanks go to:
                                       serialization.
 
   Guido Wesdorp (guido at infrae.com) -- Added extra_item attribute on
-                                      compound fields.
+                                      compound fields, bugfixes.
 
   Yura Petrov (ypetrov at naumen.ru) -- Various FSForm related
                                      improvements.

@@ -8,6 +8,7 @@ from OFS.ObjectManager import ObjectManager
 from OFS.PropertyManager import PropertyManager
 from OFS.SimpleItem import Item
 import Acquisition
+from ComputedAttribute import ComputedAttribute
 from urllib import quote
 import os
 import string
@@ -471,7 +472,7 @@ class Form:
 
     security.declareProtected('Access contents information',
                               'management_page_charset')
-    def management_page_charset(self):
+    def _management_page_charset(self):
         """manage_before_header calls this to determine management
         screen encodings.
         """
@@ -479,7 +480,13 @@ class Form:
             return self.stored_encoding
         else:
             return 'UTF-8'
-        
+
+    # XXX have to use a ComputedAttribute in Zope 2.7, as
+    # management_page_charset is not automatically called anymore..
+    security.declareProtected('Access contents information',
+                              'management_page_charset')
+    management_page_charset = ComputedAttribute(_management_page_charset)
+    
     security.declareProtected('View', 'set_encoding_header')
     def set_encoding_header(self):
         """Set the encoding in the RESPONSE object.

@@ -2,17 +2,24 @@ Formulator changes
 
   1.6.2
   
-      - Fixed bug which caused validation of listfields to throw
-        an exception when a list of strings was used as the value
-        of <items> and one of the elements was 2 characters long
+    Bugs Fixed
+
+      - Fixed bug which caused validation of listfields to throw an
+        exception when a list of strings was used as the value of
+        <items> and one of the elements was 2 characters long.
+
+      - Formulator should now work again in Zope 2.7; Zope 2.7 has a
+        change to the way it retrieved the character set it used to to
+        display the ZMI. This interacted badly with the recent changes
+        in Formulator to support unicode.
 
   1.6.1
   
     Bugs Fixed
  
-      - Adding Fields to empty Groups had not been possible
+      - Adding Fields to empty Groups had not been possible.
 
-      - ZMI "Order" tab of an empty form did raise an exception
+      - ZMI "Order" tab of an empty form did raise an exception.
 
   1.6.0
   
