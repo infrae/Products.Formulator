@@ -1,0 +1,43 @@
+Formulator changes
+
+  0.9.1
+
+    Features Added
+
+      - Widgets now have a 'hidden' property. If set, the widget is
+        drawn as a 'hidden' field. 'hidden' fields do get validated
+        normally, however.
+ 
+      - Changed API of Widget and Validator slightly; render() and
+        validate() methods now take an extra 'key' argument indicating
+        the name the field should have in the form. This is necessarily
+        to handle sub fields of composite fields.
+
+      - Added EmailField and FloatField.
+ 
+      - Added some infrastructure to support 'composite fields'; fields 
+        composed out of multiple sub fields.
+
+      - Added DateTimeField, the first example of a composite field
+        (field made of other fields).
+
+    Bugs Fixed  
+
+      - General code cleanups; removed some unused methods.
+
+      - Fixed security assertion for validate_all_to_request() method.
+
+      - MethodFields now check whether they have 'View' permission to
+        execute listed Python Script or DTML Method.
+
+      - RangedInteger is now < end, instead of <=, compatible with the
+        documentation.
+      
+  0.9
+
+    Initial Release
+
+      - Initial public release of Formulator.
+
+
+

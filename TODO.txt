@@ -1,0 +1,8 @@
+Formulator todo
+
+  - improve sub field handling; ability to override field settings 
+    from the field that contains sub field.
+
+  - DateTimeField: allow different Input style 'list', for dropdown
+    list entry of dates.
+
