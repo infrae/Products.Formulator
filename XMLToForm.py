@@ -127,6 +127,13 @@ def XMLToForm(s, form, override_encoding=None):
         form.move_group_down('Default')
         form.remove_group('Default')
 
+    # delete fields which did exist before setting the values in XML
+    # but are not present in the XML
+    old_ids = [ id for id in form.objectIds() if id not in \
+                form.get_field_ids(include_disabled=1) ]
+    if old_ids:
+        form.manage_delObjects(old_ids)
+
 def encode(text, encoding):
     if encoding is None:
         return text

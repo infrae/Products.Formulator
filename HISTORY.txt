@@ -25,6 +25,9 @@ Formulator changes
       - Added explicit security declatation for the "fieldAdd" DTML-file.
         Fixed a problem with copy & paste fields in Zope 2.7.3.
 
+      - Fields having been removed via the XML tab in the ZMI still
+        showed up in the "Contents" tab.
+
   1.7.0
  
     Features Added
