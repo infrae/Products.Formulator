@@ -68,7 +68,7 @@ class FormTestCase(unittest.TestCase):
         self.form.override_test = PythonScript('override_test')
         self.form.override_test.write("return ['ok', 'no']\n")
 
-        list_field = getattr(self.form, 'list_field')
+        list_field = self.form.list_field
         list_field.values['items'] = [ ('ok', 'ok'), ('no', 'no') ]
 
         list_field.values['first_item'] = 'on'
@@ -108,6 +108,30 @@ class FormTestCase(unittest.TestCase):
         self.assertEquals(items1, items2)
 
         list_field.validate({'field_list_field':'42'})
+
+
+    def test_items_is_sequence(self):
+        """ test that a multi list widget renders correctly,
+        even if the items consist out of a tuple.
+        this has bugged in some earlier version
+        """
+        # use a MultiCheckBoxField instead of a MultiListField just for variance
+        self.form.manage_addField('list_field', 'Test List Field', 'MultiCheckBoxField')
+        
+        list_field = self.form.list_field
+        list_field.values['items'] = [ ('foo', 'foo'), ('bar', 'bar') ]
+        list_field.values['first_item'] = 'on'
+
+        items1 = list_field.render()
+
+        list_field.tales['items'] = TALESMethod("python:('foo', 'bar')")
+        self.assertEquals(('foo', 'bar'), list_field.get_value('items'))
+        items2 = list_field.render()
+
+        # test render
+        self.assertEquals(items1, items2)
+        # test render_view
+        self.assertEquals("foo", list_field.render_view(('foo',)) )
 
 
     def test_labels(self):
