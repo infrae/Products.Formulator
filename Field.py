@@ -6,6 +6,7 @@ import OFS
 from Shared.DC.Scripts.Bindings import Bindings
 from Errors import ValidationError
 from Products.Formulator.Widget import MultiItemsWidget
+from Products.PlacelessTranslationService import translate, getLanguages
 
 class Field:
     """Base class of all fields.
@@ -118,6 +119,20 @@ class Field:
             else:
                 # get normal value
                 value = self.get_orig_value(id)
+        # construct i18n id:
+        # add id to form
+        # then concatenate: formid+fieldid+title
+        # eg: getvalue(uploadform_title_title) and translate then
+        
+        # check if an i18n id exist
+        if id in ['title', 'description']:
+            i18n_domain, i18n = self.get_i18n_info()
+            if i18n_domain and i18n:
+                msgid = "%s_%s_%s" % (i18n, self.id, id)
+                msgstr = translate(i18n_domain, msgid, context=self.REQUEST,
+                    as_unicode=self.get_unicode_mode())
+                if msgstr is not None:
+                    return msgstr
 
         # if normal value is a callable itself, wrap it
         if callable(value):
@@ -125,6 +140,13 @@ class Field:
         else:
             return value
 
+    def get_i18n_info(self):
+        """Get i18n info. Try to get it from the form."""
+        try:
+            return self.aq_parent.get_i18n_info()
+        except AttributeError:
+            return '', ''
+        
     security.declareProtected('View management screens', 'get_override')
     def get_override(self, id):
         """Get override method for id (not wrapped)."""
