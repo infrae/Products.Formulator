@@ -6,3 +6,4 @@ Formulator todo
   - DateTimeField: allow different Input style 'list', for dropdown
     list entry of dates.
 
+  - Make composite fields work well as hidden fields.
