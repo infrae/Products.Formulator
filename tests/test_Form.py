@@ -18,7 +18,9 @@ from Products.PythonScripts.PythonScript import PythonScript
 from test_serialize import FakeRequest
 
 """ random assembly testing some reported bugs.
-    This is _not_ a structured or even complete test suite
+    This is _not_ a structured or even complete test suite.
+    Most tests test the "render" method of fields, thus they
+    maybe could be moved to a "test_widgets" test case partially
 """
 
 class FormTestCase(unittest.TestCase):
@@ -134,7 +136,40 @@ class FormTestCase(unittest.TestCase):
         self.assertEquals("foo", list_field.render_view(('foo',)) )
 
 
+    def test_lines_field_rendering(self):
+        """ line fields should both accept lists / tuples
+        of strings and single strings with whitespace.
+        If they would not accept the second case, render_from_request
+        would be broken.
+        """
+        self.form.manage_addField(
+            'lines_field', 'Test Lines Field', 'LinesField')
+
+        field = self.form.lines_field
+
+        request = FakeRequest()
+        request.form['field_lines_field'] = 'Text'
+        
+        rendered = field.render(REQUEST=request)
+
+        # strip <textarea ...> </texarea> manually :-/
+        m = re.match(r'<textarea[^>]*>(.*)</textarea>', rendered, re.M | re.S)
+        self.assert_("output of linesfield not parseable :"+rendered,
+                     m is not None)
+        self.assertEquals('Text', m.group(1))
+
+        field.values['hidden']='checked'
+        rendered = field.render(REQUEST=request)
+
+        # strip <input value="" ... /> manually :-/
+        m = re.match(r'<input.* value="([^"]*)".*/>', rendered, re.M | re.I | re.S)
+        self.assert_("output of linesfield not parseable :"+rendered,
+                     m is not None)
+        self.assertEquals('Text', m.group(1))
+        
+    
     def test_labels(self):
+        """ test that labels do not influence validation """
         self.form.manage_addField(
             'label_field', 'Test Label Field', 'LabelField')
 
