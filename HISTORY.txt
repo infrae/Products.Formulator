@@ -2,6 +2,13 @@ Formulator changes
 
   0.9.5
 
+    Features Added
+ 
+      - Added FileField (with browse button). Can be used to upload
+        files if form is set to multipart/form-data.
+
+      - Added LinkField for URLs.
+
     Bugs Fixed
 
       - Made ListField and RadioField more tolerant of integer
