@@ -517,7 +517,7 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
         {'label':'Settings', 'action':'formSettings',
          'help':('Formulator', 'formSettings.txt')},
         {'label':'XML', 'action':'formXML',
-        'help':('Formulator', 'formXML.txt')},
+         'help':('Formulator', 'formXML.txt')},
         ) +
         PropertyManager.manage_options +
         RoleManager.manage_options +
