@@ -129,62 +129,51 @@ class BooleanValidator(Validator):
 BooleanValidatorInstance = BooleanValidator()
 
 class IntegerValidator(StringBaseValidator):
-
-    message_names = StringBaseValidator.message_names +\
-                    ['not_integer']
-
-    not_integer = 'You did not enter an integer.'
-    
-    def validate(self, field, key, REQUEST):
-        value = StringBaseValidator.validate(self, field, key, REQUEST)
-        # need to add this check to allow empty fields
-        if value == "" and not field.get_value('required'):
-            return value
-        
-        try:
-            value = int(value)
-        except ValueError:
-            self.raise_error('not_integer', field)
-        return value
-
-IntegerValidatorInstance = IntegerValidator()
-
-class RangedIntegerValidator(IntegerValidator):
-    property_names = IntegerValidator.property_names +\
+    property_names = StringBaseValidator.property_names +\
                      ['start', 'end']
 
     start = fields.IntegerField('start',
                                 title='Start',
                                 description=(
         "The integer entered by the user must be larger than or equal to "
-        "this value. Required."),
-                                default=0,
-                                required=1)
+        "this value. If left empty, there is no minimum."),
+                                default="",
+                                required=0)
 
     end = fields.IntegerField('end',
                               title='End',
                               description=(
         "The integer entered by the user must be smaller than this "
-        "value. Required."),
-                              default=100,
-                              required=1)
+        "value. If left empty, there is no maximum."),
+                              default="",
+                              required=0)
 
-    message_names = IntegerValidator.message_names +\
-                    ['integer_out_of_range']
+    message_names = StringBaseValidator.message_names +\
+                    ['not_integer', 'integer_out_of_range']
 
+    not_integer = 'You did not enter an integer.'
     integer_out_of_range = 'The integer you entered was out of range.'
 
     def validate(self, field, key, REQUEST):
-        value = IntegerValidator.validate(self, field, key, REQUEST)
+        value = StringBaseValidator.validate(self, field, key, REQUEST)
         # we need to add this check again
         if value == "" and not field.get_value('required'):
             return value
-        if not field.get_value('start') <= value < field.get_value('end'):
-            self.raise_error('integer_out_of_range', field)
 
+        try:
+            value = int(value)
+        except ValueError:
+            self.raise_error('not_integer', field)
+            
+        start = field.get_value('start')
+        end = field.get_value('end')
+        if start != "" and value < start:
+            self.raise_error('integer_out_of_range', field)
+        if end != "" and value >= end:
+            self.raise_error('integer_out_of_range', field)
         return value
 
-RangedIntegerValidatorInstance = RangedIntegerValidator()
+IntegerValidatorInstance = IntegerValidator()
 
 class FloatValidator(StringBaseValidator):
     message_names = StringBaseValidator.message_names + ['not_float']

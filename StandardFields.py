@@ -36,8 +36,13 @@ class IntegerField(PythonField):
 class RangedIntegerField(PythonField):
     meta_type = "RangedIntegerField"
 
+    # this field is not addable anymore and deprecated. For
+    # backwards compatibility it's a clone of IntegerField,
+    # though it may go away in the future.
+    internal_field = 1 
+    
     widget = Widget.TextWidgetInstance
-    validator = Validator.RangedIntegerValidatorInstance
+    validator = Validator.IntegerValidatorInstance
 
 class FloatField(PythonField):
     meta_type = "FloatField"
