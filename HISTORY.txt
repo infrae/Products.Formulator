@@ -18,7 +18,12 @@ Formulator changes
       - Refactored ListWidget and RadioWidget so they share code; they both
         inherit from SingleItemsWidget now.
 
-   Bugs Fixed
+      - Added LinesField to submit a list of lines in a textarea.
+
+      - Added MultiListField and MultiCheckBoxField, both use new
+        MultiItemsWidget and MultiSelectionValidator.
+
+    Bugs Fixed
 
   0.9.4
 
