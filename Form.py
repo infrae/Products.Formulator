@@ -10,7 +10,7 @@ import os
 import string
 from cStringIO import StringIO
 
-from Validator import ValidationError
+from Errors import ValidationError, FormValidationError
 from FieldRegistry import FieldRegistry
 from Widget import render_tag
 from DummyField import fields
@@ -20,16 +20,6 @@ from Acquisition import aq_base
 from App.Dialogs import MessageDialog
 from OFS.CopySupport import CopyError, eNotSupported
 import sys
-
-class FormValidationError(Exception):
-    __allow_access_to_unprotected_subobjects__ = 1
-    
-    def __init__(self, errors, result):
-        Exception.__init__(self,"Form Validation Error")
-        self.errors = errors
-        self.result = result
-
-Globals.InitializeClass(FormValidationError)
 
 class Form:
     """Form base class.

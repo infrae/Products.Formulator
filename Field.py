@@ -4,8 +4,7 @@ from Globals import Persistent, DTMLFile
 from AccessControl import ClassSecurityInfo
 import OFS
 from Shared.DC.Scripts.Bindings import Bindings
-
-from Validator import ValidationError
+from Errors import ValidationError
 
 class Field:
     """Base class of all fields.

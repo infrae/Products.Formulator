@@ -2,6 +2,11 @@ from Globals import DTMLFile
 import Form
 import StandardFields, HelperFields
 from FieldRegistry import FieldRegistry
+import Errors
+from Products.PythonScripts.Utility import allow_module
+
+# Allow Errors to be imported TTW
+allow_module('Products.Formulator.Errors')
 
 def initialize(context):
     """Initialize the Formulator product.

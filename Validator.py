@@ -5,16 +5,7 @@ from DateTime import DateTime
 from threading import Thread
 from urllib import urlopen
 from urlparse import urljoin
-
-class ValidationError(Exception):
-    __allow_access_to_unprotected_subobjects__ = 1
-    
-    def __init__(self, error_key, field):
-        Exception.__init__(self, error_key)
-        self.error_key = error_key
-        self.field_id = field.id
-        self.field = field
-        self.error_text = field.get_error_message(error_key)
+from Errors import ValidationError
 
 class Validator:
     """Validates input and possibly transforms it to output.
@@ -479,13 +470,6 @@ class LinkValidator(StringValidator):
         if not field.get_value('check_link'):
             return value
 
-        # check links to this site by using resolve_url
-        if link_type in ['internal', 'relative']:
-            try:
-                REQUEST.resolve_url(value)
-            except:
-                self.raise_error('not_link', field)
-                
         # check whether we can open the link
         link = LinkHelper(value)
         thread = Thread(target=link.open)
