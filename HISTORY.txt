@@ -1,5 +1,22 @@
 Formulator changes
 
+  0.9.4
+
+    Features Added
+
+      - Added API docs for Form, BasicForm and ZMIForm.
+
+      - Renamed the confusingly named PythonForm and PythonField to
+        ZMIForm and ZMIField, as they are used from the Zope Management
+        Interface and not from Python.
+
+    Bugs Fixed
+
+      - Removed some validation code that wasn't in use anymore (items_method).
+
+      - Removed 'has_field_id' in Form as this duplicated
+        the functionality of 'has_field'.
+
   0.9.3
 
     Features Added
