@@ -16,6 +16,8 @@ Formulator changes
 
       - use REQUEST.form instead of REQUEST where possible.
 
+      - display month and day with initial zero in DateTimeField.
+
   0.9.2
 
     Features Added

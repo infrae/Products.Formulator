@@ -500,8 +500,8 @@ class DateTimeWidget(Widget):
             minute = None
         else:
             year = value.year()
-            month = value.month()
-            day = value.day()
+            month = "%02d" % value.month()
+            day = "%02d" % value.day()
             hour = "%02d" % value.hour()
             minute = "%02d" % value.minute()
             
