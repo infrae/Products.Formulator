@@ -1,12 +1,15 @@
 import unittest
 import Zope
+from Testing import makerequest
 
 from Products.Formulator.Form import ZMIForm
 from Products.Formulator.XMLToForm import XMLToForm
 from Products.Formulator.FormToXML import formToXML
+from Products.Formulator.MethodField import Method
 
 from Products.Formulator.Errors import ValidationError, FormValidationError
 
+import re
 
 class FakeRequest:
     """ a fake request for testing.
@@ -384,8 +387,50 @@ class SerializeTestCase(unittest.TestCase):
         self.assertEquals(form.render(), form2.render())
 
         self.assertEquals(form.get_groups(), form2.get_groups())
-    
+
+
+    def test_validatorMethod(self):
+        # test if validator methods are serialized properly
+        # we need a context here to do this
+        get_transaction().begin()
+        self.connection = Zope.app()._p_jar
+        self.root = makerequest.makerequest(
+            self.connection.root()['Application'])
+
+        self.root.manage_addProduct['Formulator'] \
+                 .manage_add('form', 'Test Form')
+        form = self.root.form
+
+        self.root.manage_addDTMLMethod('test_dtml','Test DTML','ok')
         
+        form.manage_addField('string_field', '<string> Field', 'StringField')
+        form.string_field.values['external_validator'] = Method('test_dtml')
+
+        # test that the override works:
+        self.assertEquals('ok',
+                          form.string_field.get_value('external_validator')())
+
+        # now serialize it:
+        xml = formToXML(form)
+
+        # get the external validator from the output
+        # XXX this could be more elegant, I guess ...
+        for line in xml.split('\n'):
+            m = re.match(r'\s*<external_validator type="method">(.*?)</external_validator>\s*',
+                         line)
+            if m: break
+        else:
+            self.fail('external_validator not found in xml')
+        self.assertEquals('test_dtml',m.group(1))
+        
+        # deserialize it
+        self.root.manage_addProduct['Formulator'] \
+                  .manage_add('form2', 'Test Form')
+        form2 = self.root.form2
+        XMLToForm(xml, form2)
+        self.assertEquals('ok',
+                          form2.string_field.get_value('external_validator')())
+
 def test_suite():
     suite = unittest.TestSuite()
 
