@@ -1,5 +1,6 @@
 import unittest, re
 import Zope
+from DateTime import DateTime
 
 # XXX this does not work for zope2.x if x < 3
 # can we fake this? should we do this?
@@ -164,6 +165,83 @@ class FormTestCase(unittest.TestCase):
         css_matches = css_matcher.findall(field.render())
         self.assertEquals(0, len(css_matches))
 
+
+    def test_renderHidden(self):
+        # test that rendering fields hidden does produce
+        # meaningful results; i.e. such which may still lead to successfull
+        # validation when submitting a form with hidden fields
+        # this has been broken for DateTimeFields, and fields
+        # which allowed multiple values
+        self.form.manage_addProduct['Formulator']\
+                 .manage_addField('date_time','Test Field','DateTimeField')
+        self.form.manage_addProduct['Formulator']\
+                  .manage_addField('multi_list','Test Field','MultiCheckBoxField')
+        self.form.manage_addProduct['Formulator']\
+                 .manage_addField('check_boxes','Test Field','MultiListField')
+        self.form.manage_addProduct['Formulator']\
+                  .manage_addField('lines','Test Field','LinesField')
+
+        self.form.date_time.values['default']=DateTime(1970,1,1,)
+        self.form.date_time.values['hidden']=1
+        
+        # FIXME: compare result agains a fixed string
+        # this may break even if the tested feature is intact
+        # for example it breaks with python 2.3.2, as this causes
+        # a different sorting on the attributes :-/
+        # however I am definitely too lazy to parse and compare this properly
+        hidden_datetime_expected = [
+            '<input value="1970" name="subfield_date_time_year" type="hidden"  />',
+            '<input value="01" name="subfield_date_time_month" type="hidden"  />',
+            '<input value="01" name="subfield_date_time_day" type="hidden"  />',
+            '<input value="00" name="subfield_date_time_hour" type="hidden"  />',
+            '<input value="00" name="subfield_date_time_minute" type="hidden"  />',
+            '<input value="am" name="subfield_date_time_ampm" type="hidden"  />'
+            ]
+
+        self.assertEquals(''.join(hidden_datetime_expected[:5]),
+                          self.form.date_time.render())
+
+        self.form.date_time.values['date_only']=1
+        self.assertEquals(''.join(hidden_datetime_expected[:3]),
+                          self.form.date_time.render())
+        
+        self.form.date_time.values['date_only']=0
+        self.form.date_time.values['ampm_time_style']=1
+        hidden_datetime_expected[3] = \
+           '<input value="12" name="subfield_date_time_hour" type="hidden"  />'
+        self.assertEquals(''.join(hidden_datetime_expected),
+                          self.form.date_time.render())
+        
+
+        self.form.multi_list.values['items'] = (('a','a'),('b','b'), ('c','c'))
+        self.form.multi_list.values['default'] = ['a','c']
+        self.form.multi_list.values['hidden'] = 1
+
+        hidden_multilist_expected = [
+            '<input value="a" name="field_multi_list" type="hidden"  />',
+            '<input value="c" name="field_multi_list" type="hidden"  />',
+            ]
+        
+        self.assertEquals(''.join(hidden_multilist_expected),
+                          self.form.multi_list.render())
+
+        self.form.check_boxes.values['items'] = (('a','a'),('b','b'), ('c','c'))
+        self.form.check_boxes.values['default'] = ['a','c']
+        self.form.check_boxes.values['hidden'] = 1
+
+        hidden_checkboxes_expected = \
+           [ s.replace('multi_list','check_boxes') \
+             for s in hidden_multilist_expected ]
+        self.assertEquals(''.join(hidden_checkboxes_expected),
+                          self.form.check_boxes.render())
+
+        self.form.lines.values['default'] = ['a','c']
+        self.form.lines.values['hidden'] = 1
+
+        hidden_lines_expected = '''<input value="a
+c" name="field_lines" type="hidden"  />'''
+        self.assertEquals(hidden_lines_expected,
+                          self.form.lines.render())
 
 def test_suite():
     suite = unittest.TestSuite()
