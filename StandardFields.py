@@ -83,8 +83,10 @@ class DateTimeField(PythonField):
 
         if self.get_value('input_style') == 'text':
             self.sub_form = create_datetime_text_sub_form()
-        else:
+        elif value == 'list':
             self.sub_form = create_datetime_list_sub_form()
+        else:
+            assert 0, "Unknown input_style"
             
     def on_value_input_style_changed(self, value):
         if value == 'text':
