@@ -10,6 +10,11 @@ Formulator changes
 
       - Allow turning off of XML prologue section.
 
+      - Optimization of TALESMethod by caching compiled expression.
+        This speeds SilvaMetadata indexing up by a lot if a fallback
+        on default is made, especially in the case of Python
+        expressions, as it avoids lots of compilation overhead.
+
     Bugs Fixed
 
       - XML serialization should be more consistent now.

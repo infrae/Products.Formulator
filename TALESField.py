@@ -36,10 +36,11 @@ try:
         """
         def __init__(self, text):
             self._text = text
-            #self._expr = getEngine().compile(text)
-
+            
         def __call__(self, **kw):
-            expr = getEngine().compile(self._text)
+            expr = getattr(self, '_v_expr', None)
+            if expr is None:
+                self._v_expr = expr = getEngine().compile(self._text)
             return getEngine().getContext(kw).evaluate(expr)
 
             # check if we have 'View' permission for this method
