@@ -293,8 +293,16 @@ class Form:
     security.declareProtected('View', 'validate_all_to_request')
     def validate_all_to_request(self, REQUEST):
         """Validation, continue validating all fields, catch errors.
+        Everything that could be validated will be added to REQUEST.
         """
-        result = self.validate_all(REQUEST)
+        try:
+            result = self.validate_all(REQUEST)
+        except FormValidationError, e:
+            # put whatever result we have in REQUEST
+            for key, value in e.result.items():
+                REQUEST.set(key, value)
+            # reraise exception
+            raise
         for key, value in result.items():
             REQUEST.set(key, value)
         return result
