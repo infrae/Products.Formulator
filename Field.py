@@ -228,7 +228,11 @@ class PythonField(
 
     security.declareProtected('View', 'get_field_key')
     def get_field_key(self):
-        return "field_%s" % self.id
+        widget_name = self.get_value('widget_name')
+        if widget_name:
+            return widget_name
+        else:
+            return "field_%s" % self.id
 
 Globals.InitializeClass(PythonField)
 

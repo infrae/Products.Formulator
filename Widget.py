@@ -6,7 +6,7 @@ class Widget:
     """
     
     property_names = ['title', 'description',
-                      'default', 'css_class']
+                      'default', 'widget_name', 'css_class']
 
     title = fields.StringField('title',
                                title='Title',
@@ -26,6 +26,17 @@ class Widget:
                                        width="20", height="3",
                                        required=0)
 
+    widget_name = fields.StringField('widget_name',
+                                     title='Widget name',
+                                     description=(
+        "The name of the field in the form. If left blank, the field "
+        "name is constructed from the id instead, which is usually "
+        "fine. If however you need field names with special characters in "
+        "them that are not accepted in Zope ids, this can be useful. Note "
+        "that no check for uniqueness is made, so be careful."),
+                                     default="",
+                                     required=0)
+    
     css_class = fields.StringField('css_class',
                                    title='CSS class',
                                    description=(
