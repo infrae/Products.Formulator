@@ -92,7 +92,7 @@ class Form:
         field_list[i], field_list[i + 1] = field_list[i + 1], field_list[i]
         self.groups = groups
         return 1
-    
+
     security.declareProtected('Change Formulator Forms', 'move_field_group')
     def move_field_group(self, field_ids, from_group, to_group):
         """Moves a fields from one group to the other.
@@ -347,14 +347,14 @@ class Form:
     
 Globals.InitializeClass(Form)
 
-class BasicForm(Form):
+class BasicForm(Persistent, Acquisition.Implicit, Form):
     """A form that manages its own fields, not using ObjectManager.
     Can contain dummy fields defined by DummyField.
     """
     security = ClassSecurityInfo()
        
     def __init__(self, action="", method="POST", enctype=""):
-        Form.__init__(self, action, method, enctype)
+        BasicForm.inheritedAttribute('__init__')(self, action, method, enctype)
         self.fields = {}
 
     security.declareProtected('Change Formulator Forms', 'add_field')
@@ -364,7 +364,7 @@ class BasicForm(Form):
         # update group info
         self.field_added(field.id, group)
         # add field to list
-        self.fields[field.id] = field
+        self.fields[field.id] = field 
         self.fields = self.fields
 
     security.declareProtected('Change Formulator Forms', 'add_fields')

@@ -13,8 +13,6 @@ class Field:
     """
     security = ClassSecurityInfo()
 
-    sub_field_names = []
-
     # this is a field
     is_field = 1
     # this is not an internal field (can be overridden by subclass)
@@ -88,6 +86,12 @@ class Field:
     def get_override(self, id):
         """Get override method for id (not wrapped)."""
         return self.overrides.get(id, "")
+
+    security.declareProtected('Access contents information', 'is_required')
+    def is_required(self):
+        """Check whether this field is required (utility function)
+        """
+        return self.has_value('required') and self.get_value('required')
     
     security.declareProtected('View management screens', 'get_error_names')
     def get_error_names(self):
@@ -231,9 +235,23 @@ class PythonField(
             else:
                 raise
 
-        # update values of field with results
-        self.values.update(result)
-        self.values = self.values
+        # first check for any changes  
+        values = self.values
+        changed = []
+        for key, value in result.items():
+            # store keys for which we want to notify change
+            if not values.has_key(key) or values[key] != value:
+                changed.append(key)
+                          
+        # now do actual update of values
+        values.update(result)
+        self.values = values
+
+        # finally notify field of all changed values if necessary
+        for key in changed:
+            method_name = "on_value_%s_changed" % key
+            if hasattr(self, method_name):
+                getattr(self, method_name)(values[key])
         
         if REQUEST:
             message="Content changed."

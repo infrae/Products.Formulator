@@ -326,6 +326,7 @@ class DateTimeValidator(Validator):
         "The date and time entered must be later than or equal to "
         "this date/time. If left empty, no check is performed."),
                                           default=None,
+                                          input_style="text",
                                           required=0)
 
     end_datetime = fields.DateTimeField('end_datetime',
@@ -334,6 +335,7 @@ class DateTimeValidator(Validator):
         "The date and time entered must be earlier than "
         "this date/time. If left empty, no check is performed."),
                                         default=None,
+                                        input_style="text",
                                         required=0)
     
     message_names = Validator.message_names + ['required_not_found',
@@ -346,9 +348,9 @@ class DateTimeValidator(Validator):
     
     def validate(self, field, key, REQUEST):    
         try:
-            year = field.validate_sub_field('text_year', REQUEST)
-            month = field.validate_sub_field('text_month', REQUEST)
-            day = field.validate_sub_field('text_day', REQUEST)
+            year = field.validate_sub_field('year', REQUEST)
+            month = field.validate_sub_field('month', REQUEST)
+            day = field.validate_sub_field('day', REQUEST)
             
             if field.get_value('date_only'):
                 hour = 0
@@ -374,7 +376,7 @@ class DateTimeValidator(Validator):
             self.raise_error('not_datetime', field)
 
         try:
-            result = DateTime(year, month, day, hour, minute)
+            result = DateTime(int(year), int(month), int(day), hour, minute)
         # ugh, a host of string based exceptions
         except ('DateTimeError', 'Invalid Date Components', 'TimeError'):
             self.raise_error('not_datetime', field)

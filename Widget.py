@@ -1,6 +1,7 @@
 import string
 from DummyField import fields
 from DocumentTemplate.DT_Util import html_quote
+from DateTime import DateTime
 
 class Widget:
     """A field widget that knows how to display itself as HTML.
@@ -260,8 +261,12 @@ class ListWidget(Widget):
         "item. Use the | (pipe) character to separate what is shown "
         "to the user from the true value. If no | is supplied, the "
         "shown value for the list item is identical to the true value. "
-        "If an items_method is supplied, the contents of items will "
-        "be ignored."), 
+        "After validation this returns a list of tuples, "
+        "where each tuple represents one list element, and consists "
+        "of two strings, one for the displayed value and one for the "
+        "value that will be submitted. If you want to override this "
+        "property you will therefore have to create a method that "
+        "returns such a list."), 
                                      default=[],
                                      width=20,
                                      height=5,
@@ -345,7 +350,9 @@ class RadioWidget(Widget):
         "List items in the field. Each row should contain a list "
         "item. Use the | (pipe) character to separate what is shown "
         "to the user from the true value. If no | is supplied, the "
-        "shown value for the list item is identical to the true value."), 
+        "shown value for the list item is identical to the true value."
+        "Override this property the same way you'd override "
+        "the items property of a ListField."), 
                                      default=[],
                                      width=20,
                                      height=5,
@@ -411,7 +418,7 @@ RadioWidgetInstance = RadioWidget()
 
 class DateTimeWidget(Widget):
     property_names = Widget.property_names +\
-                     ['date_separator', 'time_separator',
+                     ['default_now', 'date_separator', 'time_separator',
                       'input_style', 'input_order',
                       'date_only']
 
@@ -422,8 +429,16 @@ class DateTimeWidget(Widget):
                                    default=None,
                                    display_style="text",
                                    display_order="ymd",
+                                   input_style="text",
                                    required=0)
-    
+
+    default_now = fields.CheckBoxField('default_now',
+                                       title="Default to now",
+                                       description=(
+        "Default date and time will be the date and time at showing of "
+        "the form (if the default is left empty)."),
+                                       default=0)
+                                       
     date_separator = fields.StringField('date_separator',
                                         title='Date separator',
                                         description=(
@@ -447,10 +462,11 @@ class DateTimeWidget(Widget):
     input_style = fields.ListField('input_style',
                                    title="Input style",
                                    description=(
-        "The type of input used; currently only  'text' for text "
-        "based input."),
+        "The type of input used. 'text' will show the date part "
+        "as text, while 'list' will use dropdown lists instead."),
                                    default="text",
-                                   items=[("text", "text")],
+                                   items=[("text", "text"),
+                                          ("list", "list")],
                                    size=1)
 
     input_order = fields.ListField('input_order',
@@ -474,6 +490,12 @@ class DateTimeWidget(Widget):
     # FIXME: do we want to handle 'extra'?
     
     def render(self, field, key, value, REQUEST):
+        # FIXME: backwards compatibility hack:
+        if not hasattr(field, 'sub_form'):
+            from StandardFields import create_datetime_text_sub_form
+            field.sub_form = create_datetime_text_sub_form()
+        if value is None and field.get_value('default_now'):
+            value = DateTime()
         if value is None:
             year = None
             month = None
@@ -486,20 +508,20 @@ class DateTimeWidget(Widget):
             day = "%02d" % value.day()
             hour = "%02d" % value.hour()
             minute = "%02d" % value.minute()
-            
+        
         input_order = field.get_value('input_order')
         if input_order == 'ymd':
-            order = [('text_year', year),
-                     ('text_month', month),
-                     ('text_day', day)]
+            order = [('year', year),
+                     ('month', month),
+                     ('day', day)]
         elif input_order == 'dmy':
-            order = [('text_day', day),
-                     ('text_month', month),
-                     ('text_year', year)]
+            order = [('day', day),
+                     ('month', month),
+                     ('year', year)]
         elif input_order == 'mdy':
-            order = [('text_month', month),
-                     ('text_day', day),
-                     ('text_year', year)]
+            order = [('month', month),
+                     ('day', day),
+                     ('year', year)]
         result = []
         for sub_field_name, sub_field_value in order:
             result.append(field.render_sub_field(sub_field_name,

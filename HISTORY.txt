@@ -14,6 +14,15 @@ Formulator changes
         method calls instead. 'items_method' in ListField went
         away.
 
+      - added ability to display DateTimeFields using drop down lists
+        instead of text input. Added some other bells and whistles to
+        DateTimeField. Changed some of the inner workings of composite
+        fields; component fields are now unique per field instance
+        instead of shared between them.
+ 
+      - is_required() utility method on field to check whether a field
+        is required.
+
     Bugs Fixed
 
       - Fixed typos in security assertions.

@@ -38,7 +38,7 @@ class Method(Persistent, Acquisition.Implicit):
         getSecurityManager().checkPermission('View', method)
         # okay, execute it with supplied arguments
         return apply(method, arg, kw)
-
+    
 class MethodValidator(Validator.StringBaseValidator):
 
     def validate(self, field, key, REQUEST):
