@@ -446,6 +446,18 @@ class DateTimeValidatorTestCase(ValidatorTestCase):
             DateTimeField('f', allow_empty_time=1, required=0), 'f', {})
         self.assertEquals(None, result)
 
+
+    def test_date_failure(self):
+        self.assertValidatorRaises(
+            Validator.ValidationError, 'not_datetime',
+            self.v.validate,
+            DateTimeField('f'),
+            'f', {'subfield_f_year': '2002',
+                  'subfield_f_month': '6',
+                  'subfield_f_day': '35',
+                  'subfield_f_hour': '10',
+                  'subfield_f_minute': '30'})
+
 def test_suite():
     suite = unittest.TestSuite()
 
