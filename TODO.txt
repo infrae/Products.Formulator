@@ -4,8 +4,6 @@ Formulator TODO
     get_form_encoding method (where the ZMIForm uses acquisistion 
     to achieve this).
   
-  - Should fix XML export/import which currently is in latin1.
-
   - Make composite fields work well as hidden fields.
 
   - Add combobox field
