@@ -414,6 +414,10 @@ class ZMIField(
         """
         return self.render(REQUEST=REQUEST)
 
+    security.declareProtected('Access contents information', '__getitem__')
+    def __getitem__(self, key):
+        return self.get_value(key)
+    
     security.declareProtected('View management screens', 'isTALESAvailable')
     def isTALESAvailable(self):
         """Return true only if TALES is available.
