@@ -71,5 +71,3 @@ msgstr "De ingevoerde datum/tijd was buiten de grenzen."
 msgid "Input is required but no input given."
 msgstr "Verplichte invoer niet ontvangen"
 
-msgid "short title"
-msgstr "Korte titel (formulator)"
