@@ -41,7 +41,7 @@ Test this <dtml-var meta_type>.
     <dtml-var title>
     </td> 
      
-    <td align="left' valign="top">
+    <td align="left" valign="top">
     <dtml-var "render()">
     </td>
   </tr>
