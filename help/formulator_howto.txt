@@ -216,14 +216,55 @@ Formulator HOWTO
 
     I've set the 'Form action' property of the form to 'feedback'.
     When the form is submitted it, Zope will access the 'feedback'
-    DTML Method. This method should do a number of things:
+    DTML Method. The form data will be coming into 'feedback' in the
+    'REQUEST' object (more precisely the 'REQUEST.form' object).
 
-      * validate all fields.
+    The 'feedback' method should do a number of things:
+
+      * validate all fields (tell formulator to take care of this).
   
       * handle any validation errors.
 
       * if there were no validation errors, do something with the
         form results.
 
-   The form data will be coming into 'feedback' in the 'REQUEST'
-   object (more precisely the 'REQUEST.form' object). The
+    Here's 'feedback', with comments::
+
+      <dtml-var standard_html_header>
+      <dtml-try>
+	<!-- try the validation, results should be put in
+	     REQUEST (keyed under the field id) --> 
+	<dtml-call "form.validate_all_to_request(REQUEST)">  
+      <dtml-except FormValidationError>
+	<!-- if something went wrong with any field validation,
+	     a FormValidationError will be raised, which we
+	     will then catch here -->
+	<!-- we will display the errors here -->
+	<ul>
+	<dtml-in "error_value.errors">
+	  <li>
+	  <dtml-var "field.get_value('title')">:
+	  <dtml-var error_text>
+	  </li>
+	</dtml-in>
+	</ul>
+
+      <dtml-else>
+	<!-- if no FormValidationError was raised, we're done
+	     with validation and our results will now be in
+	     REQUEST (and in DTML namespace). -->
+
+	<!-- we could do anything with them, but we'll simply
+	     display them -->
+	Hah, you are a <dtml-var color> <dtml-var animal> with
+	<dtml-var number> legs.
+
+      </dtml-try>
+
+      <dtml-var standard_html_footer> 
+    
+    Note that often you can use acquisition with the validation page
+    as well, so you can reuse most of its functionality.
+  
+
+
