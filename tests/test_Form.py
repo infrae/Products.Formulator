@@ -471,7 +471,6 @@ class FormTestCase(ZopeTestCase.ZopeTestCase):
         # and the unicode flag set
         self.root.manage_addProduct['Formulator'] \
                  .manage_add('form2', 'Test Form b\xef\xbf\xbdr', unicode_mode=1)
-
         form2 = self.root.form2
         self.assertEquals(1, form2.get_unicode_mode())
         self.assertEquals( type(u' '), type(form2.title))
@@ -482,7 +481,6 @@ class FormTestCase(ZopeTestCase.ZopeTestCase):
         # to a form with the unicode flag set
         self.root.manage_addProduct['Formulator'] \
                  .manage_add('form2', 'Test Form b\xef\xbf\xbdr', unicode_mode=1)
-
         form2 = self.root.form2
         self.assertEquals(1, form2.get_unicode_mode())
         
