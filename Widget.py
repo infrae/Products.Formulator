@@ -405,12 +405,12 @@ class RadioWidget(Widget):
                                        name=key,
                                        value=radio_value,
                                        checked=None)
-            text = "%s&nbsp;%s" % (radio, radio_text)
+            text = "%s%s" % (radio, radio_text)
             radios.append(text)
 
         orientation = field.get_value('orientation')
         if orientation == 'horizontal':
-            return string.join(radios, "&nbsp;")
+            return string.join(radios, "&nbsp;&nbsp;")
         else:
             return string.join(radios, "<br />")
     
