@@ -9,16 +9,13 @@ from Errors import ValidationError
 from helpers import is_sequence
 
 try:
-    from DateTime.DateTime import DateError
-    _have_date_error = 1
+    from DateTime.DateTime import DateError, TimeError
+    date_time_format_exceptions = (DateError, TimeError)
 except ImportError:
-    _have_date_error = 0
-
-try:
-    from DateTime.DateTime import TimeError
-    _have_time_error = 1
-except ImportError:
-    _have_time_error = 0
+    # uh, a host of string based exceptions
+    # for DateTime errors, if Zope 2.x, x<7
+    date_time_format_exceptions = \
+         ('DateTimeError', 'Invalid Date Components', 'TimeError')
 
 class ValidatorBase:
     """Even more minimalistic base class for validators.
@@ -692,14 +689,9 @@ class DateTimeValidator(Validator):
             elif ampm == 'pm' and hour < 12:
                 hour += 12
 
-        exceptions_to_catch = ('DateTimeError', 'Invalid Date Components', 'TimeError')
-        if _have_date_error: exceptions_to_catch += (DateError, )
-        if _have_time_error: exceptions_to_catch += (TimeError, )
-
         try:
             result = DateTime(int(year), int(month), int(day), hour, minute)
-        # ugh, a host of string based exceptions
-        except exceptions_to_catch:
+        except date_time_format_exceptions:
             self.raise_error('not_datetime', field)
 
         # check if things are within range
