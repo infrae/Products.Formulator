@@ -337,6 +337,7 @@ class FormTestCase(unittest.TestCase):
         date_field = self.form.date_field
 
         date_field.values['default_now'] = 1
+        date_field.values['default'] = DateTime('1971/01/01')
         date_field.values['date_only'] = 1 # for less typing in test only ...
 
         expected_values = \
@@ -352,7 +353,7 @@ class FormTestCase(unittest.TestCase):
 
         # as we are already here, check yet another thing:
         # test that default is honored if no value given
-        date_field.values['default'] = DateTime('1970/01/01')
+        expected_values['subfield_date_field_year'] = '1971'
         rendered = date_field.render_from_request( FakeRequest() )
         self._helper_render_datetime(expected_values, rendered, type='text')
 
