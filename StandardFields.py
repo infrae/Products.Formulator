@@ -13,6 +13,12 @@ class PasswordField(PythonField):
 
     widget = Widget.PasswordWidgetInstance
     validator = Validator.StringValidatorInstance
+
+class EmailField(PythonField):
+    meta_type = "EmailField"
+
+    widget = Widget.TextWidgetInstance
+    validator = Validator.EmailValidatorInstance
     
 class CheckBoxField(PythonField):
     meta_type = "CheckBoxField"
@@ -32,6 +38,12 @@ class RangedIntegerField(PythonField):
     widget = Widget.TextWidgetInstance
     validator = Validator.RangedIntegerValidatorInstance
 
+class FloatField(PythonField):
+    meta_type = "FloatField"
+
+    widget = Widget.TextWidgetInstance
+    validator = Validator.FloatValidatorInstance
+    
 class TextAreaField(PythonField):
     meta_type = "TextAreaField"
 

@@ -1,4 +1,4 @@
-import string
+import string, re
 from DummyField import fields
 
 class ValidationError(Exception):
@@ -85,6 +85,25 @@ class StringValidator(StringBaseValidator):
 
 StringValidatorInstance = StringValidator()
 
+class EmailValidator(StringValidator):
+    message_names = StringValidator.message_names + ['not_email']
+
+    not_email = 'You did not enter an email address.'
+
+    # contributed, I don't pretend to understand this..
+    pattern = re.compile("^([0-9a-z_&.+-]+!)*[0-9a-z_&.+-]+@(([0-9a-z]([0-9a-z-]*[0-9a-z])?\.)+[a-z]{2,3}|([0-9]{1,3}\.){3}[0-9]{1,3})$")
+    
+    def validate(self, field, REQUEST):
+        value = StringValidator.validate(self, field, REQUEST)
+        if value == "" and not field.get_value('required'):
+            return value
+
+        if self.pattern.search(string.lower(value)) == None:
+            self.raise_error('not_email', field)
+        return value
+
+EmailValidatorInstance = EmailValidator()
+
 class BooleanValidator(Validator):
     def validate(self, field, REQUEST):
         return not not REQUEST.get(field.get_field_key(), 0)
@@ -148,6 +167,24 @@ class RangedIntegerValidator(IntegerValidator):
         return value
 
 RangedIntegerValidatorInstance = RangedIntegerValidator()
+
+class FloatValidator(StringBaseValidator):
+    message_names = StringBaseValidator.message_names + ['not_float']
+
+    not_float = "You did not enter a floating point number."
+
+    def validate(self, field, REQUEST):
+        value = StringBaseValidator.validate(self, field, REQUEST)
+        if value == "" and not field.get_value('required'):
+            return value
+
+        try:
+            value = float(value)
+        except ValueError:
+            self.raise_error('not_float', field)
+        return value
+
+FloatValidatorInstance = FloatValidator()
 
 class LinesValidator(StringBaseValidator):
     property_names = StringBaseValidator.property_names +\
