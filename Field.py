@@ -5,6 +5,7 @@ from AccessControl import ClassSecurityInfo
 import OFS
 from Shared.DC.Scripts.Bindings import Bindings
 from Errors import ValidationError
+from TALESField import TALESMethod
 
 class Field:
     """Base class of all fields.
@@ -260,7 +261,7 @@ class ZMIField(
 
     security.declareProtected('Change Formulator Fields', 'manage_edit')
     def manage_edit(self, REQUEST):
-        """Submit edit form.
+        """Submit Field edit form.
         """
         try:
             # validate the form and get results
@@ -274,6 +275,21 @@ class ZMIField(
             else:
                 raise
 
+        self._edit(result)
+        
+        if REQUEST:
+            message="Content changed."
+            return self.manage_main(self,REQUEST,
+                                    manage_tabs_message=message)
+
+    security.declareProtected('Change Formulator Fields', 'manage_edit_xmlrpc')
+    def manage_edit_xmlrpc(self, map):
+        """Edit Field Properties through XMLRPC
+        """
+        # BEWARE: there is no validation on the values passed through the map
+        self._edit(map)
+
+    def _edit(self, result):
         # first check for any changes  
         values = self.values
         changed = []
@@ -291,11 +307,7 @@ class ZMIField(
             method_name = "on_value_%s_changed" % key
             if hasattr(self, method_name):
                 getattr(self, method_name)(values[key])
-        
-        if REQUEST:
-            message="Content changed."
-            return self.manage_main(self,REQUEST,
-                                    manage_tabs_message=message)
+
 
     security.declareProtected('Change Formulator Forms', 'manage_beforeDelete')
     def manage_beforeDelete(self, item, container):
@@ -367,17 +379,30 @@ class ZMIField(
             else:
                 raise
 
+        self._edit_tales(result)
+
+        if REQUEST:
+            message="Content changed."
+            return self.manage_talesForm(self, REQUEST,
+                                         manage_tabs_message=message)
+
+    def _edit_tales(self, result):
         if not hasattr(self, 'tales'):
             self.tales = result
         else:
             self.tales.update(result)
             self.tales = self.tales
 
-        if REQUEST:
-            message="Content changed."
-            return self.manage_talesForm(self, REQUEST,
-                                         manage_tabs_message=message)
-        
+    security.declareProtected('Change Formulator Forms', 'manage_tales_xmlrpc')
+    def manage_tales_xmlrpc(self, map):
+        """Change TALES expressions through XMLRPC.
+        """
+        # BEWARE: there is no validation on the values passed through the map
+        result = {}
+        for key, value in map.items():
+            result[key] = TALESMethod(value)
+        self._edit_tales(result)
+
     # display test screen
     security.declareProtected('View management screens', 'fieldTest')
     fieldTest = DTMLFile('dtml/fieldTest', globals())
