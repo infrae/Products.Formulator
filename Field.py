@@ -131,9 +131,9 @@ class Field:
     def _get_default(self, key, value, REQUEST):
         if value is not None:
             return value
-        elif REQUEST is not None and REQUEST.form.has_key(key):
+        try:
             return REQUEST.form[key]
-        else:
+        except:
             return self.get_value('default')
 
     security.declareProtected('View', 'render')

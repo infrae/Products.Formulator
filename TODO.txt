@@ -16,3 +16,8 @@ Formulator TODO
     view-only.
 
   - Add unit tests!
+
+  - Fix restart 'undo' bug
+
+  - Forms should have name property (for Javascript etc)
+
