@@ -9,10 +9,13 @@ Formulator changes
 
       - Added LinkField for URLs.
 
-    Bugs Fixed
-
       - Made ListField and RadioField more tolerant of integer
         (and possibly other) values, not only strings.
+
+      - Made ListField and RadioField happy to deal with non-tuples too in the 
+        items list. In this case, the item text and value will be identical.
+
+   Bugs Fixed
 
   0.9.4
 

@@ -1,6 +1,21 @@
-Formulator todo
-
-  - improve sub field handling; ability to override field settings 
-    from the field that contains sub field.
+Formulator TODO
 
   - Make composite fields work well as hidden fields.
+
+  - Add combobox field
+
+  - Add various button fields
+
+  - Investigate duration and time only field.
+
+  - internationalisation (or error messages first)
+
+  - HTML filtering field?
+
+  - Phone/Zipcode/etc field, with ####-##### style patterns. 
+
+  - Multiple select fields (list and checkbox)
+
+  - Separate out common code of RadioWidget and ListWidget; also
+    do this for future MultiSelectListWidget and MultiSelectCheckBoxWidget.
+    They're all ItemsWidgets.

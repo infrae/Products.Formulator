@@ -258,7 +258,88 @@ class FileWidget(TextWidget):
         
 FileWidgetInstance = FileWidget()
 
-class ListWidget(Widget):
+class ItemsWidget(Widget):
+    """A widget that has a number of items in it.
+    """
+    
+    items = fields.ListTextAreaField('items',
+                                     title='Items',
+                                     description=(
+        "Items in the field. Each row should contain an "
+        "item. Use the | (pipe) character to separate what is shown "
+        "to the user from the submitted value. If no | is supplied, the "
+        "shown value for the item will be identical to the submitted value. "
+        "Internally the items property returns a list. If a list item "
+        "is a single value, that will be used for both the display and "
+        "the submitted value. A list item can also be a tuple consisting "
+        "of two elements. The first element of the tuple should be a string "
+        "that is name of the item that should be displayed. The second "
+        "element of the tuple should be the value that will be submitted. "
+        "If you want to override this property you will therefore have "
+        "to return such a list."),
+
+                                     default=[],
+                                     width=20,
+                                     height=5,
+                                     required=0)
+
+class SingleItemsWidget(ItemsWidget):
+    """A widget with a number of items that has only a single
+    selectable item.
+    """
+    first_item = fields.CheckBoxField('first_item',
+                                      title="Select First Item",
+                                      description=(
+        "If checked, the first item will always be selected if "
+        "no initial default value is supplied."),
+                                      default=0)    
+
+    def render_items(self, field, key, value, REQUEST):
+        # get items
+        items = field.get_value('items')
+    
+        # check if we want to select first item
+        if not value and field.get_value('first_item') and len(items) > 0:
+            try:
+                text, value = items[0]
+            except ValueError:
+                value = items[0]
+
+        css_class = field.get_value('css_class')
+        
+        # FIXME: what if we run into multiple items with same value?
+        rendered_items = []
+        for item in items:
+            try:
+                item_text, item_value = item
+            except ValueError:
+                item_text = item
+                item_value = item
+
+            if item_value == value:
+                rendered_item = self.render_selected_item(item_text,
+                                                          item_value,
+                                                          key,
+                                                          css_class)
+            else:
+                rendered_item = self.render_item(item_text,
+                                                 item_value,
+                                                 key,
+                                                 css_class)
+
+            rendered_items.append(rendered_item)
+
+        return rendered_items
+        
+class MultiItemsWidget(ItemsWidget):
+    """A widget with a number of items that has multiple selectable
+    items.
+    """
+    
+    def render_items(self, field, key, value, REQUEST):
+        pass
+
+class ListWidget(SingleItemsWidget):
     """List widget.
     """
     property_names = Widget.property_names +\
@@ -272,32 +353,6 @@ class ListWidget(Widget):
                                  default="",
                                  required=0)
 
-    first_item = fields.CheckBoxField('first_item',
-                                      title="Select First Item",
-                                      description=(
-        "If checked, the first item will always be selected if "
-        "no initial default value is supplied."),
-                                      default=0)
-    
-    items = fields.ListTextAreaField('items',
-                                     title='Items',
-                                     description=(
-        "List items in the field. Each row should contain a list "
-        "item. Use the | (pipe) character to separate what is shown "
-        "to the user from the true value. If no | is supplied, the "
-        "shown value for the list item is identical to the true value. "
-        "After validation this returns a list of tuples, "
-        "where each tuple represents one list element. "
-        "The first element of the tuple is a string that is the displayed "
-        "name of the list element. The second element of tuple is the "
-        "value that will be submitted. If you want to override this "
-        "property you will therefore have to create a method that "
-        "returns such a list."), 
-                                     default=[],
-                                     width=20,
-                                     height=5,
-                                     required=0)
-    
     size = fields.IntegerField('size',
                                title='Size',
                                description=(
@@ -308,45 +363,25 @@ class ListWidget(Widget):
                                required=1)
 
     def render(self, field, key, value, REQUEST):
-        # get items
-        items = field.get_value('items')
-    
-        # check if we want to select first item
-        if not value and field.get_value('first_item') and len(items) > 0:
-            value = items[0][1]
-        
-        # FIXME: what if we run into multiple items with same value?
-        options = []
-        for item in items:
-            try:
-                option_text, option_value = item
-            except TypeError:
-                option_text = item
-                option_value = item
-                
-            if option_value != value:
-                # no selected attribute
-                option = render_element('option',
-                                        contents=option_text,
-                                        value=option_value)
-            else:
-                # render with 'selected' attribute
-                option = render_element('option',
-                                        contents=option_text,
-                                        value=option_value,
-                                        selected=None)
-            options.append(option)
-    
+        rendered_items = self.render_items(field, key, value, REQUEST)
+
         return render_element('select',
                               name=key,
                               css_class=field.get_value('css_class'),
                               size=field.get_value('size'),
-                              contents=string.join(options, "\n"),
+                              contents=string.join(rendered_items, "\n"),
                               extra=field.get_value('extra'))
-                              
+    
+    def render_item(self, text, value, key, css_class):
+        return render_element('option', contents=text, value=value)
+
+    def render_selected_item(self, text, value, key, css_class):
+        return render_element('option', contents=text, value=value,
+                              selected=None)
+    
 ListWidgetInstance = ListWidget()
 
-class RadioWidget(Widget):
+class RadioWidget(SingleItemsWidget):
     """List widget.
     """
     property_names = Widget.property_names +\
@@ -360,27 +395,6 @@ class RadioWidget(Widget):
                                  default="",
                                  required=0)
 
-    first_item = fields.CheckBoxField('first_item',
-                                      title="Select First Item",
-                                      description=(
-        "If checked, the first item will always be selected if "
-        "no initial default value is supplied."),
-                                      default=0)
-    
-    items = fields.ListTextAreaField('items',
-                                     title='Items',
-                                     description=(
-        "List items in the field. Each row should contain a list "
-        "item. Use the | (pipe) character to separate what is shown "
-        "to the user from the actual value. If no | is supplied, the "
-        "shown value for the list item is identical to the actual value."
-        "Override this property the same way you'd override "
-        "the items property of a ListField."), 
-                                     default=[],
-                                     width=20,
-                                     height=5,
-                                     required=0)
-
     orientation = fields.ListField('orientation',
                                    title='Orientation',
                                    description=(
@@ -393,47 +407,28 @@ class RadioWidget(Widget):
                                           ('Horizontal', 'horizontal')])
                                    
     def render(self, field, key, value, REQUEST):
-        items = field.get_value('items')     
-
-        # check if we want to select first item
-        if not value and field.get_value('first_item') and len(items) > 0:
-            value = items[0][1]
-
-        css_class = field.get_value('css_class')
-        # FIXME: what if we run into multiple items with same value?
-        radios = []
-        for item in items:
-            try:
-                radio_text, radio_value = item
-            except TypeError:
-                radio_text = item
-                radio_value = item
-                
-            if radio_value != value:
-                # no selected attribute
-                
-                radio = render_element('input',
-                                       type="radio",
-                                       css_class=css_class,
-                                       name=key,
-                                       value=radio_value)
-            else:
-                # render with 'checked' attribute
-                radio = render_element('input',
-                                       type="radio",
-                                       css_class=css_class,
-                                       name=key,
-                                       value=radio_value,
-                                       checked=None)
-            text = "%s%s" % (radio, radio_text)
-            radios.append(text)
-
+        rendered_items = self.render_items(field, key, value, REQUEST)
         orientation = field.get_value('orientation')
         if orientation == 'horizontal':
-            return string.join(radios, "&nbsp;&nbsp;")
+            return string.join(rendered_items, "&nbsp;&nbsp;")
         else:
-            return string.join(radios, "<br />")
+            return string.join(rendered_items, "<br />")
+        
+    def render_item(self, text, value, key, css_class):
+        return render_element('input',
+                              type="radio",
+                              css_class=css_class,
+                              name=key,
+                              value=value) + text
     
+    def render_selected_item(self, text, value, key, css_class):
+        return render_element('input',
+                              type="radio",
+                              css_class=css_class,
+                              name=key,
+                              value=value,
+                              checked=None) + text
+       
 RadioWidgetInstance = RadioWidget()
 
 class DateTimeWidget(Widget):
