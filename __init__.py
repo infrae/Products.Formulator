@@ -34,9 +34,9 @@ def initialize(context):
     FieldRegistry.registerField(StandardFields.DateTimeField,
                                 'www/DateTimeField.gif')
     FieldRegistry.registerField(StandardFields.FileField,
-                                'www/StringField.gif')
+                                'www/FileField.gif')
     FieldRegistry.registerField(StandardFields.LinkField,
-                                'www/StringField.gif')
+                                'www/LinkField.gif')
     
     # some helper fields
     FieldRegistry.registerField(HelperFields.ListTextAreaField)
