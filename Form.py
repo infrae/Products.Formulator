@@ -2,7 +2,9 @@ import Globals, AccessControl
 import OFS
 from Globals import DTMLFile, Persistent
 from AccessControl import ClassSecurityInfo
+from AccessControl.Role import RoleManager
 from OFS.ObjectManager import ObjectManager
+from OFS.PropertyManager import PropertyManager
 from OFS.SimpleItem import Item
 import Acquisition
 from urllib import quote
@@ -484,7 +486,7 @@ def create_settings_form():
     form.add_fields([title, row_length, name, action, method, enctype])
     return form
 
-class ZMIForm(ObjectManager, Item, Form):
+class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
     """
     A Formulator Form, fields are managed by ObjectManager.
     """
@@ -508,7 +510,8 @@ class ZMIForm(ObjectManager, Item, Form):
         {'label':'Settings', 'action':'formSettings',
          'help':('Formulator', 'formSettings.txt')},
         ) +
-        AccessControl.Role.RoleManager.manage_options +
+        PropertyManager.manage_options +
+        RoleManager.manage_options +
         Item.manage_options
         )
 

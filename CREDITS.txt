@@ -28,6 +28,8 @@ Many thanks go to:
 
   Max Petrich (petrich.max@kis-solution.de) -- feedback and bugfixes.
 
+  Matt Behrens (matt.behrens@kohler.com) -- feedback and bugfixes.
+
   Also a thank you to those few valiant souls who suffered through the
   bugs of ZFormulator, the previous implementation. Let's hope this
   one's better!
