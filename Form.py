@@ -156,7 +156,7 @@ class Form:
         del groups[group]
         return 1
 
-    security.declareProtected('Change Formulator forms', 'move_group_up')
+    security.declareProtected('Change Formulator Forms', 'move_group_up')
     def move_group_up(self, group):
         """Move a group up in the group list.
         """
@@ -169,7 +169,7 @@ class Form:
         self.group_list = group_list
         return 1
     
-    security.declareProtected('Change Formulator forms', 'move_group_down')  
+    security.declareProtected('Change Formulator Forms', 'move_group_down')  
     def move_group_down(self, group):
         """Move a group down in the group list.
         """
@@ -493,7 +493,7 @@ class PythonForm(ObjectManager, Item, Form):
                 field_ids.append(field.id)
         return field_ids
 
-    security.declareProtected('View Management Screens',
+    security.declareProtected('View management screens',
                               'get_group_rows')
     def get_group_rows(self):
         """Get the groups in rows (for the order screen).
