@@ -15,8 +15,9 @@ Formulator changes
         on default is made, especially in the case of Python
         expressions, as it avoids lots of compilation overhead.
 
-      - Extra attribute defined for complex fields called 'extra_item', 
-        which allows setting HTML attributes to contained tags.
+      - Extra attribute defined for list/multicheckbox/radio fields
+        called 'extra_item', which allows setting HTML attributes to
+        individual list item/checkbox/radio button.
 
     Bugs Fixed
 
