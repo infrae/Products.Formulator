@@ -104,7 +104,7 @@ class EmailValidator(StringValidator):
     not_email = 'You did not enter an email address.'
 
     # contributed, I don't pretend to understand this..
-    pattern = re.compile("^([0-9a-z_&.+-]+!)*[0-9a-z_&.+-]+@(([0-9a-z]([0-9a-z-]*[0-9a-z])?\.)+[a-z]{2,3}|([0-9]{1,3}\.){3}[0-9]{1,3})$")
+    pattern = re.compile("^([0-9a-z_&.+-]+!)*[0-9a-z_&.+-]+@(([0-9a-z]([0-9a-z-]*[0-9a-z])?\.)+[a-z]{2,4}|([0-9]{1,3}\.){3}[0-9]{1,3})$")
     
     def validate(self, field, key, REQUEST):
         value = StringValidator.validate(self, field, key, REQUEST)
