@@ -10,6 +10,8 @@ Formulator changes
 
        - Fixed minor bug in year handling of DateTimeField.
 
+       - Now hidden fields also take text from 'extra' property.
+
   0.9.5
 
     Features Added

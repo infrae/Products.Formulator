@@ -79,7 +79,8 @@ class Widget:
         return render_element("input",
                               type="hidden",
                               name=key,
-                              value=value)
+                              value=value,
+                              extra=field.get_value('extra'))
                               
 class TextWidget(Widget):
     """Text widget
