@@ -25,6 +25,8 @@ def initialize(context):
                                 'www/EmailField.gif')
     FieldRegistry.registerField(StandardFields.FloatField,
                                 'www/FloatField.gif')
+    FieldRegistry.registerField(StandardFields.TestField,
+                                'www/StringField.gif')
     
     # some helper fields
     FieldRegistry.registerField(HelperFields.ListTextAreaField)

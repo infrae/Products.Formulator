@@ -21,8 +21,8 @@ class Validator:
     def raise_error(self, error_key, field):
         raise ValidationError(error_key, field)
     
-    def validate(self, field, REQUEST):
-        return REQUEST.get(field.get_field_key(), None)
+    def validate(self, field, key, REQUEST):
+        return REQUEST.get(key, None)
     
 class StringBaseValidator(Validator):
     """Simple string validator.
@@ -40,8 +40,8 @@ class StringBaseValidator(Validator):
     
     required_not_found = 'Input is required but no input given.'
         
-    def validate(self, field, REQUEST):
-        value = string.strip(REQUEST.get(field.get_field_key(), ""))
+    def validate(self, field, key, REQUEST):
+        value = string.strip(REQUEST.get(key, ""))
         if field.get_value('required') and value == "":
             self.raise_error('required_not_found', field)
         return value
@@ -71,8 +71,8 @@ class StringValidator(StringBaseValidator):
 
     too_long = 'Too much input was given.'
 
-    def validate(self, field, REQUEST):
-        value = StringBaseValidator.validate(self, field, REQUEST)
+    def validate(self, field, key, REQUEST):
+        value = StringBaseValidator.validate(self, field, key, REQUEST)
 
         max_length = field.get_value('max_length')
         truncate = field.get_value('truncate')
@@ -94,8 +94,8 @@ class EmailValidator(StringValidator):
     # contributed, I don't pretend to understand this..
     pattern = re.compile("^([0-9a-z_&.+-]+!)*[0-9a-z_&.+-]+@(([0-9a-z]([0-9a-z-]*[0-9a-z])?\.)+[a-z]{2,3}|([0-9]{1,3}\.){3}[0-9]{1,3})$")
     
-    def validate(self, field, REQUEST):
-        value = StringValidator.validate(self, field, REQUEST)
+    def validate(self, field, key, REQUEST):
+        value = StringValidator.validate(self, field, key, REQUEST)
         if value == "" and not field.get_value('required'):
             return value
 
@@ -106,8 +106,8 @@ class EmailValidator(StringValidator):
 EmailValidatorInstance = EmailValidator()
 
 class BooleanValidator(Validator):
-    def validate(self, field, REQUEST):
-        return not not REQUEST.get(field.get_field_key(), 0)
+    def validate(self, field, key, REQUEST):
+        return not not REQUEST.get(key, 0)
 
 BooleanValidatorInstance = BooleanValidator()
 
@@ -118,8 +118,8 @@ class IntegerValidator(StringBaseValidator):
 
     not_integer = 'You did not enter an integer.'
     
-    def validate(self, field, REQUEST):
-        value = StringBaseValidator.validate(self, field, REQUEST)
+    def validate(self, field, key, REQUEST):
+        value = StringBaseValidator.validate(self, field, key, REQUEST)
         # need to add this check to allow empty fields
         if value == "" and not field.get_value('required'):
             return value
@@ -157,8 +157,8 @@ class RangedIntegerValidator(IntegerValidator):
 
     integer_out_of_range = 'The integer you entered was out of range.'
 
-    def validate(self, field, REQUEST):
-        value = IntegerValidator.validate(self, field, REQUEST)
+    def validate(self, field, key, REQUEST):
+        value = IntegerValidator.validate(self, field, key, REQUEST)
         # we need to add this check again
         if value == "" and not field.get_value('required'):
             return value
@@ -174,8 +174,8 @@ class FloatValidator(StringBaseValidator):
 
     not_float = "You did not enter a floating point number."
 
-    def validate(self, field, REQUEST):
-        value = StringBaseValidator.validate(self, field, REQUEST)
+    def validate(self, field, key, REQUEST):
+        value = StringBaseValidator.validate(self, field, key, REQUEST)
         if value == "" and not field.get_value('required'):
             return value
 
@@ -223,8 +223,8 @@ class LinesValidator(StringBaseValidator):
     line_too_long = 'A line was too long.'
     too_long = 'You entered too many characters.'
     
-    def validate(self, field, REQUEST):
-        value = StringBaseValidator.validate(self, field, REQUEST)
+    def validate(self, field, key, REQUEST):
+        value = StringBaseValidator.validate(self, field, key, REQUEST)
         # we need to add this check again
         if value == "" and not field.get_value('required'):
             return value
@@ -255,8 +255,8 @@ class LinesValidator(StringBaseValidator):
 LinesValidatorInstance = LinesValidator()    
 
 class TextValidator(LinesValidator):
-    def validate(self, field, REQUEST):
-        value = LinesValidator.validate(self, field, REQUEST)
+    def validate(self, field, key, REQUEST):
+        value = LinesValidator.validate(self, field, key, REQUEST)
         # we need to add this check again
         if value == [] and not field.get_value('required'):
             return value
@@ -273,8 +273,8 @@ class SelectionValidator(StringBaseValidator):
 
     unknown_selection = 'You selected an item that was not in the list.'
     
-    def validate(self, field, REQUEST):
-        value = StringBaseValidator.validate(self, field, REQUEST)
+    def validate(self, field, key, REQUEST):
+        value = StringBaseValidator.validate(self, field, key, REQUEST)
 
         if value == "" and not field.get_value('required'):
             return value
@@ -298,7 +298,7 @@ class SelectionValidator(StringBaseValidator):
 SelectionValidatorInstance = SelectionValidator()
 
 class TestValidator(Validator):
-    def validate(self, field, REQUEST):
+    def validate(self, field, key, REQUEST):
         first_value = field.validate_sub_field('first_field', REQUEST)
         second_value = field.validate_sub_field('second_field', REQUEST)
         return first_value, second_value

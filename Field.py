@@ -24,7 +24,7 @@ class Field:
         self.id = id
         # initialize values of fields in form
         self.initialize_values(kw)
-    
+        
         # initialize message values with defaults
         message_values = {}
         for message_name in self.validator.message_names:
@@ -43,16 +43,6 @@ class Field:
             values[id] = value
         self.values = values
         
-    security.declareProtected('Access contents information', 'get_field_key')
-    def get_field_key(self):
-        """Field key to use inside forms.
-        """
-        widget_name = self.get_value('widget_name')
-        if widget_name:
-            return widget_name
-        else:
-            return "field_%s" % self.id
- 
     security.declareProtected('Access contents information', 'has_value')
     def has_value(self, id):
         """Return true if the field defines such a value.
@@ -95,38 +85,46 @@ class Field:
                 return getattr(self.validator, name)
             else:
                 return "Unknown error: %s" % name
-       
+    
+    security.declarePrivate('_render_helper')
+    def _render_helper(self, key, value=None):
+        if value == None:
+            value = self.get_value('default')
+        if self.get_value('hidden'):
+            return self.widget.render_hidden(self, key, value)
+        else:
+            return self.widget.render(self, key, value)
+        
     security.declareProtected('View', 'render')
     def render(self, value=None):
         """Render the field widget
         """
-        if value == None:
-            value = self.get_value('default')
-        if self.get_value('hidden'):
-            # render as hidden field
-            return self.widget.render_hidden(self, value)
-        else:
-            # use widget to render
-            return self.widget.render(self, value)
+        return self._render_helper("field_%s" % self.id, value)
 
+    security.declareProtected('View', 'render_sub_field')
+    def render_sub_field(self, id, value=None):
+        """Render a sub field of this field, as part of
+        complete rendering of widget in a form.
+        """
+        return self.sub_form.get_field(id)._render_helper(
+            "subfield_%s_%s" % (self.id, id), value)
+
+    security.declarePrivate('_validate_helper')
+    def _validate_helper(self, key, REQUEST):
+        return self.validator.validate(self, key, REQUEST)
+    
     security.declareProtected('View', 'validate')    
     def validate(self, REQUEST):
         """Validate/transform the field.
         """
-        return self.validator.validate(self, REQUEST)
-    
-    security.declareProtected('View', 'render_sub_field')
-    def render_sub_field(self, id, value=None):
-        """Render a sub field of this field, as part of
-        widget drawing.
-        """
-        return self.sub_form.get_field(id).render(value)
+        return self._validate_helper("field_%s" % self.id, REQUEST)
 
     security.declareProtected('View', 'validate_sub_field')
     def validate_sub_field(self, id, REQUEST):
         """Validates a subfield (as part of field validation).
         """
-        return self.sub_form.get_field(id).validate(value)
+        return self.sub_form.get_field(id)._validate_helper(
+            "subfield_%s_%s" % (self.id, id), REQUEST)
 
 Globals.InitializeClass(Field)
     

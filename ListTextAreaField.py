@@ -9,14 +9,14 @@ class ListTextAreaWidget(Widget.TextAreaWidget):
                                        default=[],
                                        required=0)
 
-    def render(self, field, value=None):
+    def render(self, field, key, value=None):
         if value == None:
             value = field.get_value('default')
         lines = []
         for element_text, element_value in value:
             lines.append("%s | %s" % (element_text, element_value))
-        return Widget.TextAreaWidget.render(self, field, string.join(lines,
-                                                                     '\n'))
+        return Widget.TextAreaWidget.render(self, field, key,
+                                            string.join(lines, '\n'))
 
 ListTextAreaWidgetInstance = ListTextAreaWidget()
 
@@ -24,8 +24,8 @@ class ListLinesValidator(Validator.LinesValidator):
     """A validator that can deal with lines that have a | separator
     in them to split between text and value of list items.
     """
-    def validate(self, field, REQUEST):
-        value = Validator.LinesValidator.validate(self, field, REQUEST)
+    def validate(self, field, key, REQUEST):
+        value = Validator.LinesValidator.validate(self, field, key, REQUEST)
         result = []
         for line in value:
             elements = string.split(line, "|")

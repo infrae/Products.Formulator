@@ -65,13 +65,13 @@ class TestField(PythonField):
     
     first_field = fields.StringField('first_field',
                                      title="First field",
-                                     default="Foo",
-                                     required=0)
+                                     required=0,
+                                     display_width=5)
 
     second_field = fields.StringField('second_field',
                                       title="Second field",
-                                      default="Bar",
-                                      required=0)
+                                      required=0,
+                                      display_width=5)
 
     widget = Widget.TestWidgetInstance
     validator = Validator.TestValidatorInstance

@@ -12,7 +12,7 @@ class MethodWidget(Widget.TextWidget):
                                  default="",
                                  required=0)
     
-    def render(self, field, value=None):
+    def render(self, field, key, value=None):
         if value == None:
             method_name = field.get_value('default')
         else:
@@ -21,7 +21,7 @@ class MethodWidget(Widget.TextWidget):
             else:
                 method_name = ""
                 
-        return Widget.TextWidget.render(self, field, method_name)
+        return Widget.TextWidget.render(self, field, key, method_name)
 
 MethodWidgetInstance = MethodWidget()
 
@@ -42,8 +42,9 @@ class Method(Persistent, Acquisition.Implicit):
 
 class MethodValidator(Validator.StringBaseValidator):
 
-    def validate(self, field, REQUEST):
-        value = Validator.StringBaseValidator.validate(self, field, REQUEST)
+    def validate(self, field, key, REQUEST):
+        value = Validator.StringBaseValidator.validate(self, field, key,
+                                                       REQUEST)
 
         if value == "" and not field.get_value('required'):
             return value
