@@ -12,6 +12,10 @@ Installing Formulator
 
   Upgrading
 
+    to 1.4.1 from earlier versions
+ 
+      There should be no problems.
+
     to 1.4.0 from earlier versions
 
       There should be no problems.

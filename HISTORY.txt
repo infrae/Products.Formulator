@@ -1,5 +1,12 @@
 Formulator changes
 
+  1.4.1
+
+    Bugs Fixed
+
+      - It was not possible to make DateTime fields not required when
+        'allow_empty_time' was enabled. Fixed.
+
   1.4.0
 
     Features Added
