@@ -25,3 +25,6 @@ def convert_unicode(struct):
         for k,v in struct.items():
             new_dict[k] = convert_unicode(v)
         return new_dict
+
+    # if it something else, leave it untouched
+    return struct
