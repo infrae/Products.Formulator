@@ -492,8 +492,12 @@ class ZMIField(
         """Change message texts.
         """
         messages = self.message_values
+        unicode_mode = self.get_unicode_mode()
         for message_key in self.get_error_names():
-            messages[message_key] = REQUEST[message_key]
+            message = REQUEST[message_key]
+            if unicode_mode:
+                message = unicode(message, 'UTF-8')
+            messages[message_key] = message
 
         self.message_values = messages
         if REQUEST:
