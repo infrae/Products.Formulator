@@ -2,6 +2,9 @@ Formulator changes
 
     Bugs Fixed
 
+     - Fixed issue for render_view of list fields with no default
+       value.
+
      - Fixed issue with non-ascci charachtes in the title of a newly
        created form or field of the unicode property has been set
        (Patch from Bertrand Croq)
