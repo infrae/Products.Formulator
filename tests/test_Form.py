@@ -8,6 +8,13 @@ from DateTime import DateTime
 # can we fake this? should we do this?
 from Testing import makerequest
 
+try:
+    from Products import PlacelessTranslationService
+    pts_installed=1
+except ImportError:
+    pts_installed=0
+
+
 from Products.Formulator.Form import ZMIForm
 from Products.Formulator.Errors import ValidationError, FormValidationError
 from Products.Formulator.MethodField import Method
@@ -127,7 +134,16 @@ class FormTestCase(unittest.TestCase):
         items1 = list_field.render( ('foo',) )
 
         list_field.tales['items'] = TALESMethod("python:('foo', 'bar')")
-        self.assertEquals(('foo', 'bar'), list_field.get_value('items'))
+        # NOTE: if PTS is installed, the i18n_translate_items
+        # also works as "input sanitizer" here converting the insane
+        # value returned from the tales expression to something Formulator's
+        # ListFields want to see
+        if pts_installed:
+            self.assertEquals([('foo', 'foo'), ('bar', 'bar')], \
+                              list_field.get_value('items'))
+        else:
+            self.assertEquals(('foo', 'bar'), list_field.get_value('items'))
+        
         items2 = list_field.render( ('foo',) )
 
         # test render
