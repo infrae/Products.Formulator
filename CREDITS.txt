@@ -57,6 +57,8 @@ Many thanks go to:
 
   Sébastien Robin (seb@nexedi.com) -- more consistent ordering in
                                          XML serialization.
+
+  Guido Wesdorp -- Added extra_item attribute on compound fields.
                                             
   Special thanks also goes to Rik Hoekstra.
 
