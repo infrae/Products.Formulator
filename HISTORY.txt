@@ -2,10 +2,16 @@ Formulator changes
 
   1.0.1
 
-    Bugs Fix
+    Bugs Fixed
 
        - Fixed bug with renaming groups. Previously, renamed groups were not
          properly stored in the ZODB.
+
+       - Made MultiSelectionValidator (used by MultiListField among others)
+         deal better with integer values.
+
+       - Hacked around CopySupport changes in Zope 2.4.0; renames work
+         again now.
             
   1.0
 
