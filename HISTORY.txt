@@ -8,6 +8,9 @@ Formulator changes
         (most of) form to XML and read it in again (over an existing
         form).
 
+      - New XML tab for forms which shows the XML serialization (no
+        saving option yet).
+
       - FSForm.py uses XML serialization to provide a formulator form
         version for FileSystemSite. It does not get imported by
         default.
