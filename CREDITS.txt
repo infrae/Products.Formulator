@@ -3,6 +3,7 @@ Formulator Credits
   Martijn Faassen (faassen@vet.uu.nl) -- Main developer, design and
                               implementation. 
 
+
 Many thanks go to:
       
   Kit Blake (kitblake@v2.nl) -- UI help and design help.
@@ -40,6 +41,10 @@ Many thanks go to:
   Sascha Welter (welter@network-ag.com) -- Extensive help with email
                                            regular expression.
 
+  Clemens Klein-Robbenhaar (robbenhaar@espresto.com) -- Bugfixes and     
+                                      feature additions to XML
+                                      serialization.
+                                                        
   Special thanks also goes to Rik Hoekstra.
 
   Also a thank you to those few valiant souls who suffered through the
