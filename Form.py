@@ -773,6 +773,10 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
         add_and_edit(self, id, REQUEST)
         return ''
 
+    # security declaration for the generic "add field" form,
+    # which is set as a class attribute in "initializeForm" later on
+    security.declareProtected('Change Formulator Forms', 'fieldAdd')
+
     security.declareProtected('View management screens', 'formTest')
     formTest = DTMLFile('dtml/formTest', globals())
 
