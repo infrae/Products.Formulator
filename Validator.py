@@ -470,6 +470,13 @@ class LinkValidator(StringValidator):
         if not field.get_value('check_link'):
             return value
 
+        # resolve internal links using Zope's resolve_url
+        if link_type in ['internal', 'relative']:
+            try:
+                REQUEST.resolve_url(value)
+            except:
+                self.raise_error('not_link', field)
+                
         # check whether we can open the link
         link = LinkHelper(value)
         thread = Thread(target=link.open)
