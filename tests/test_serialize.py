@@ -167,7 +167,7 @@ class SerializeTestCase(unittest.TestCase):
         form.manage_addField('multi_field', '<Checkbox> Field', 'MultiCheckBoxField')
 
         form2 = ZMIForm('test2', 'ValueTest')
-        
+
         xml = formToXML(form)
         XMLToForm(xml, form2)
 
@@ -194,14 +194,14 @@ class SerializeTestCase(unittest.TestCase):
         """
         form = ZMIForm('test', '<EncodingTest>')
         form.manage_addField('int_field', 'int Field', 'IntegerField')
-        
+
         form2 = ZMIForm('test2', 'ValueTest')
         request = FakeRequest()
         for message_key in form.int_field.get_error_names():
            request[message_key] = 'test message for error key <%s>' % message_key
         form.int_field.manage_messages(REQUEST=request)
-        
-        
+
+
         xml = formToXML(form)
         XMLToForm(xml, form2)
         # print xml
@@ -224,8 +224,8 @@ class SerializeTestCase(unittest.TestCase):
             text2 = e.errors[0].error_text
 
         self.assertEquals(text1, text2)
-        
-        
+
+
 
 
     def test_fieldValueTypes(self):
@@ -252,7 +252,7 @@ class SerializeTestCase(unittest.TestCase):
         multi_field = getattr(form, 'multi_field')
         link_field = getattr(form, 'link_field')
         empty_field = getattr(form, 'empty_field')
-   
+
         # XXX editing fields by messing with a fake request
         # -- any better way to do this?
 
@@ -267,7 +267,7 @@ class SerializeTestCase(unittest.TestCase):
             request.update( {'field_default':'42',
                              'field_enabled':'checked'})
             int_field.manage_edit(REQUEST=request)
-            
+
             request.clear()
             request.update(default_values)
             request.update( {'field_default':'1.7'})
@@ -282,7 +282,7 @@ class SerializeTestCase(unittest.TestCase):
                              'field_css_class':'test_css',
                              'field_time_separator':'$'})
             date_field.manage_edit(REQUEST=request)
-            
+
             request.clear()
             request.update(default_values)
             request.update( {'field_default':'foo',
@@ -319,9 +319,9 @@ class SerializeTestCase(unittest.TestCase):
         except ValidationError, e:
             self.fail('error when editing field %s; error message: %s' %
                        (e.field_id, e.error_text) )
-        
+
         form2 = ZMIForm('test2', 'ValueTest')
-        
+
         xml = formToXML(form)
         XMLToForm(xml, form2)
 
@@ -368,16 +368,16 @@ class SerializeTestCase(unittest.TestCase):
                           form2.link_field.get_value('check_timeout'))
 
         # XXX not tested: equal form validation failure on invalid input
-        
-        
+
+
 
     def test_emptyGroup(self):
         """ test bugfix: empty groups are allowed in the XMLForm """
         form = ZMIForm('test', 'GroupTest')
         form.add_group('empty')
-        
+
         form2 = ZMIForm('test2', 'GroupTestCopy')
-        
+
         xml = formToXML(form)
         XMLToForm(xml, form2)
         # print xml
@@ -402,7 +402,7 @@ class SerializeTestCase(unittest.TestCase):
         form = self.root.form
 
         self.root.manage_addDTMLMethod('test_dtml','Test DTML','ok')
-        
+
         form.manage_addField('string_field', '<string> Field', 'StringField')
         form.string_field.values['external_validator'] = Method('test_dtml')
 
@@ -422,7 +422,7 @@ class SerializeTestCase(unittest.TestCase):
         else:
             self.fail('external_validator not found in xml')
         self.assertEquals('test_dtml',m.group(1))
-        
+
         # deserialize it
         self.root.manage_addProduct['Formulator'] \
                   .manage_add('form2', 'Test Form')
@@ -442,4 +442,4 @@ def main():
 
 if __name__ == '__main__':
     main()
-    
+

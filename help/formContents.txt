@@ -1,16 +1,16 @@
 Formulator Form - Contents
- 
+
   Description
 
     The contents view of a Formulator Form behaves much like normal
     Zope Folder. The difference is that the only objects listed are
     Formulator Fields, and if you look at the 'Add' list you can see
     you can only add different types of fields on this screen.
-    
+
     Similarly, you can't copy and paste objects into the form that are
     not fields, and it is not allowed to copy fields to normal folders
     either.
-  
+
     If you click on a field, you will enter the field edit screen, where
     you can modify field properties.
 
@@ -23,5 +23,5 @@ Formulator Form - Contents
     Formulator Form, look at the online help for Folders.
 
 
-  
+
 

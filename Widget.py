@@ -6,7 +6,7 @@ from DateTime import DateTime
 class Widget:
     """A field widget that knows how to display itself as HTML.
     """
-    
+
     property_names = ['title', 'description',
                       'default', 'css_class', 'alternate_name',
                       'hidden']
@@ -28,7 +28,7 @@ class Widget:
                                        default="",
                                        width="20", height="3",
                                        required=0)
-    
+
     css_class = fields.StringField('css_class',
                                    title='CSS class',
                                    description=(
@@ -46,7 +46,7 @@ class Widget:
         "that cannot be used as Zope ids."),
                                         default="",
                                         required=0)
-    
+
     hidden = fields.CheckBoxField('hidden',
                                   title="Hidden",
                                   description=(
@@ -67,12 +67,12 @@ class Widget:
         "to add an onClick attribute to use with JavaScript, for instance."),
                                default="",
                                required=0)
-      
+
     def render(self, field, key, value, REQUEST):
         """Renders this widget as HTML using property values in field.
         """
         return "[widget]"
-        
+
     def render_hidden(self, field, key, value, REQUEST):
         """Renders this widget as a hidden field.
         """
@@ -95,7 +95,7 @@ class Widget:
             return ''
         return value
 
-    
+
 class TextWidget(Widget):
     """Text widget
     """
@@ -126,7 +126,7 @@ class TextWidget(Widget):
         "Note that is client side behavior only."),
                                            default="",
                                            required=0)
-   
+
     def render(self, field, key, value, REQUEST):
         """Render text input field.
         """
@@ -153,11 +153,11 @@ class TextWidget(Widget):
         if value is None:
             return ''
         return value
-    
+
 TextWidgetInstance = TextWidget()
 
 class PasswordWidget(TextWidget):
-    
+
     def render(self, field, key, value, REQUEST):
         """Render password input field.
         """
@@ -182,7 +182,7 @@ class PasswordWidget(TextWidget):
 
     def render_view(self, field, value):
         return "[password]"
-    
+
 PasswordWidgetInstance = PasswordWidget()
 
 class CheckBoxWidget(Widget):
@@ -194,7 +194,7 @@ class CheckBoxWidget(Widget):
         "Default setting of the widget; either checked or unchecked. "
         "(true or false)"),
                                    default=0)
-    
+
     def render(self, field, key, value, REQUEST):
         """Render checkbox.
         """
@@ -217,7 +217,7 @@ class CheckBoxWidget(Widget):
             return 1
         else:
             return 0
-        
+
 CheckBoxWidgetInstance = CheckBoxWidget()
 
 class TextAreaWidget(Widget):
@@ -225,7 +225,7 @@ class TextAreaWidget(Widget):
     """
     property_names = Widget.property_names +\
                      ['width', 'height', 'extra']
-    
+
     default = fields.TextAreaField('default',
                                    title='Default',
                                    description=(
@@ -233,7 +233,7 @@ class TextAreaWidget(Widget):
                                    default="",
                                    width=20, height=3,
                                    required=0)
-    
+
     width = fields.IntegerField('width',
                                 title='Width',
                                 description=(
@@ -251,7 +251,7 @@ class TextAreaWidget(Widget):
     def render(self, field, key, value, REQUEST):
         width = field.get_value('width')
         height = field.get_value('height')
-        
+
         return render_element("textarea",
                               name=key,
                               css_class=field.get_value('css_class'),
@@ -264,13 +264,13 @@ class TextAreaWidget(Widget):
         if value is None:
             return ''
         return value
-    
+
 TextAreaWidgetInstance = TextAreaWidget()
 
 class LinesTextAreaWidget(TextAreaWidget):
     property_names = Widget.property_names +\
                      ['width', 'height', 'view_separator', 'extra']
-    
+
     default = fields.LinesField('default',
                                 title='Default',
                                 description=(
@@ -288,7 +288,7 @@ class LinesTextAreaWidget(TextAreaWidget):
                                         default='<br />\n',
                                         whitespace_preserve=1,
                                         required=1)
-    
+
     def render(self, field, key, value, REQUEST):
         value = string.join(value, "\n")
         return TextAreaWidget.render(self, field, key, value, REQUEST)
@@ -301,10 +301,10 @@ class LinesTextAreaWidget(TextAreaWidget):
     def render_hidden(self, field, key, value, REQUEST):
         if value is None:
             return ''
-        # reuse method from base class 
+        # reuse method from base class
         return Widget.render_hidden(self,field,key,'\n'.join(value), REQUEST)
-        
-    
+
+
 LinesTextAreaWidgetInstance = LinesTextAreaWidget()
 
 class FileWidget(TextWidget):
@@ -333,13 +333,13 @@ class FileWidget(TextWidget):
 
     def render_view(self, field, value):
         return "[File]"
-    
+
 FileWidgetInstance = FileWidget()
 
 class ItemsWidget(Widget):
     """A widget that has a number of items in it.
     """
-    
+
     items = fields.ListTextAreaField('items',
                                      title='Items',
                                      description=(
@@ -374,7 +374,7 @@ class ItemsWidget(Widget):
         "instance."),
                                default="",
                                required=0)
-      
+
 class SingleItemsWidget(ItemsWidget):
     """A widget with a number of items that has only a single
     selectable item.
@@ -392,23 +392,23 @@ class SingleItemsWidget(ItemsWidget):
                                       description=(
         "If checked, the first item will always be selected if "
         "no initial default value is supplied."),
-                                      default=0)    
+                                      default=0)
 
     def render_items(self, field, key, value, REQUEST):
-            
+
         # get items
         items = field.get_value('items')
-    
+
         # check if we want to select first item
         if not value and field.get_value('first_item') and len(items) > 0:
             try:
                 text, value = items[0]
             except ValueError:
                 value = items[0]
-                
+
         css_class = field.get_value('css_class')
         extra_item = field.get_value('extra_item')
-        
+
         # if we run into multiple items with same value, we select the
         # first one only (for now, may be able to fix this better later)
         selected_found = 0
@@ -420,7 +420,7 @@ class SingleItemsWidget(ItemsWidget):
                 item_text = item
                 item_value = item
 
-                
+
             if item_value == value and not selected_found:
                 rendered_item = self.render_selected_item(item_text,
                                                           item_value,
@@ -453,7 +453,7 @@ class SingleItemsWidget(ItemsWidget):
             if value==item_value:
                 return item_text
         raise KeyError, "Wrong item value [[%s]]" % (value,)
-        
+
 class MultiItemsWidget(ItemsWidget):
     """A widget with a number of items that has multiple selectable
     items.
@@ -477,7 +477,7 @@ class MultiItemsWidget(ItemsWidget):
                                         default='<br />\n',
                                         whitespace_preserve=1,
                                         required=1)
-    
+
     def render_items(self, field, key, value, REQUEST):
         # need to deal with single item selects
         if type(value) is not type([]):
@@ -538,7 +538,7 @@ class MultiItemsWidget(ItemsWidget):
     def render_hidden(self, field, key, value, REQUEST):
         if value is not None and type(value) is not types.ListType:
             value = [value]
-        # reuse method from base class 
+        # reuse method from base class
         render_item_hidden = Widget.render_hidden
         result = []
         for v in value:
@@ -550,7 +550,7 @@ class ListWidget(SingleItemsWidget):
     """
     property_names = Widget.property_names +\
                      ['first_item', 'items', 'size', 'extra', 'extra_item']
-    
+
     size = fields.IntegerField('size',
                                title='Size',
                                description=(
@@ -562,22 +562,22 @@ class ListWidget(SingleItemsWidget):
 
     def render(self, field, key, value, REQUEST):
         rendered_items = self.render_items(field, key, value, REQUEST)
-    
+
         return render_element('select',
                               name=key,
                               css_class=field.get_value('css_class'),
                               size=field.get_value('size'),
                               contents=string.join(rendered_items, "\n"),
                               extra=field.get_value('extra'))
-    
+
     def render_item(self, text, value, key, css_class, extra_item):
-        return render_element('option', contents=text, value=value, 
+        return render_element('option', contents=text, value=value,
                               extra=extra_item)
 
     def render_selected_item(self, text, value, key, css_class, extra_item):
         return render_element('option', contents=text, value=value,
                               selected=None, extra=extra_item)
-    
+
 ListWidgetInstance = ListWidget()
 
 class MultiListWidget(MultiItemsWidget):
@@ -585,7 +585,7 @@ class MultiListWidget(MultiItemsWidget):
     """
     property_names = Widget.property_names +\
                      ['items', 'size', 'view_separator', 'extra', 'extra_item']
-    
+
     size = fields.IntegerField('size',
                                title='Size',
                                description=(
@@ -605,15 +605,15 @@ class MultiListWidget(MultiItemsWidget):
                               size=field.get_value('size'),
                               contents=string.join(rendered_items, "\n"),
                               extra=field.get_value('extra'))
-    
+
     def render_item(self, text, value, key, css_class, extra_item):
-        return render_element('option', contents=text, value=value, 
+        return render_element('option', contents=text, value=value,
                               extra=extra_item)
 
     def render_selected_item(self, text, value, key, css_class, extra_item):
         return render_element('option', contents=text, value=value,
                               selected=None, extra=extra_item)
-    
+
 MultiListWidgetInstance = MultiListWidget()
 
 class RadioWidget(SingleItemsWidget):
@@ -621,7 +621,7 @@ class RadioWidget(SingleItemsWidget):
     """
     property_names = Widget.property_names +\
                      ['first_item', 'items', 'orientation', 'extra_item']
-    
+
     orientation = fields.ListField('orientation',
                                    title='Orientation',
                                    description=(
@@ -632,7 +632,7 @@ class RadioWidget(SingleItemsWidget):
                                    size=1,
                                    items=[('Vertical', 'vertical'),
                                           ('Horizontal', 'horizontal')])
-                                   
+
     def render(self, field, key, value, REQUEST):
         rendered_items = self.render_items(field, key, value, REQUEST)
         orientation = field.get_value('orientation')
@@ -640,7 +640,7 @@ class RadioWidget(SingleItemsWidget):
             return string.join(rendered_items, "&nbsp;&nbsp;")
         else:
             return string.join(rendered_items, "<br />")
-        
+
     def render_item(self, text, value, key, css_class, extra_item):
         return render_element('input',
                               type="radio",
@@ -648,7 +648,7 @@ class RadioWidget(SingleItemsWidget):
                               name=key,
                               value=value,
                               extra=extra_item) + text
-    
+
     def render_selected_item(self, text, value, key, css_class, extra_item):
         return render_element('input',
                               type="radio",
@@ -657,7 +657,7 @@ class RadioWidget(SingleItemsWidget):
                               value=value,
                               checked=None,
                               extra=extra_item) + text
-        
+
 RadioWidgetInstance = RadioWidget()
 
 class MultiCheckBoxWidget(MultiItemsWidget):
@@ -665,7 +665,7 @@ class MultiCheckBoxWidget(MultiItemsWidget):
     """
     property_names = Widget.property_names +\
                      ['items', 'orientation', 'view_separator', 'extra_item']
-    
+
     orientation = fields.ListField('orientation',
                                    title='Orientation',
                                    description=(
@@ -676,7 +676,7 @@ class MultiCheckBoxWidget(MultiItemsWidget):
                                    size=1,
                                    items=[('Vertical', 'vertical'),
                                           ('Horizontal', 'horizontal')])
-                                   
+
     def render(self, field, key, value, REQUEST):
         rendered_items = self.render_items(field, key, value, REQUEST)
         orientation = field.get_value('orientation')
@@ -684,7 +684,7 @@ class MultiCheckBoxWidget(MultiItemsWidget):
             return string.join(rendered_items, "&nbsp;&nbsp;")
         else:
             return string.join(rendered_items, "<br />")
-        
+
     def render_item(self, text, value, key, css_class, extra_item):
         return render_element('input',
                               type="checkbox",
@@ -692,7 +692,7 @@ class MultiCheckBoxWidget(MultiItemsWidget):
                               name=key,
                               value=value,
                               extra=extra_item) + text
-    
+
     def render_selected_item(self, text, value, key, css_class, extra_item):
         return render_element('input',
                               type="checkbox",
@@ -725,7 +725,7 @@ class DateTimeWidget(Widget):
         "Default date and time will be the date and time at showing of "
         "the form (if the default is left empty)."),
                                        default=0)
-                                       
+
     date_separator = fields.StringField('date_separator',
                                         title='Date separator',
                                         description=(
@@ -781,14 +781,14 @@ class DateTimeWidget(Widget):
                                            default=0)
 
     # FIXME: do we want to handle 'extra'?
-    
+
     def render(self, field, key, value, REQUEST):
         use_ampm = field.get_value('ampm_time_style')
         # FIXME: backwards compatibility hack:
         if not hasattr(field, 'sub_form'):
             from StandardFields import create_datetime_text_sub_form
             field.sub_form = create_datetime_text_sub_form()
-            
+
         if value is None and field.get_value('default_now'):
             value = DateTime()
         if value is None:
@@ -808,7 +808,7 @@ class DateTimeWidget(Widget):
                 hour = "%02d" % value.hour()
             minute = "%02d" % value.minute()
             ampm = value.ampm()
-        
+
         input_order = field.get_value('input_order')
         if input_order == 'ymd':
             order = [('year', year),
@@ -831,11 +831,11 @@ class DateTimeWidget(Widget):
             time_result = (field.render_sub_field('hour', hour, REQUEST) +
                            field.get_value('time_separator') +
                            field.render_sub_field('minute', minute, REQUEST))
-            
+
             if use_ampm:
-                time_result += '&nbsp;' + field.render_sub_field('ampm', 
+                time_result += '&nbsp;' + field.render_sub_field('ampm',
                                                             ampm, REQUEST)
-                
+
             return date_result + '&nbsp;&nbsp;&nbsp;' + time_result
         else:
             return date_result
@@ -846,7 +846,7 @@ class DateTimeWidget(Widget):
             value = DateTime()
         sub_values = {}
         subfields = ['year','month','day']
-        if value is not None:                
+        if value is not None:
             sub_values['year']  = '%04d' % value.year()
             sub_values['month'] = "%02d" % value.month()
             sub_values['day']   = "%02d" % value.day()
@@ -869,13 +869,13 @@ class DateTimeWidget(Widget):
             result.append(sub_field.widget.render_hidden(sub_field,
                                     sub_key, sub_values.get(subfield), REQUEST))
         return ''.join(result)
-    
+
     def render_view(self, field, value):
         if value is None:
             return ''
 
         use_ampm = field.get_value('ampm_time_style')
-        
+
         year = "%04d" % value.year()
         month = "%02d" % value.month()
         day = "%02d" % value.day()
@@ -885,7 +885,7 @@ class DateTimeWidget(Widget):
             hour = "%02d" % value.hour()
         minute = "%02d" % value.minute()
         ampm = value.ampm()
-        
+
         order = field.get_value('input_order')
         if order == 'ymd':
             output = [year, month, day]
@@ -894,15 +894,15 @@ class DateTimeWidget(Widget):
         elif order == 'mdy':
             output = [month, day, year]
         date_result = string.join(output, field.get_value('date_separator'))
-        
+
         if not field.get_value('date_only'):
             time_result = hour + field.get_value('time_separator') + minute
             if use_ampm:
-                time_result += '&nbsp;' + ampm                
+                time_result += '&nbsp;' + ampm
             return date_result + '&nbsp;&nbsp;&nbsp;' + time_result
         else:
             return date_result
-        
+
 DateTimeWidgetInstance = DateTimeWidget()
 
 class LabelWidget(Widget):
@@ -918,16 +918,16 @@ class LabelWidget(Widget):
         default="",
         width=20, height=3,
         required=0)
-    
+
     def render(self, field, key, value, REQUEST):
         return render_element("div",
                               css_class=field.get_value('css_class'),
                               contents=field.get_value('default'))
-                              
+
     # XXX should render view return the same information as render?
     def render_view(self, field, value):
         return field.get_value('default')
-    
+
 LabelWidgetInstance = LabelWidget()
 
 def render_tag(tag, **kw):
@@ -953,7 +953,7 @@ def render_tag(tag, **kw):
         if value == None:
             value = key
         attr_list.append('%s="%s"' % (key, html_quote(value)))
-            
+
     attr_str = string.join(attr_list, " ")
     return "<%s %s %s" % (tag, attr_str, extra)
 

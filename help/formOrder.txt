@@ -6,7 +6,7 @@ Formulator Form - Order
     should be displayed in the form. You can also group fields together;
     this may be helpful when you create a complicated form.
 
-    Any field that gets added to the form ends up in the first  
+    Any field that gets added to the form ends up in the first
     group. This group always exists and cannot be removed.
 
     You can click on the field id to go directly to the field management
@@ -47,7 +47,7 @@ Formulator Form - Order
     groups should appear in a single row (the default is 4
     groups). Changing this has no impact on the functionality of the
     form itself.
- 
+
     When you add a new group, it will be added to the right of the
     current last group, if this still fits in a row. Otherwise a new
     row will be created and the group will be displayed there.
@@ -66,14 +66,14 @@ Formulator Form - Order
 
     You can change the order of the gropus by using the 'Move Up' and
     'Move Dn' buttons in the 'Group' section of a group. This moves
-    the entire group in the group order. You cannot move the first 
+    the entire group in the group order. You cannot move the first
     group (and it therefore has no group movement buttons).
 
   Renaming groups
 
     You can rename a group by filling in the new name in the input
     box above the 'Rename' button, and then pressing that button.
-  
+
   Removing groups
 
     You can remove a group by pressing the 'Remove' button in the 'Group'

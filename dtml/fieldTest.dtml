@@ -39,8 +39,8 @@ Test this <dtml-var meta_type>.
   <tr>
     <td class="form-label" >
     <dtml-var title>
-    </td> 
-     
+    </td>
+
     <td align="left" valign="top">
     <dtml-var "render()">
     </td>

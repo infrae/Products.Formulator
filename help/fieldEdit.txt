@@ -40,10 +40,10 @@ Formulator Field - Edit
     For some widget properties such as 'Maximum input' in StringField
     you can set the value to '0'; in that the HTML widget won't care
     how much the user inputs.
-      
+
   Validator properties
 
-    This set of properties determines how the field validates the 
+    This set of properties determines how the field validates the
     information that is submitted for this field.
 
     A very common validator property is the 'required' property. If a

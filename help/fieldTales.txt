@@ -3,7 +3,7 @@ Formulator Field - TALES
   Description
 
     Sometimes you'd like a field property to be dynamic instead of
-    just a value filled in in the 'Edit' tab of the field. To 
+    just a value filled in in the 'Edit' tab of the field. To
     make your fields more dynamic, you can enter TALES expressions
     in the TALES tab. Whenever you (or some code) asks for the value of
     that field property next with 'get_value()', the TALES expression
@@ -28,7 +28,7 @@ Formulator Field - TALES
     The specification:
 
       http://dev.zope.org/Wikis/DevSite/Projects/ZPT/TALES%20Specification%201.3
-     
+
   Predefined variables
 
     Two predefined variables are in the expression namespace, 'form',
@@ -59,7 +59,7 @@ Formulator Field - TALES
     parameters, for instance:
 
       python:form.bar(1, 'hey')
-  
+
   Example
 
     A good example of the use of the TALES tab is the 'items' property
@@ -91,7 +91,7 @@ Formulator Field - TALES
     which will give 10 random numbers.
 
       python:form.random_numbers(10)
- 
+
     Caveat: in the current Formulator implementation it is very hard
     to actually go through validation successfully, as exactly the
     same random numbers need to be generated twice; once for the

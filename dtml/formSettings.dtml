@@ -6,7 +6,7 @@ Settings for this form.
 </p>
 
 <dtml-let me="this()">
- 
+
 <dtml-var "settings_form.header()">
 
 <table border="0">

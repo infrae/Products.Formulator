@@ -28,7 +28,7 @@ The following files are in play (in 'Products/Formulator'):
     (derived from ObjectManager).
 
   'StandardFields.py'
- 
+
     Contains a bunch of standard fields that can be used by Formulator,
     such as StringField, IntegerField and TextArea field.
 
@@ -58,7 +58,7 @@ The following files are in play (in 'Products/Formulator'):
     complicated than the average Product __init__.py.
 
   'FieldHelpTopic.py'
- 
+
     Used to make the Zope help system automatically generate help for
     each field class.
 
@@ -75,8 +75,8 @@ The following files are in play (in 'Products/Formulator'):
 
     Used internally by ListFields.
 
-  'www' 
- 
+  'www'
+
     This directory contains dtml files and icons used in the
     management screens of Formulator.
 
@@ -91,7 +91,7 @@ Startup Sequence
     * the widget and validator classes is initialized, using the
       dummy FieldProperty objects as if they are fields as class
       attributes.
- 
+
     * Singleton widget instance and validator instance objects are
       created.
 
@@ -101,7 +101,7 @@ Startup Sequence
     * A singleton FieldRegistry object is created.
 
   'initialize()' - fields are registered with FieldRegistry:
- 
+
     * A reference to the field class is stored in the FieldRegistry.
 
     * A BasicForm instance is created for each field class. Then the
@@ -111,8 +111,8 @@ Startup Sequence
 
     * Each field class now has a BasicForm containing the (dummy) fields
       that define its look and feel and behavior.
-     
-    * The appropriate field icons are also added to field classes. 
+
+    * The appropriate field icons are also added to field classes.
 
     * the Form is registered with Zope
 
@@ -123,7 +123,7 @@ Startup Sequence
     * the .txt files in the help directory are registered with Zope.
 
     * A special FieldHelpTopic is created for each registered field.
- 
+
   'initialize()' - final touches:
 
     * initializeForm in Form.py registers each (non-internal) field in
@@ -167,7 +167,7 @@ Default properties
 
   The propery_fields *have* (indirectly through FieldDummy instances)
   been constructed with default values given as keyword arguments.
- 
+
   So this is how it all works out in the end. I hope. My brain just
   exploded; how's yours?
 
@@ -176,6 +176,6 @@ Default properties
   when you construct a DummyField for use in a Widget or Validator;
   if instead you're fine with whatever default the field will come
   up with, don't pass a keyword argument.
-   
+
   Creating new types of fields is actually quite easy; trust me.
 

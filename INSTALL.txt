@@ -17,11 +17,11 @@ Installing Formulator
       There should be no problems.
 
     to 1.4.2 from earlier versions
-       
+
       There should be no problems.
 
     to 1.4.1 from earlier versions
- 
+
       There should be no problems.
 
     to 1.4.0 from earlier versions
@@ -47,16 +47,16 @@ Installing Formulator
 
     to 1.1.0 from earlier versions
 
-      There should be no problems. If you're upgrading from 0.9.2 or 
+      There should be no problems. If you're upgrading from 0.9.2 or
       below however, please see the upgrading note for 0.9.3. Do note
-      that the Override tab is scheduled to be phased out eventually in 
+      that the Override tab is scheduled to be phased out eventually in
       favor of the TALES tab. This will take a while yet, though.
 
     to 1.0.9 from earlier versions
 
-      There should be no problems. If you're upgrading from 0.9.2 or 
+      There should be no problems. If you're upgrading from 0.9.2 or
       below however, please see the upgrading note for 0.9.3. Do note
-      that the Override tab is scheduled to be phased out eventually in 
+      that the Override tab is scheduled to be phased out eventually in
       favor of the TALES tab. This will take a while yet, though.
 
     to 1.0.1 from earlier versions
@@ -70,7 +70,7 @@ Installing Formulator
       below, please see the upgrading note for 0.9.3.
 
     to 0.9.5 from earlier versions
- 
+
       There should be no problems in upgrading from 0.9.4 or 0.9.3.
       If you're upgrading from 0.9.2 or below, see the upgrading note
       for 0.9.3.
@@ -83,14 +83,14 @@ Installing Formulator
       note for 0.9.3.
 
     to 0.9.3 from earlier versions
-     
+
       'items_method' in ListField is gone; you'll have to adjust make
       your forms use 'items' in the override tab now instead. Sorry
       about that, it *was* marked experimental. :)
 
       There should be no other problems in upgrading.
 
-    to 0.9.2 from earlier versions 
+    to 0.9.2 from earlier versions
 
       There should be no significant upgrade problems; your forms
       should still work. RangedIntegerFields should show up as
@@ -114,17 +114,17 @@ Installing Formulator
     Formulator comes as a 'Formulator-x.x.tgz' file, where 'x.x'
     stands for the Formulator version number. On Unix, you can use::
 
-      tar xvzf Formulator-x.x.tgz 
+      tar xvzf Formulator-x.x.tgz
 
     to unpack the file. On Windows you can use your favorite archiving
     software, such as WinZip.
 
-    This will create a Formulator directory. 
+    This will create a Formulator directory.
 
-  Installing the Product 
+  Installing the Product
 
     Move this directory to your Zope's Products directory. Normally
-    this is 'yourzope/lib/python/Products'. 
+    this is 'yourzope/lib/python/Products'.
 
     Now restart your Zope.
 

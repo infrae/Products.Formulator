@@ -35,9 +35,9 @@ Information
 
      http://www.zope.org/Members/faassen/Formulator
 
-  There are also instructions to join the Formulator mailing list there. 
+  There are also instructions to join the Formulator mailing list there.
   Discussion about Formulator should preferably happen on the mailing list
   first, though you can always mail me as well. But please consider the
   list if you have questions or suggestions.
-  
+
   Even more info can be found by reading the source. :)

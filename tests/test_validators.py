@@ -38,7 +38,7 @@ class StringValidatorTestCase(ValidatorTestCase):
 
     def tearDown(self):
         pass
-        
+
     def test_basic(self):
         result = self.v.validate(
             TestField('f', max_length=0, truncate=0, required=0, unicode=0),
@@ -71,7 +71,7 @@ class StringValidatorTestCase(ValidatorTestCase):
             self.v.validate,
             TestField('f', max_length=10, truncate=0, required=0, unicode=0),
             'f', {'f' : 'this is way too long'})
-        
+
     def test_error_truncate(self):
         result = self.v.validate(
             TestField('f', max_length=10, truncate=1, required=0, unicode=0),
@@ -116,12 +116,12 @@ class StringValidatorTestCase(ValidatorTestCase):
                       whitespace_preserve=1),
             'f', {'f' : ' foo '})
         self.assertEqual(' foo ', result)
-        
+
 class EmailValidatorTestCase(ValidatorTestCase):
-     
+
     def setUp(self):
         self.v = Validator.EmailValidatorInstance
-        
+
     def test_basic(self):
         result = self.v.validate(
             TestField('f', max_length=0, truncate=0, required=1, unicode=0),
@@ -130,7 +130,7 @@ class EmailValidatorTestCase(ValidatorTestCase):
         result = self.v.validate(
             TestField('f', max_length=0, truncate=0, required=1, unicode=0),
             'f', {'f': 'm.faassen@vet.uu.nl'})
-        self.assertEquals('m.faassen@vet.uu.nl', result) 
+        self.assertEquals('m.faassen@vet.uu.nl', result)
 
     def test_error_not_email(self):
         # a few wrong email addresses should raise error
@@ -144,7 +144,7 @@ class EmailValidatorTestCase(ValidatorTestCase):
             self.v.validate,
             TestField('f', max_length=0, truncate=0, required=1, unicode=0),
             'f', {'f': '@bar.com'})
-        
+
     def test_error_required_not_found(self):
         # empty string
         self.assertValidatorRaises(
@@ -158,7 +158,7 @@ class EmailValidatorTestCase(ValidatorTestCase):
 class BooleanValidatorTestCase(ValidatorTestCase):
     def setUp(self):
         self.v = Validator.BooleanValidatorInstance
-        
+
     def tearDown(self):
         pass
 
@@ -189,7 +189,7 @@ class IntegerValidatorTestCase(ValidatorTestCase):
             TestField('f', max_length=0, truncate=0,
                       required=0, start="", end=""),
             'f', {'f': '15'})
-        self.assertEquals(15, result)  
+        self.assertEquals(15, result)
 
         result = self.v.validate(
             TestField('f', max_length=0, truncate=0,
@@ -202,7 +202,7 @@ class IntegerValidatorTestCase(ValidatorTestCase):
                       required=0, start="", end=""),
             'f', {'f': '-1'})
         self.assertEquals(-1, result)
-        
+
     def test_no_entry(self):
         # result should be empty string if nothing entered
         result = self.v.validate(
@@ -258,7 +258,7 @@ class IntegerValidatorTestCase(ValidatorTestCase):
             TestField('f', max_length=0, truncate=0, required=1,
                       start=0, end=-10),
             'f', {'f': '-1'})
-        
+
     def test_error_not_integer(self):
         self.assertValidatorRaises(
             Validator.ValidationError, 'not_integer',
@@ -266,7 +266,7 @@ class IntegerValidatorTestCase(ValidatorTestCase):
             TestField('f', max_length=0, truncate=0, required=1,
                       start="", end=""),
             'f', {'f': 'foo'})
-        
+
         self.assertValidatorRaises(
             Validator.ValidationError, 'not_integer',
             self.v.validate,
@@ -281,7 +281,7 @@ class IntegerValidatorTestCase(ValidatorTestCase):
                       start="", end=""),
             'f', {'f': '1e'})
 
-    def test_error_required_not_found(self):   
+    def test_error_required_not_found(self):
         # empty string
         self.assertValidatorRaises(
             Validator.ValidationError, 'required_not_found',
@@ -337,7 +337,7 @@ class FloatValidatorTestCase(ValidatorTestCase):
 class DateTimeValidatorTestCase(ValidatorTestCase):
     def setUp(self):
         self.v = Validator.DateTimeValidatorInstance
-        
+
     def test_normal(self):
         result = self.v.validate(
             DateTimeField('f'),
@@ -380,7 +380,7 @@ class DateTimeValidatorTestCase(ValidatorTestCase):
         self.assertEquals(1, result.day())
         self.assertEquals(22, result.hour())
         self.assertEquals(30, result.minute())
-        
+
         self.assertValidatorRaises(
             Validator.ValidationError, 'not_datetime',
             self.v.validate,
@@ -445,7 +445,7 @@ class DateTimeValidatorTestCase(ValidatorTestCase):
         result = self.v.validate(
             DateTimeField('f', allow_empty_time=1, required=0), 'f', {})
         self.assertEquals(None, result)
-        
+
 def test_suite():
     suite = unittest.TestSuite()
 
@@ -455,7 +455,7 @@ def test_suite():
     suite.addTest(unittest.makeSuite(IntegerValidatorTestCase, 'test'))
     suite.addTest(unittest.makeSuite(FloatValidatorTestCase, 'test'))
     suite.addTest(unittest.makeSuite(DateTimeValidatorTestCase, 'test'))
-    
+
     return suite
 
 def main():
@@ -463,4 +463,4 @@ def main():
 
 if __name__ == '__main__':
     main()
-    
+

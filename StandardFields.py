@@ -8,7 +8,7 @@ import OFS
 
 class StringField(ZMIField):
     meta_type = "StringField"
-    
+
     widget = Widget.TextWidgetInstance
     validator = Validator.StringValidatorInstance
 
@@ -29,13 +29,13 @@ class PatternField(ZMIField):
 
     widget = Widget.TextWidgetInstance
     validator = Validator.PatternValidatorInstance
-    
+
 class CheckBoxField(ZMIField):
     meta_type = "CheckBoxField"
 
     widget = Widget.CheckBoxWidgetInstance
     validator = Validator.BooleanValidatorInstance
-        
+
 class IntegerField(ZMIField):
     meta_type = "IntegerField"
 
@@ -48,8 +48,8 @@ class RangedIntegerField(ZMIField):
     # this field is not addable anymore and deprecated. For
     # backwards compatibility it's a clone of IntegerField,
     # though it may go away in the future.
-    internal_field = 1 
-    
+    internal_field = 1
+
     widget = Widget.TextWidgetInstance
     validator = Validator.IntegerValidatorInstance
 
@@ -58,7 +58,7 @@ class FloatField(ZMIField):
 
     widget = Widget.TextWidgetInstance
     validator = Validator.FloatValidatorInstance
-    
+
 class TextAreaField(ZMIField):
     meta_type = "TextAreaField"
 
@@ -70,7 +70,7 @@ class RawTextAreaField(ZMIField):
 
     widget = Widget.TextAreaWidgetInstance
     validator = Validator.StringValidatorInstance
-    
+
 class ListField(ZMIField):
     meta_type = "ListField"
 
@@ -88,7 +88,7 @@ class LinesField(ZMIField):
 
     widget = Widget.LinesTextAreaWidgetInstance
     validator = Validator.LinesValidatorInstance
-   
+
 class RadioField(ZMIField):
     meta_type = "RadioField"
 
@@ -100,16 +100,16 @@ class MultiCheckBoxField(ZMIField):
 
     widget = Widget.MultiCheckBoxWidgetInstance
     validator = Validator.MultiSelectionValidatorInstance
-    
+
 class FileField(ZMIField):
      meta_type = "FileField"
- 
+
      widget = Widget.FileWidgetInstance
      validator = Validator.FileValidatorInstance
- 
+
 class LinkField(ZMIField):
     meta_type = "LinkField"
-    
+
     widget = Widget.TextWidgetInstance
     validator = Validator.LinkValidatorInstance
 
@@ -117,7 +117,7 @@ class LabelField(ZMIField):
     """Just a label, doesn't really validate.
     """
     meta_type = "LabelField"
-    
+
     widget = Widget.LabelWidgetInstance
     validator = Validator.SuppressValidatorInstance
 
@@ -126,7 +126,7 @@ class DateTimeField(ZMIField):
 
     widget = Widget.DateTimeWidgetInstance
     validator = Validator.DateTimeValidatorInstance
-    
+
     def __init__(self, id, **kw):
         # icky but necessary...
         apply(ZMIField.__init__, (self, id), kw)
@@ -167,7 +167,7 @@ class DateTimeField(ZMIField):
         for field in self.sub_form.get_fields():
             field.values['css_class'] = value
             field._p_changed = 1
-    
+
     def override_year_items(self):
         """The method gets called to get the right amount of years.
         """
@@ -183,41 +183,41 @@ class DateTimeField(ZMIField):
         else:
             last_year = first_year + 11
         return create_items(first_year, last_year, digits=4)
-            
+
 def create_datetime_text_sub_form():
     sub_form = BasicForm()
-        
+
     year = IntegerField('year',
                         title="Year",
                         required=0,
                         display_width=4,
                         display_maxwidth=4,
                         max_length=4)
-    
+
     month = IntegerField('month',
                          title="Month",
                          required=0,
                          display_width=2,
                          display_maxwidth=2,
                          max_length=2)
-    
+
     day = IntegerField('day',
                        title="Day",
                        required=0,
                        display_width=2,
                        display_maxwidth=2,
                        max_length=2)
-    
+
     sub_form.add_group("date")
     sub_form.add_fields([year, month, day], "date")
-    
+
     hour = IntegerField('hour',
                         title="Hour",
                         required=0,
                         display_width=2,
                         display_maxwidth=2,
                         max_length=2)
-    
+
     minute = IntegerField('minute',
                           title="Minute",
                           required=0,
@@ -246,14 +246,14 @@ def create_datetime_list_sub_form():
                      default="",
                      items=create_items(2000, 2010, digits=4),
                      size=1)
-    
+
     month = ListField('month',
                       title="Month",
                       required=0,
                       default="",
                       items=create_items(1, 13, digits=2),
                       size=1)
-    
+
     day = ListField('day',
                     title="Day",
                     required=0,
@@ -263,14 +263,14 @@ def create_datetime_list_sub_form():
 
     sub_form.add_group("date")
     sub_form.add_fields([year, month, day], "date")
-    
+
     hour = IntegerField('hour',
                         title="Hour",
                         required=0,
                         display_width=2,
                         display_maxwidth=2,
                         max_length=2)
-    
+
     minute = IntegerField('minute',
                           title="Minute",
                           required=0,
@@ -285,7 +285,7 @@ def create_datetime_list_sub_form():
                      items=[("am","am"),
                             ("pm","pm")],
                      size=1)
-    
+
     sub_form.add_group("time")
 
     sub_form.add_fields([hour, minute, ampm], "time")
@@ -297,7 +297,7 @@ def create_items(start, end, digits=0):
         format_string = "%0" + str(digits) + "d"
     else:
         format_string = "%s"
-        
+
     for i in range(start, end):
         s = format_string % i
         result.append((s, s))

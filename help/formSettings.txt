@@ -24,7 +24,7 @@ Formulator Form - Settings
     the URL (so you can for instance bookmark the URL). The 'header()'
     method of the Form will use this as the 'method' attribute of the
     HTML form.
-  
+
   Form enctype
 
     The encoding type of the form. If no encoding type is selected,

@@ -36,8 +36,8 @@ class Form:
     encoding = 'UTF-8'
     stored_encoding = 'ISO-8859-1'
     unicode_mode = 0
-    
-    # CONSTRUCTORS    
+
+    # CONSTRUCTORS
     def __init__(self, action, method, enctype, name,
                  encoding, stored_encoding, unicode_mode):
         """Initialize form.
@@ -54,7 +54,7 @@ class Form:
         self.encoding = encoding
         self.stored_encoding = stored_encoding
         self.unicode_mode = unicode_mode
-        
+
     # MANIPULATORS
     security.declareProtected('Change Formulator Forms', 'field_added')
     def field_added(self, field_id, group=None):
@@ -71,7 +71,7 @@ class Form:
             self.group_list.append(group)
             self.group_list = self.group_list
         self.groups = groups
-        
+
     security.declareProtected('Change Formulator Forms', 'field_removed')
     def field_removed(self, field_id):
         """A field was removed from the form.
@@ -93,7 +93,7 @@ class Form:
         field_list[i], field_list[i - 1] = field_list[i - 1], field_list[i]
         self.groups = groups
         return 1
-    
+
     security.declareProtected('Change Formulator Forms', 'move_field_down')
     def move_field_down(self, field_id, group):
         groups = self.groups
@@ -123,7 +123,7 @@ class Form:
                 to_list.append(field.id)
         self.groups = groups
         return 1
-    
+
     security.declareProtected('Change Formulator Forms', 'add_group')
     def add_group(self, group):
         """Add a new group.
@@ -134,11 +134,11 @@ class Form:
         groups[group] = []
         # add the group to the bottom of the list of groups
         self.group_list.append(group)
-        
+
         self.group_list = self.group_list
         self.groups = groups
         return 1
-    
+
     security.declareProtected('Change Formulator Forms', 'remove_group')
     def remove_group(self, group):
         """Remove a group.
@@ -154,11 +154,11 @@ class Form:
         del groups[group]
         # remove it from the group order list as well
         self.group_list.remove(group)
-        
+
         self.group_list = self.group_list
         self.groups = groups
         return 1
-    
+
     security.declareProtected('Change Formulator Forms', 'rename_group')
     def rename_group(self, group, name):
         """Rename a group.
@@ -189,8 +189,8 @@ class Form:
         group_list[i], group_list[i - 1] = group_list[i - 1], group_list[i]
         self.group_list = group_list
         return 1
-    
-    security.declareProtected('Change Formulator Forms', 'move_group_down')  
+
+    security.declareProtected('Change Formulator Forms', 'move_group_down')
     def move_group_down(self, group):
         """Move a group down in the group list.
         """
@@ -202,7 +202,7 @@ class Form:
         group_list[i], group_list[i + 1] = group_list[i + 1], group_list[i]
         self.group_list = group_list
         return 1
-    
+
     # ACCESSORS
     security.declareProtected('View', 'get_fields')
     def get_fields(self, include_disabled=0):
@@ -221,7 +221,7 @@ class Form:
         for field in self.get_fields(include_disabled):
             result.append(field.id)
         return result
-    
+
     security.declareProtected('View', 'get_fields_in_group')
     def get_fields_in_group(self, group, include_disabled=0):
         """Get all fields in a group (in the display order).
@@ -242,14 +242,14 @@ class Form:
         """
         # define in subclass
         pass
-    
+
     security.declareProtected('View', 'get_field')
     def get_field(self, id):
         """Get a field of a certain id.
         """
         # define in subclass
         pass
-    
+
     security.declareProtected('View', 'get_groups')
     def get_groups(self, include_empty=0):
         """Get a list of all groups, in display order.
@@ -261,7 +261,7 @@ class Form:
             return self.group_list
         return [group for group in self.group_list
                 if self.get_fields_in_group(group)]
- 
+
     security.declareProtected('View', 'get_form_encoding')
     def get_form_encoding(self):
         """Get the encoding the form is in. Should be the same as the
@@ -269,19 +269,19 @@ class Form:
         is 'UTF-8'.
         """
         return getattr(self, 'encoding', 'UTF-8')
-    
+
     security.declareProtected('View', 'get_stored_encoding')
     def get_stored_encoding(self):
         """Get the encoding of the stored field properties.
         """
         return getattr(self, 'stored_encoding', 'ISO-8859-1')
-    
+
     security.declareProtected('View', 'get_unicode_mode')
     def get_unicode_mode(self):
         """Get unicode mode information.
         """
         return getattr(self, 'unicode_mode', 0)
-    
+
     security.declareProtected('View', 'render')
     def render(self, dict=None, REQUEST=None):
         """Render form in a default way.
@@ -331,7 +331,7 @@ class Form:
                 w('</tr>\n')
             w('</table>\n')
         return result.getvalue()
-    
+
     security.declareProtected('View', 'validate')
     def validate(self, REQUEST):
         """Validate all enabled fields in this form. Stop validating and
@@ -348,7 +348,7 @@ class Form:
             # store as alternate name as well if necessary
             alternate_name = field.get_value('alternate_name')
             if alternate_name:
-                result[alternate_name] = value   
+                result[alternate_name] = value
         return result
 
     security.declareProtected('View', 'validate_to_request')
@@ -359,7 +359,7 @@ class Form:
         for key, value in result.items():
             REQUEST.set(key, value)
         return result
-    
+
     security.declareProtected('View', 'validate_all')
     def validate_all(self, REQUEST):
         """Validate all enabled fields in this form, catch any ValidationErrors
@@ -383,7 +383,7 @@ class Form:
             except ValidationError, err:
                 errors.append(err)
         if len(errors) > 0:
-            raise FormValidationError(errors, result) 
+            raise FormValidationError(errors, result)
         return result
 
     security.declareProtected('View', 'validate_all_to_request')
@@ -486,7 +486,7 @@ class Form:
     security.declareProtected('Access contents information',
                               'management_page_charset')
     management_page_charset = ComputedAttribute(_management_page_charset)
-    
+
     security.declareProtected('View', 'set_encoding_header')
     def set_encoding_header(self):
         """Set the encoding in the RESPONSE object.
@@ -501,7 +501,7 @@ class Form:
         self.REQUEST.RESPONSE.setHeader(
             'Content-Type',
             'text/html;charset=%s' % encoding)
-    
+
 Globals.InitializeClass(Form)
 
 class BasicForm(Persistent, Acquisition.Implicit, Form):
@@ -509,7 +509,7 @@ class BasicForm(Persistent, Acquisition.Implicit, Form):
     Can contain dummy fields defined by DummyField.
     """
     security = ClassSecurityInfo()
-       
+
     def __init__(self, action="", method="POST", enctype="", name="",
                  encoding="UTF-8", stored_encoding='ISO-8859-1',
                  unicode_mode=0):
@@ -521,12 +521,12 @@ class BasicForm(Persistent, Acquisition.Implicit, Form):
 
     security.declareProtected('Change Formulator Forms', 'add_field')
     def add_field(self, field, group=None):
-        """Add a field to the form to a certain group. 
+        """Add a field to the form to a certain group.
         """
         # update group info
         self.field_added(field.id, group)
         # add field to list
-        self.fields[field.id] = field 
+        self.fields[field.id] = field
         self.fields = self.fields
 
     security.declareProtected('Change Formulator Forms', 'add_fields')
@@ -535,7 +535,7 @@ class BasicForm(Persistent, Acquisition.Implicit, Form):
         """
         for field in fields:
             self.add_field(field, group)
-            
+
     security.declareProtected('Change Formulator Forms', 'remove_field')
     def remove_field(self, field):
         """Remove field from form.
@@ -555,7 +555,7 @@ class BasicForm(Persistent, Acquisition.Implicit, Form):
         if field is None:
             return 0
         return include_disabled or field.get_value('enabled')
-    
+
     security.declareProtected('View', 'get_field')
     def get_field(self, id, include_disabled=0):
         """get a field of a certain id."""
@@ -563,7 +563,7 @@ class BasicForm(Persistent, Acquisition.Implicit, Form):
         if include_disabled or field.get_value('enabled'):
             return field
         raise FieldDisabledError("Field %s is disabled" % id, field)
-    
+
     def _realize_fields(self):
         """Make the fields in this form actual fields, not just dummy fields.
         """
@@ -612,7 +612,7 @@ def create_settings_form():
                                        'multipart/form-data')],
                                required=0,
                                size=1,
-                               default=None) 
+                               default=None)
 
     encoding = fields.StringField('encoding',
                                   title='Encoding of pages the form is in',
@@ -627,7 +627,7 @@ def create_settings_form():
                                         title='Form properties are unicode',
                                         default=0,
                                         required=1)
-    
+
     form.add_fields([title, row_length, name, action, method,
                      enctype, encoding, stored_encoding, unicode_mode])
     return form
@@ -643,7 +643,7 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
     # should be helpful with ZClasses, but not sure why I
     # had it in here as a comment in the first place..
     security.declareObjectProtected('View')
-    
+
     # the tabs we want to show
     manage_options = (
         (
@@ -674,7 +674,7 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
         self.id = id
         self.title = title
         self.row_length = 4
-        
+
     def all_meta_types(self):
         """Get all meta types addable to this field. The ZMI uses
         this method (original defined in ObjectManager).
@@ -692,7 +692,7 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
                       action ='manage_main')
         ob=self._getOb(id)
         if not ob.cb_isMoveable():
-            raise CopyError, eNotSupported % id            
+            raise CopyError, eNotSupported % id
         self._verifyObjectPaste(ob)
         try:    ob._notifyOfCopyTo(self, op=1)
         except: raise CopyError, MessageDialog(
@@ -702,7 +702,7 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
         self._delObject(id)
         ob = aq_base(ob)
         ob._setId(new_id)
-        
+
         # Note - because a rename always keeps the same context, we
         # can just leave the ownership info unchanged.
         self._setObject(new_id, ob, set_owner=0)
@@ -726,7 +726,7 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
         if field is None or not hasattr(aq_base(field), 'is_field'):
             return 0
         return include_disabled or field.get_value('enabled')
-    
+
     security.declareProtected('View', 'get_field')
     def get_field(self, id, include_disabled=0):
         """Get a field of a certain id
@@ -781,7 +781,7 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
         self.set_xml(form_data)
         return self.formXML(self, REQUEST,
                             manage_tabs_message="Changed form")
-        
+
     security.declareProtected('Change Formulator Forms', 'manage_settings')
     def manage_settings(self, REQUEST):
         """Change settings in settings screen.
@@ -798,7 +798,7 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
         if result['unicode_mode'] != self.unicode_mode:
             xml = self.get_xml()
         # now set the form settings
-        
+
         # convert XML to or from unicode mode if necessary
         unicode_message = None
         if result['unicode_mode'] != self.unicode_mode:
@@ -814,7 +814,7 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
                 unicode_message = ("Converted from unicode to %s encoding" %
                                    encoding)
             self.set_xml(xml, encoding)
-            
+
         # now set the form settings
         for key, value in result.items():
             setattr(self, key, value)
@@ -823,7 +823,7 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
             message = message + ' ' + unicode_message
         return self.formSettings(self, REQUEST,
                                  manage_tabs_message=message)
-    
+
     security.declareProtected('Change Formulator Forms', 'manage_refresh')
     def manage_refresh(self, REQUEST):
         """Refresh internal data structures of this form.
@@ -872,7 +872,7 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
             if len(fields) > max:
                 max = len(fields)
         return max
-    
+
     security.declareProtected('Change Formulator Forms',
                               'manage_move_field_up')
     def manage_move_field_up(self, group, REQUEST):
@@ -886,7 +886,7 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
             message = "Can't move field up."
         return self.formOrder(self, REQUEST,
                               manage_tabs_message=message)
-    
+
     security.declareProtected('Change Formulator Forms',
                               'manage_move_field_down')
     def manage_move_field_down(self, group, REQUEST):
@@ -917,7 +917,7 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
             message = "Can't transfer fields."
         return self.formOrder(self, REQUEST,
                               manage_tabs_message=message)
-        
+
     security.declareProtected('Change Formulator Forms',
                               'manage_add_group')
     def manage_add_group(self, new_group, REQUEST):
@@ -960,7 +960,7 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
 
         return self.formOrder(self, REQUEST,
                               manage_tabs_message=message)
-    
+
     security.declareProtected('Change Formulator Forms',
                               'manage_move_group_up')
     def manage_move_group_up(self, group, REQUEST):
@@ -972,7 +972,7 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
             message = "Can't move group %s up" % group
         return self.formOrder(self, REQUEST,
                               manage_tabs_message=message)
-        
+
     security.declareProtected('Change Formulator Forms',
                               'manage_move_group_down')
     def manage_move_group_down(self, group, REQUEST):
@@ -987,7 +987,7 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
 
 PythonForm = ZMIForm # NOTE: backwards compatibility
 Globals.InitializeClass(ZMIForm)
-        
+
 manage_addForm = DTMLFile("dtml/formAdd", globals())
 
 def manage_add(self, id, title="", unicode_mode=0, REQUEST=None):
@@ -1021,13 +1021,13 @@ def initializeForm(field_registry):
     """Sets up ZMIForm with fields from field_registry.
     """
     form_class = ZMIForm
-    
+
     meta_types = []
     for meta_type, field in field_registry.get_field_classes().items():
         # don't set up in form if this is a field for internal use only
         if field.internal_field:
             continue
-        
+
         # set up individual add dictionaries for meta_types
         dict = { 'name': field.meta_type,
                  'action':
@@ -1037,7 +1037,7 @@ def initializeForm(field_registry):
         setattr(form_class,
                 'manage_add%sForm' % meta_type,
                 DTMLFile('dtml/fieldAdd', globals(), fieldname=meta_type))
-        
+
     # set up meta_types that can be added to form
     form_class._meta_types = tuple(meta_types)
 
@@ -1046,7 +1046,7 @@ def initializeForm(field_registry):
 
 
 
- 
+
 
 
 

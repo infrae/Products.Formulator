@@ -33,7 +33,7 @@ Formulator HOWTO
     the only things that are addable are Formulator Fields. When you
     add a field to a form, it'll show up in the Form, just like an
     object shows up in a normal Zope Folder.
-    
+
   Fields
 
     When you click on a field, you see a list of its properties in the
@@ -59,14 +59,14 @@ Formulator HOWTO
 
     The form 'Test' tab is not difficult to explain; it shows all the
     fields you have added to the form. You can test the behavior of
-    the entire form here. 
+    the entire form here.
 
     In the 'Order' part you can group fields and order them inside
     their groups. The order determines the order in which they appear
     on the 'Test' screen, and can also can be used in your own
     code. Initially there is only a single 'Default' group, but you
     can add new groups and change their names.
-  
+
     In the 'Settings' tab you can determine the form properties.  You
     can set the form submit action and method here, which you can
     later use with the 'header()' and 'footer()' methods of the form.
@@ -102,11 +102,11 @@ Formulator HOWTO
     The form contains three fields; a StringField 'animal', a
     StringField 'color', and an IntegerField 'number'. 'index_html' is
     the DTML Method that does the manual layout::
-   
+
       <dtml-var standard_html_header>
 
-      <!-- show the header of the form, using 'Form action' and 
-	'Form method' form settings (<form action="..." method="...">)  
+      <!-- show the header of the form, using 'Form action' and
+	'Form method' form settings (<form action="..." method="...">)
 	-->
       <dtml-var "form.header()">
 
@@ -165,8 +165,8 @@ Formulator HOWTO
 
       <dtml-var standard_html_header>
 
-      <!-- show the header of the form, using 'Form action' and 
-	'Form method' form settings (<form action="..." method="...">)  
+      <!-- show the header of the form, using 'Form action' and
+	'Form method' form settings (<form action="..." method="...">)
 	-->
       <dtml-var "form.header()">
 
@@ -179,7 +179,7 @@ Formulator HOWTO
 	   be used more easily -->
       <dtml-let field=sequence-item>
 
-      <!-- each field will be on a line by itself -->    
+      <!-- each field will be on a line by itself -->
       <tr>
       <!-- display the title property of this field -->
       <td><dtml-var "field.get_value('title')"></td>
@@ -223,7 +223,7 @@ Formulator HOWTO
     The 'feedback' method should do a number of things:
 
       * validate all fields (tell formulator to take care of this).
-  
+
       * handle any validation errors.
 
       * if there were no validation errors, do something with the
@@ -234,8 +234,8 @@ Formulator HOWTO
       <dtml-var standard_html_header>
       <dtml-try>
 	<!-- try the validation, results should be put in
-	     REQUEST (keyed under the field id) --> 
-	<dtml-call "form.validate_all_to_request(REQUEST)">  
+	     REQUEST (keyed under the field id) -->
+	<dtml-call "form.validate_all_to_request(REQUEST)">
       <dtml-except FormValidationError>
 	<!-- if something went wrong with any field validation,
 	     a FormValidationError will be raised, which we
@@ -262,10 +262,10 @@ Formulator HOWTO
 
       </dtml-try>
 
-      <dtml-var standard_html_footer> 
-    
+      <dtml-var standard_html_footer>
+
     Note that often you can use acquisition with the validation page
     as well, so you can reuse most of its functionality.
-  
+
 
 

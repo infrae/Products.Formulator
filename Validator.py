@@ -24,18 +24,18 @@ class ValidatorBase:
         "get a validation error as a field suddenly got enabled that "
         "wasn't there when the form was drawn."),
                                    default=1)
-    
+
     def raise_error(self, error_key, field):
         raise ValidationError(error_key, field)
-    
-    def validate(self, field, key, REQUEST):    
+
+    def validate(self, field, key, REQUEST):
         pass # override in subclass
 
     def need_validate(self, field, key, REQUEST):
         """Default behavior is always validation.
         """
         return 1
-    
+
 class Validator(ValidatorBase):
     """Validates input and possibly transforms it to output.
     """
@@ -53,16 +53,16 @@ class Validator(ValidatorBase):
         "'external_validator_failed' to be raised."),
                                             default="",
                                             required=0)
-    
+
     message_names = ValidatorBase.message_names + ['external_validator_failed']
 
     external_validator_failed = "The input failed the external validator."
-    
+
 class StringBaseValidator(Validator):
     """Simple string validator.
     """
     property_names = Validator.property_names + ['required', 'whitespace_preserve']
-    
+
     required = fields.CheckBoxField('required',
                                     title='Required',
                                     description=(
@@ -76,11 +76,11 @@ class StringBaseValidator(Validator):
         "Checked if the field preserves whitespace. This means even "
         "just whitespace input is considered to be data."),
                                                default=0)
-    
+
     message_names = Validator.message_names + ['required_not_found']
-    
+
     required_not_found = 'Input is required but no input given.'
-        
+
     def validate(self, field, key, REQUEST):
         value = REQUEST.get(key, "")
         if not field.get_value('whitespace_preserve'):
@@ -88,7 +88,7 @@ class StringBaseValidator(Validator):
         if field.get_value('required') and value == "":
             self.raise_error('required_not_found', field)
         return value
-    
+
 class StringValidator(StringBaseValidator):
     property_names = StringBaseValidator.property_names +\
                      ['unicode', 'max_length', 'truncate']
@@ -108,7 +108,7 @@ class StringValidator(StringBaseValidator):
         "Note that this is server side validation."),
                                      default="",
                                      required=0)
-    
+
     truncate = fields.CheckBoxField('truncate',
                                     title='Truncate',
                                     description=(
@@ -127,10 +127,10 @@ class StringValidator(StringBaseValidator):
         if field.get_value('unicode'):
             # use acquisition to get encoding of form
             value = unicode(value, field.get_form_encoding())
-            
+
         max_length = field.get_value('max_length') or 0
         truncate = field.get_value('truncate')
-        
+
         if max_length > 0 and len(value) > max_length:
             if truncate:
                 value = value[:max_length]
@@ -153,7 +153,7 @@ class EmailValidator(StringValidator):
     # some custom script if needed), and of course no characters that
     # don't belong in an e-mail address.
     pattern = re.compile('^[0-9a-zA-Z_&.%+-]+@([0-9a-zA-Z]([0-9a-zA-Z-]*[0-9a-zA-Z])?\.)+[a-zA-Z]{2,6}$')
-    
+
     def validate(self, field, key, REQUEST):
         value = StringValidator.validate(self, field, key, REQUEST)
         if value == "" and not field.get_value('required'):
@@ -168,7 +168,7 @@ EmailValidatorInstance = EmailValidator()
 class PatternValidator(StringValidator):
     # does the real work
     checker = PatternChecker.PatternChecker()
-    
+
     property_names = StringValidator.property_names +\
                      ['pattern']
 
@@ -245,7 +245,7 @@ class IntegerValidator(StringBaseValidator):
             value = int(value)
         except ValueError:
             self.raise_error('not_integer', field)
-            
+
         start = field.get_value('start')
         end = field.get_value('end')
         if start != "" and value < start:
@@ -308,17 +308,17 @@ class LinesValidator(StringBaseValidator):
         "If set to 0 or is left empty, there is no maximum."),
                                      default="",
                                      required=0)
-    
+
     message_names = StringBaseValidator.message_names +\
                     ['too_many_lines', 'line_too_long', 'too_long']
 
     too_many_lines = 'You entered too many lines.'
     line_too_long = 'A line was too long.'
     too_long = 'You entered too many characters.'
-    
+
     def validate(self, field, key, REQUEST):
         value = StringBaseValidator.validate(self, field, key, REQUEST)
-    
+
         # we need to add this check again
         if value == "" and not field.get_value('required'):
             return []
@@ -347,10 +347,10 @@ class LinesValidator(StringBaseValidator):
             if max_linelength and len(line) > max_linelength:
                 self.raise_error('line_too_long', field)
             result.append(line)
-            
+
         return result
 
-LinesValidatorInstance = LinesValidator()    
+LinesValidatorInstance = LinesValidator()
 
 class TextValidator(LinesValidator):
     def validate(self, field, key, REQUEST):
@@ -375,18 +375,18 @@ class SelectionValidator(StringBaseValidator):
         "Checked if the field delivers a unicode string instead of an "
         "8-bit string."),
                                    default=0)
-    
+
     message_names = StringBaseValidator.message_names +\
                     ['unknown_selection']
 
     unknown_selection = 'You selected an item that was not in the list.'
-    
+
     def validate(self, field, key, REQUEST):
         value = StringBaseValidator.validate(self, field, key, REQUEST)
 
         if value == "" and not field.get_value('required'):
             return value
-        
+
         # get the text and the value from the list of items
         for item in field.get_value('items'):
             if type(item) in [type(()), type([])]:
@@ -408,10 +408,10 @@ class SelectionValidator(StringBaseValidator):
 
             if str_value == value:
                 return item_value
-            
+
         # if we didn't find the value, return error
         self.raise_error('unknown_selection', field)
-            
+
 SelectionValidatorInstance = SelectionValidator()
 
 class MultiSelectionValidator(Validator):
@@ -433,10 +433,10 @@ class MultiSelectionValidator(Validator):
 
     message_names = Validator.message_names + ['required_not_found',
                                                'unknown_selection']
-    
+
     required_not_found = 'Input is required but no input given.'
     unknown_selection = 'You selected an item that was not in the list.'
-    
+
     def validate(self, field, key, REQUEST):
         values = REQUEST.get(key, [])
         # NOTE: a hack to deal with single item selections
@@ -454,7 +454,7 @@ class MultiSelectionValidator(Validator):
         if field.get_value('unicode'):
             values = [unicode(value, field.get_form_encoding())
                       for value in values]
-        
+
         # create a dictionary of possible values
         value_dict = {}
         for item in field.get_value('items'):
@@ -482,13 +482,13 @@ class MultiSelectionValidator(Validator):
             self.raise_error('unknown_selection', field)
         # everything checks out
         return result
-            
+
 MultiSelectionValidatorInstance = MultiSelectionValidator()
 
 class FileValidator(Validator):
     def validate(self, field, key, REQUEST):
         return REQUEST.get(key, None)
-    
+
 FileValidatorInstance = FileValidator()
 
 class LinkHelper:
@@ -498,7 +498,7 @@ class LinkHelper:
 
     def __init__(self, link):
         self.link = link
-        
+
     def open(self):
         try:
             urlopen(self.link)
@@ -512,7 +512,7 @@ class LinkHelper:
 class LinkValidator(StringValidator):
     property_names = StringValidator.property_names +\
                      ['check_link', 'check_timeout', 'link_type']
-    
+
     check_link = fields.CheckBoxField('check_link',
                                       title='Check Link',
                                       description=(
@@ -525,7 +525,7 @@ class LinkValidator(StringValidator):
         "Maximum amount of seconds to check link. Required"),
                                       default=7.0,
                                       required=1)
-    
+
     link_type = fields.ListField('link_type',
                                  title='Type of Link',
                                  default="external",
@@ -536,16 +536,16 @@ class LinkValidator(StringValidator):
                                  description=(
         "Define the type of the link. Required."),
                                  required=1)
-    
+
     message_names = StringValidator.message_names + ['not_link']
-    
+
     not_link = 'The specified link is broken.'
-    
+
     def validate(self, field, key, REQUEST):
         value = StringValidator.validate(self, field, key, REQUEST)
         if value == "" and not field.get_value('required'):
             return value
-        
+
         link_type = field.get_value('link_type')
         if link_type == 'internal':
             value = urljoin(REQUEST['BASE0'], value)
@@ -554,7 +554,7 @@ class LinkValidator(StringValidator):
         # otherwise must be external
 
         # FIXME: should try regular expression to do some more checking here?
-        
+
         # if we don't need to check the link, we're done now
         if not field.get_value('check_link'):
             return value
@@ -565,7 +565,7 @@ class LinkValidator(StringValidator):
                 REQUEST.resolve_url(value)
             except:
                 self.raise_error('not_link', field)
-                
+
         # check whether we can open the link
         link = LinkHelper(value)
         thread = Thread(target=link.open)
@@ -574,10 +574,10 @@ class LinkValidator(StringValidator):
         del thread
         if not link.status:
             self.raise_error('not_link', field)
-            
+
         return value
 
-LinkValidatorInstance = LinkValidator()       
+LinkValidatorInstance = LinkValidator()
 
 class DateTimeValidator(Validator):
 
@@ -617,21 +617,21 @@ class DateTimeValidator(Validator):
         "Allow time to be left empty. Time will default to midnight "
         "on that date."),
                                             default=0)
-    
+
     message_names = Validator.message_names + ['required_not_found',
                                                'not_datetime',
                                                'datetime_out_of_range']
-    
+
     required_not_found = 'Input is required but no input given.'
     not_datetime = 'You did not enter a valid date and time.'
     datetime_out_of_range = 'The date and time you entered were out of range.'
-    
-    def validate(self, field, key, REQUEST):    
+
+    def validate(self, field, key, REQUEST):
         try:
             year = field.validate_sub_field('year', REQUEST)
             month = field.validate_sub_field('month', REQUEST)
             day = field.validate_sub_field('day', REQUEST)
-            
+
             if field.get_value('date_only'):
                 hour = 0
                 minute = 0
@@ -652,7 +652,7 @@ class DateTimeValidator(Validator):
         # handling of completely empty sub fields
         if ((year == '' and month == '' and day == '') and
             (field.get_value('date_only') or (hour == '' and minute == '')
-            or (hour == 0 and minute == 0))): 
+            or (hour == 0 and minute == 0))):
             if field.get_value('required'):
                 self.raise_error('required_not_found', field)
             else:
@@ -697,16 +697,16 @@ class DateTimeValidator(Validator):
             self.raise_error('datetime_out_of_range', field)
 
         return result
-    
+
 DateTimeValidatorInstance = DateTimeValidator()
-        
-    
+
+
 class SuppressValidator(ValidatorBase):
     """A validator that is actually not used.
-    """ 
+    """
     def need_validate(self, field, key, REQUEST):
         """Don't ever validate; suppress result in output.
         """
         return 0
-    
+
 SuppressValidatorInstance = SuppressValidator()

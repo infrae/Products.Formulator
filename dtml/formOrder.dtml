@@ -6,7 +6,7 @@ Change the display order and grouping of the fields in this form.
 </p>
 
 <table border="1" cellspacing="1" cellpadding="3">
-<dtml-let all_groups="get_groups(include_empty=1)" 
+<dtml-let all_groups="get_groups(include_empty=1)"
           group_length="get_largest_group_length()"
           first_group="all_groups and all_groups[0] or None">
 <dtml-in "get_group_rows()">
@@ -23,7 +23,7 @@ Change the display order and grouping of the fields in this form.
     <dtml-var group html_quote>
     </div>
     </td></tr>
-  
+
   <tr><td align="left">
     <dtml-let fields="get_fields_in_group(group)" fields_amount="_.len(fields)">
     <table border="0" cellspacing="0" cellpadding="0">
@@ -42,14 +42,14 @@ Change the display order and grouping of the fields in this form.
     </dtml-let>
     </table>
   </td></tr>
-     
+
   <tr><td align="center">
     <input class="form-element" type="submit" name="manage_move_field_up:method"
            value="Move Up">
   </td></tr>
-  
+
   <tr><td align="center">
-    <input class="form-element" type="submit" name="manage_move_field_down:method" 
+    <input class="form-element" type="submit" name="manage_move_field_down:method"
            value="Move Dn"><br><br>
   </td></tr>
 
@@ -63,7 +63,7 @@ Change the display order and grouping of the fields in this form.
     </select>
     </div>
   </td></tr>
- 
+
   <tr><td align="center">
     <input class="form-element" type="submit" name="manage_move_group:method"
            value="Transfer">
@@ -71,7 +71,7 @@ Change the display order and grouping of the fields in this form.
 
 
   <dtml-if "group != first_group">
-  
+
   <tr><td align="center" class="list-header">
     <div class="list-item">
     Group
@@ -84,7 +84,7 @@ Change the display order and grouping of the fields in this form.
   </td></tr>
 
   <tr><td align="center">
-    <input class="form-element" type="submit" name="manage_move_group_down:method" 
+    <input class="form-element" type="submit" name="manage_move_group_down:method"
            value="Move Dn"><br><br>
   </td></tr>
 
@@ -108,7 +108,7 @@ Change the display order and grouping of the fields in this form.
     Group
     </div>
   </td></tr>
-  
+
   <tr><td align="center">
     <input type="text" name="new_group" value="" size="10">
   </td></tr>

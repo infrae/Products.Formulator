@@ -9,7 +9,7 @@ except ImportError:
 #def write(s):
 #    if type(s) == type(u''):
 #        print "Unicode:", repr(s)
-    
+
 def formToXML(form, prologue=1):
     """Takes a formulator form and serializes it to an XML representation.
     """

@@ -54,7 +54,7 @@ Test this form.
     <td align="left" valign="top">
     <dtml-var "field.render()">
     </td>
-  </tr>  
+  </tr>
   </dtml-let>
   </dtml-in>
   </dtml-if>

@@ -35,9 +35,9 @@ def XMLToForm(s, form, override_encoding=None):
             encoding = None
         else:
             encoding = override_encoding
-        
+
     #  get the settings
-    settings = [field.id for field in form.settings_form.get_fields()]    
+    settings = [field.id for field in form.settings_form.get_fields()]
     for setting in settings:
         value = getattr(top.first.form.first, setting, None)
         if value is None:
@@ -48,7 +48,7 @@ def XMLToForm(s, form, override_encoding=None):
             v = int(value.text)
         else:
             v = encode(value.text, encoding)
-        setattr(form, setting, v) 
+        setattr(form, setting, v)
 
     # create groups
     has_default = 0
@@ -114,12 +114,12 @@ def XMLToForm(s, form, override_encoding=None):
             field.values = field.values
             field.tales = field.tales
             field.message_values = field.message_values
-        
+
     # delete default group
     if not has_default:
         form.move_group_down('Default')
         form.remove_group('Default')
-    
+
 def encode(text, encoding):
     if encoding is None:
         return text

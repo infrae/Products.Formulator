@@ -51,8 +51,8 @@ Edit <dtml-var meta_type> properties here.
   <tr>
     <td align="left" valign="top">
     <div class="form-element">
-    <input class="form-element" type="submit" name="submit" 
-     value="Save Changes" /> 
+    <input class="form-element" type="submit" name="submit"
+     value="Save Changes" />
     </div>
     </td>
   </tr>

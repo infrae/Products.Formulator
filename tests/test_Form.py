@@ -39,7 +39,7 @@ class FormTestCase(unittest.TestCase):
     def tearDown(self):
         get_transaction().abort()
         self.connection.close()
-        
+
 
     def test_has_field(self):
         """ test if has_field works, if one asks for a non-field attribute.
@@ -55,7 +55,7 @@ class FormTestCase(unittest.TestCase):
         has lead to a item text of 'o' and a display value of 'k'
         (as the this is actually a sequence of length 2 ...)
          See http://sourceforge.net/mailarchive/forum.php?thread_id=1359918&forum_id=1702
-         
+
         Actually the original problem still does not work,
         as passing a list of int's is not yet supported.
         If it should, please uncomment the second part of the test.
@@ -77,7 +77,7 @@ class FormTestCase(unittest.TestCase):
         self.form.override_test.write("return ['ok', 'no']\n")
         # ps._makeFunction()
 
-        
+
         list_field = getattr(self.form, 'list_field')
         list_field.values['items'] = [ ('ok', 'ok'), ('no', 'no') ]
 
@@ -93,9 +93,9 @@ class FormTestCase(unittest.TestCase):
         del list_field.tales['items']
         list_field.overrides['items'] = Method('override_test')
         items2 = list_field.render()
-        
+
         self.assertEquals(items1, items2)
-        
+
         # test if TALES returns a list of e.g. int
         #list_field.values['items'] = [ ('42', '42'), ('88', '88') ]
         #
@@ -123,17 +123,17 @@ class FormTestCase(unittest.TestCase):
     def test_datetime_css_class_rendering(self):
         # test that a bug is fixed, which causing the css_class value
         # not to be rendered
-        
+
         self.form.manage_addProduct['Formulator']\
                  .manage_addField('date_time','Test Field','DateTimeField')
         field = self.form.date_time
-        
+
         css_matcher = re.compile('class="([^"]*)"')
 
         # initially no css class is set
         self.assertEquals(0, len(css_matcher.findall(field.render())))
 
-        # edit the field, bypassing validation ... 
+        # edit the field, bypassing validation ...
         field._edit({'css_class':'some_class'})
 
         # now we should have five matches for the five subfields ...
@@ -148,7 +148,7 @@ class FormTestCase(unittest.TestCase):
         current_style = field['input_style']
         other_style = {'list':'text', 'text':'list'} [current_style]
         field._edit({'input_style':other_style})
-        
+
         # still the css classes should remain the same
         css_matches = css_matcher.findall(field.render())
         self.assertEquals(5, len(css_matches))
@@ -160,7 +160,7 @@ class FormTestCase(unittest.TestCase):
         css_matches = css_matcher.findall(field.render())
         self.assertEquals(5, len(css_matches))
         for m in css_matches:
-            self.assertEquals('other_class',m)           
+            self.assertEquals('other_class',m)
 
         # and clear the css_class field:
         field._edit({'css_class':''})
@@ -199,8 +199,8 @@ class FormTestCase(unittest.TestCase):
             self.assertEquals(expected_values.pop(0),
                               child.getAttribute('value'))
             self.failIf(child.childNodes)
-        
-        
+
+
 
     def test_render_hidden(self):
         # test that rendering fields hidden does produce
@@ -219,7 +219,7 @@ class FormTestCase(unittest.TestCase):
 
         self.form.date_time.values['default']=DateTime(1970,1,1,)
         self.form.date_time.values['hidden']=1
-        
+
         expected_values = {
             'subfield_date_time_year'  : '1970',
             'subfield_date_time_month' : '01',
@@ -235,7 +235,7 @@ class FormTestCase(unittest.TestCase):
         del expected_values['subfield_date_time_minute']
         self._helper_render_hidden_datetime(expected_values,
                                             self.form.date_time.render())
-        
+
         self.form.date_time.values['date_only']=0
         self.form.date_time.values['ampm_time_style']=1
         expected_values['subfield_date_time_hour']='12'
@@ -256,7 +256,7 @@ class FormTestCase(unittest.TestCase):
         self._helper_render_hidden_list('field_check_boxes',['a','c'],
                                         self.form.check_boxes.render())
 
-        
+
         self.form.lines.values['default'] = ['a','c']
         self.form.lines.values['hidden'] = 1
         expect_str = 'a\nc'
@@ -303,7 +303,7 @@ class FormTestCase(unittest.TestCase):
             self.assertEquals('|||'.join(('Alpha','Gamma')),
                               field.render_view(['a','c']))
             self.assertEquals('', field.render_view([]))
-            
+
 
 def test_suite():
     suite = unittest.TestSuite()
