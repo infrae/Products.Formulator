@@ -46,11 +46,10 @@ class StringValidatorTestCase(ValidatorTestCase):
         self.assertEqual('foo', result)
 
     def test_htmlquotes(self):
-        # XX test html escaping -- I am not sure if this is really wanted ..
         result = self.v.validate(
             TestField('f', max_length=0, truncate=0, required=0, unicode=0),
             'f', {'f' : '<html>'})
-        self.assertEqual('&lt;html&gt;', result)
+        self.assertEqual('<html>', result)
 
     def test_encoding(self):
         utf8_string = 'M\303\274ller' # this is a M&uuml;ller
