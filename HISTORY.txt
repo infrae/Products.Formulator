@@ -4,14 +4,18 @@ Formulator changes
 
       - Added the 'modules' namespace for TALES expresions.
 
+      - when reordering a field in the "Order" tab the current field
+        is "sticky" for faster moving up and down.
+        (Patch from Sébastien Robin)
+
     Bugs Fixed
 
-     - Fixed issue for render_view of list fields with no default
-       value.
+      - Fixed issue for render_view of list fields with no default
+        value.
 
-     - Fixed issue with non-ascci charachtes in the title of a newly
-       created form or field of the unicode property has been set
-       (Patch from Bertrand Croq)
+      - Fixed issue with non-ascii characters in the title of a newly
+        created form or field if the unicode property has been set
+        (Patch from Bertrand Croq)
 
   1.8.0
 
@@ -164,7 +168,7 @@ Formulator changes
       - python 2.1.3 compatibility: boolean values like "required"
         are translated to int on XML serializations/deserialization.
 
-        The last two fixes are due to Sebastien Robin
+        The last two fixes are due to Sébastien Robin
 
       - render_hidden of DateTimeField's and fields allowing multiple
         selections did not lead to something useful for validation.
