@@ -8,6 +8,13 @@ Formulator changes
         is "sticky" for faster moving up and down.
         (Patch from Sébastien Robin)
 
+      - Addes serializeValue and deserializeValue methods to the
+        validator classes. The former takes a sax handler as an argument
+        and sends it sax events to serialize the field value, the latter
+        takes serialized values and massages them back into valid formulator
+        values. These methods are not used within formulator itself, and
+        introduce no new dependencies.
+
     Bugs Fixed
 
       - Fixed issue for render_view of list fields with no default

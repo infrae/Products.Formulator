@@ -159,7 +159,15 @@ class StringValidatorTestCase(ValidatorTestCase):
         string = 'This is the string value'
         field = TestField('f', max_length=0, truncate=0, required=0, unicode=1)
         self.v.serializeValue(field, string, handler)
-        self.assertEqual('This is the string value', handler.getXml())
+        self.assertEquals('This is the string value', handler.getXml())
+
+    def test_deserializeValue(self):
+        string = 'This is the string value'
+        field = TestField('f', max_length=0, truncate=0, required=0, unicode=1)
+        self.assertEquals(
+            'This is the string value',
+            self.v.deserializeValue(field, string)
+            )
         
 class LinesValidatorTestVase(ValidatorTestCase):
 
@@ -217,7 +225,15 @@ class LinesValidatorTestVase(ValidatorTestCase):
         field = TestField('f', max_lenght=0, truncate=0, required=1, unicode=0)
         self.v.serializeValue(field, value, handler)
         self.assertEqual('Two Lines \n of Text', handler.getXml())
-            
+
+    def test_deserializeValue(self):
+        string = 'Two Lines \n of Text'
+        field = TestField('f', max_length=0, truncate=0, whitespace_preserve=1, required=0, unicode=1)
+        self.assertEquals(
+            ['Two Lines ', ' of Text'], 
+            self.v.deserializeValue(field, string)
+            )
+        
 class EmailValidatorTestCase(ValidatorTestCase):
 
     def setUp(self):
@@ -260,7 +276,15 @@ class EmailValidatorTestCase(ValidatorTestCase):
         field = TestField('f', max_length=0, truncate=0, required=0, unicode=1)
         self.v.serializeValue(TestField, string, handler)
         self.assertEqual('eric@infrae.com', handler.getXml())
-            
+
+    def test_deserializeValue(self):
+        string = 'eric@infrae.com'
+        field = TestField('f', max_length=0, truncate=0, required=0, unicode=1)
+        self.assertEquals(
+            'eric@infrae.com', 
+            self.v.deserializeValue(field, string)
+            )
+        
 # skip PatternValidator for now
 
 class BooleanValidatorTestCase(ValidatorTestCase):
@@ -298,7 +322,20 @@ class BooleanValidatorTestCase(ValidatorTestCase):
         value = True
         self.v.serializeValue(field, value, handler2)
         self.assertEqual('True', handler2.getXml())
-    
+
+    def test_deserializeValue(self):
+        string = 'False'
+        field = TestField('f', max_length=0, truncate=0, required=0, unicode=1)
+        self.assertEquals(
+            False, 
+            self.v.deserializeValue(field, string)
+            )
+        string = 'True'
+        self.assertEquals(
+            True, 
+            self.v.deserializeValue(field, string)
+            )
+        
 class IntegerValidatorTestCase(ValidatorTestCase):
     def setUp(self):
         self.v = Validator.IntegerValidatorInstance
@@ -429,7 +466,15 @@ class IntegerValidatorTestCase(ValidatorTestCase):
         field = TestField('f', max_length=0, truncate=0, required=0, unicode=1)
         self.v.serializeValue(field, value, handler)
         self.assertEqual('1337', handler.getXml())
-            
+
+    def test_deserializeValue(self):
+        string = '1337'
+        field = TestField('f', max_length=0, truncate=0, required=0, unicode=1, start=0, end=2000)
+        self.assertEquals(
+            1337, 
+            self.v.deserializeValue(field, string)
+            )
+        
 class FloatValidatorTestCase(ValidatorTestCase):
     def setUp(self):
         self.v = Validator.FloatValidatorInstance
@@ -467,6 +512,14 @@ class FloatValidatorTestCase(ValidatorTestCase):
         self.v.serializeValue(field, value, handler)
         self.assertEqual('1.00001', handler.getXml())
 
+    def test_deserializeValue(self):
+        string = '1.00001'
+        field = TestField('f', max_length=0, truncate=0, required=0, unicode=1, start=0, end=2000)
+        self.assertEquals(
+            1.00001, 
+            self.v.deserializeValue(field, string)
+            )
+        
 class DateTimeValidatorTestCase(ValidatorTestCase):
     def setUp(self):
         self.v = Validator.DateTimeValidatorInstance
@@ -614,7 +667,15 @@ class DateTimeValidatorTestCase(ValidatorTestCase):
         self.v.serializeValue(field, value, handler)
         date = DateTime(2002,12,01,10,30,00)
         self.assertEqual(date.HTML4(), handler.getXml())
-                  
+
+    def test_deserializeValue(self):
+        string = '2004-04-23T16:13:40Z'
+        field = TestField('f', max_length=0, truncate=0, required=0, unicode=1)
+        self.assertEquals(
+            DateTime('2004-04-23T16:13:40Z'), 
+            self.v.deserializeValue(field, string)
+            )
+        
 def test_suite():
     suite = unittest.TestSuite()
 

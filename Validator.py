@@ -48,6 +48,10 @@ class ValidatorBase:
         """
         pass # override in subclass
 
+    def deserializeValue(self, field, value):
+        REQUEST = {'key': value}
+        return self.validate(field, 'key', REQUEST)
+    
     def need_validate(self, field, key, REQUEST):
         """Default behavior is always validation.
         """
@@ -108,7 +112,7 @@ class StringBaseValidator(Validator):
 
     def serializeValue(self, field, value, handler):
         handler.characters(value)
-        
+
 class StringValidator(StringBaseValidator):
     property_names = StringBaseValidator.property_names +\
                      ['unicode', 'max_length', 'truncate']
@@ -232,7 +236,12 @@ class BooleanValidator(Validator):
         else:
             value_string = 'False'
         handler.characters(value_string)
-    
+
+    def deserializeValue(self, field, value):
+        if value == 'True':
+            return True
+        return False
+        
 BooleanValidatorInstance = BooleanValidator()
 
 class IntegerValidator(StringBaseValidator):
@@ -749,6 +758,9 @@ class DateTimeValidator(Validator):
         if value is not None:
             value_string = value.HTML4()
             handler.characters(value_string)
+    
+    def deserializeValue(self, field, value):
+        return DateTime(value)
     
 DateTimeValidatorInstance = DateTimeValidator()
 
