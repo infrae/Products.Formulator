@@ -29,8 +29,10 @@ class Form:
     """
     security = ClassSecurityInfo()
 
+    encoding = 'UTF-8' # XXX unfortunately needed to make settings form upgrade
+    
     # CONSTRUCTORS    
-    def __init__(self, action, method, enctype, name):
+    def __init__(self, action, method, enctype, name, encoding):
         """Initialize form.
         """
         # make groups dict with entry for default group
@@ -42,7 +44,8 @@ class Form:
         self.action = action
         self.method = method
         self.enctype = enctype
-
+        self.encoding = encoding
+        
     # MANIPULATORS
     security.declareProtected('Change Formulator Forms', 'field_added')
     def field_added(self, field_id, group=None):
@@ -236,6 +239,14 @@ class Form:
         """
         return self.group_list
 
+    security.declareProtected('View', 'get_form_encoding')
+    def get_form_encoding(self):
+        """Get the encoding the form is in. Should be the same as the
+        encoding of the page, if specified, for unicode to work. Default
+        is 'UTF-8'.
+        """
+        return getattr(self, 'encoding', 'UTF-8')
+    
     security.declareProtected('View', 'render')
     def render(self, dict=None, REQUEST=None):
         """Render form in a default way.
@@ -396,10 +407,11 @@ class BasicForm(Persistent, Acquisition.Implicit, Form):
     """
     security = ClassSecurityInfo()
        
-    def __init__(self, action="", method="POST", enctype="", name=""):
+    def __init__(self, action="", method="POST", enctype="", name="",
+                 encoding="UTF-8"):
         BasicForm.inheritedAttribute('__init__')(self,
                                                  action, method, enctype,
-                                                 name)
+                                                 name, encoding)
         self.fields = {}
 
     security.declareProtected('Change Formulator Forms', 'add_field')
@@ -490,7 +502,13 @@ def create_settings_form():
                                size=1,
                                default=None) 
 
-    form.add_fields([title, row_length, name, action, method, enctype])
+    encoding = fields.StringField('encoding',
+                                  title='Page encoding',
+                                  default="UTF-8",
+                                  required=1)
+                                  
+    form.add_fields([title, row_length, name, action, method,
+                     enctype, encoding])
     return form
 
 class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
@@ -529,7 +547,8 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
         id    -- id of form
         title -- the title of the form
         """
-        ZMIForm.inheritedAttribute('__init__')(self, "", "POST", "", id)
+        ZMIForm.inheritedAttribute('__init__')(self, "", "POST", "", id,
+                                               'UTF-8')
         self.id = id
         self.title = title
         self.row_length = 4

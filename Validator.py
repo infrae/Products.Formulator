@@ -39,14 +39,14 @@ class StringBaseValidator(Validator):
     """Simple string validator.
     """
     property_names = Validator.property_names + ['required']
-
+    
     required = fields.CheckBoxField('required',
                                     title='Required',
                                     description=(
         "Checked if the field is required; the user has to fill in some "
         "data."),
                                     default=1)
-
+    
     message_names = Validator.message_names + ['required_not_found']
     
     required_not_found = 'Input is required but no input given.'
@@ -59,7 +59,14 @@ class StringBaseValidator(Validator):
     
 class StringValidator(StringBaseValidator):
     property_names = StringBaseValidator.property_names +\
-                     ['max_length', 'truncate']
+                     ['unicode', 'max_length', 'truncate']
+
+    unicode = fields.CheckBoxField('unicode',
+                                   title='Unicode',
+                                   description=(
+        "Checked if the field delivers a unicode string instead of an "
+        "8-bit string."),
+                                   default=0)
 
     max_length = fields.IntegerField('max_length',
                                      title='Maximum length',
@@ -85,7 +92,10 @@ class StringValidator(StringBaseValidator):
 
     def validate(self, field, key, REQUEST):
         value = StringBaseValidator.validate(self, field, key, REQUEST)
-
+        if field.get_value('unicode'):
+            # use acquisition to get encoding of form
+            value = unicode(value, field.get_form_encoding())
+            
         max_length = field.get_value('max_length') or 0
         truncate = field.get_value('truncate')
         
@@ -234,7 +244,14 @@ FloatValidatorInstance = FloatValidator()
 
 class LinesValidator(StringBaseValidator):
     property_names = StringBaseValidator.property_names +\
-                     ['max_lines', 'max_linelength', 'max_length']
+                     ['unicode', 'max_lines', 'max_linelength', 'max_length']
+
+    unicode = fields.CheckBoxField('unicode',
+                                   title='Unicode',
+                                   description=(
+        "Checked if the field delivers a unicode string instead of an "
+        "8-bit string."),
+                                   default=0)
 
     max_lines = fields.IntegerField('max_lines',
                                     title='Maximum lines',
@@ -269,9 +286,12 @@ class LinesValidator(StringBaseValidator):
     
     def validate(self, field, key, REQUEST):
         value = StringBaseValidator.validate(self, field, key, REQUEST)
+    
         # we need to add this check again
         if value == "" and not field.get_value('required'):
             return []
+        if field.get_value('unicode'):
+            value = unicode(value, field.get_form_encoding())
         # check whether the entire input is too long
         max_length = field.get_value('max_length') or 0
         if max_length and len(value) > max_length:
@@ -312,6 +332,16 @@ TextValidatorInstance = TextValidator()
 
 class SelectionValidator(StringBaseValidator):
 
+    property_names = StringBaseValidator.property_names +\
+                     ['unicode']
+
+    unicode = fields.CheckBoxField('unicode',
+                                   title='Unicode',
+                                   description=(
+        "Checked if the field delivers a unicode string instead of an "
+        "8-bit string."),
+                                   default=0)
+    
     message_names = StringBaseValidator.message_names +\
                     ['unknown_selection']
 
@@ -322,7 +352,7 @@ class SelectionValidator(StringBaseValidator):
 
         if value == "" and not field.get_value('required'):
             return value
-
+        
         # get the text and the value from the list of items
         for item in field.get_value('items'):
             try:
@@ -331,11 +361,18 @@ class SelectionValidator(StringBaseValidator):
                 item_text = item
                 item_value = item
             
-            # check if the value is equal to the *string* version of
+            # check if the value is equal to the string/unicode version of
             # item_value; if that's the case, we can return the *original*
             # value in the list (not the submitted value). This way, integers
             # will remain integers.
-            if str(item_value) == value:
+            # XXX it is impossible with the UI currently to fill in unicode
+            # items, but it's possible to do it with the TALES tab
+            if field.get_value('unicode') and type(item_value) == type(u''):
+                str_value = item_value.encode(field.get_form_encoding())
+            else:
+                str_value = str(item_value)
+                
+            if str_value == value:
                 return item_value
             
         # if we didn't find the value, return error
@@ -344,7 +381,7 @@ class SelectionValidator(StringBaseValidator):
 SelectionValidatorInstance = SelectionValidator()
 
 class MultiSelectionValidator(Validator):
-    property_names = Validator.property_names + ['required']
+    property_names = Validator.property_names + ['required', 'unicode']
 
     required = fields.CheckBoxField('required',
                                     title='Required',
@@ -352,6 +389,13 @@ class MultiSelectionValidator(Validator):
         "Checked if the field is required; the user has to fill in some "
         "data."),
                                     default=1)
+
+    unicode = fields.CheckBoxField('unicode',
+                                   title='Unicode',
+                                   description=(
+        "Checked if the field delivers a unicode string instead of an "
+        "8-bit string."),
+                                   default=0)
 
     message_names = Validator.message_names + ['required_not_found',
                                                'unknown_selection']
@@ -372,7 +416,11 @@ class MultiSelectionValidator(Validator):
                 self.raise_error('required_not_found', field)
             else:
                 return values
-            
+        # convert everything to unicode if necessary
+        if field.get_value('unicode'):
+            values = [unicode(value, field.get_form_encoding())
+                      for value in values]
+        
         # create a dictionary of possible values
         value_dict = {}
         for item in field.get_value('items'):
@@ -382,6 +430,7 @@ class MultiSelectionValidator(Validator):
                 item_text = item
                 item_value = item
             value_dict[item_value] = 0
+
         # check whether all values are in dictionary
         result = []
         for value in values:

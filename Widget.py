@@ -79,14 +79,23 @@ class Widget:
         try:
             extra = field.get_value('extra')
         except KeyError:
-    # In case extra is not defined as in DateTimeWidget
+            # In case extra is not defined as in DateTimeWidget
             extra = ''
+        if field.get_value('unicode') and type(value) == type(u''):
+            value = value.encode(field.get_form_encoding())
         return render_element("input",
                               type="hidden",
                               name=key,
                               value=value,
                               extra=extra)
-                              
+    
+    def _encode(self, field, value):
+        if (field.has_value('unicode') and field.get_value('unicode') and
+            type(value) == type(u'')):
+            return value.encode(field.get_form_encoding())
+        else:
+            return value
+        
 class TextWidget(Widget):
     """Text widget
     """
@@ -122,6 +131,7 @@ class TextWidget(Widget):
         """Render text input field.
         """
         display_maxwidth = field.get_value('display_maxwidth') or 0
+        value = self._encode(field, value)
         if display_maxwidth > 0:
             return render_element("input",
                                   type="text",
@@ -147,6 +157,8 @@ class PasswordWidget(TextWidget):
     def render(self, field, key, value, REQUEST):
         """Render password input field.
         """
+        value = self._encode(field, value)
+        
         display_maxwidth = field.get_value('display_maxwidth') or 0
         if display_maxwidth > 0:
             return render_element("input",
@@ -228,7 +240,8 @@ class TextAreaWidget(Widget):
     def render(self, field, key, value, REQUEST):
         width = field.get_value('width')
         height = field.get_value('height')
-            
+        value = self._encode(field, value)
+        
         return render_element("textarea",
                               name=key,
                               css_class=field.get_value('css_class'),
@@ -249,6 +262,7 @@ class LinesTextAreaWidget(TextAreaWidget):
                                 required=0)
     def render(self, field, key, value, REQUEST):
         value = string.join(value, "\n")
+        value = self._encode(field, value)
         return TextAreaWidget.render(self, field, key, value, REQUEST)
 
 LinesTextAreaWidgetInstance = LinesTextAreaWidget()
@@ -324,6 +338,8 @@ class SingleItemsWidget(ItemsWidget):
                                       default=0)    
 
     def render_items(self, field, key, value, REQUEST):
+        value = self._encode(field, value)
+            
         # get items
         items = field.get_value('items')
     
@@ -347,6 +363,8 @@ class SingleItemsWidget(ItemsWidget):
                 item_text = item
                 item_value = item
 
+            item_value = self._encode(field, item_value)
+                
             if item_value == value and not selected_found:
                 rendered_item = self.render_selected_item(item_text,
                                                           item_value,
@@ -381,6 +399,9 @@ class MultiItemsWidget(ItemsWidget):
         # need to deal with single item selects
         if type(value) is not type([]):
             value = [value]
+
+        value = [self._encode(field, item) for item in value]
+        
         items = field.get_value('items')
         css_class = field.get_value('css_class')
         rendered_items = []
@@ -391,6 +412,8 @@ class MultiItemsWidget(ItemsWidget):
                 item_text = item
                 item_value = item
 
+            item_value = self._encode(field, item_value)
+            
             if item_value in value:
                 rendered_item = self.render_selected_item(item_text,
                                                           item_value,
@@ -423,7 +446,7 @@ class ListWidget(SingleItemsWidget):
 
     def render(self, field, key, value, REQUEST):
         rendered_items = self.render_items(field, key, value, REQUEST)
-
+    
         return render_element('select',
                               name=key,
                               css_class=field.get_value('css_class'),

@@ -1,5 +1,24 @@
 Formulator changes
 
+  1.4.0
+
+    Features Added
+
+      - Added limited ability to output unicode for selected
+        fields. Only works properly in Zope 2.6.x, and the HTML pages
+        these forms are in need an output encoding set (such as
+        UTF-8, which is also Formulator's default encoding). If
+        'unicode' checkbox is checked Formulator will try to interpret
+        its input in the Form's encoding (default is UTF-8). It will
+        also try to display its values in that encoding. Note that
+        only field values and items currently work with unicode -- the
+        rest of the textual properties of a field are still stored as
+        8-bits. If you make sure that these properties are encoded as
+        UTF-8 (or whatever encoding you choose for the form) things
+        should be okay, however.
+
+     - XXX xml export/import which currently is latin1.
+
   1.3.1 (2002/12/20)
 
     Features Added
