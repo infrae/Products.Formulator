@@ -6,6 +6,7 @@ import OFS
 from Shared.DC.Scripts.Bindings import Bindings
 from Errors import ValidationError
 from Products.Formulator.Widget import MultiItemsWidget
+from helpers import convert_unicode
 
 try:
     from Products.PlacelessTranslationService import translate
@@ -402,27 +403,9 @@ class ZMIField(
         # first check for any changes
         values = self.values
         # if we are in unicode mode, convert result to unicode
-        # acquire get_unicode_mode and get_stored_encoding from form..
+        # acquire get_unicode_mode from form..
         if self.get_unicode_mode():
-            new_result = {}
-            for key, value in result.items():
-                if type(value) == type(''):
-                    # in unicode mode, Formulator UI always uses UTF-8
-                    value = unicode(value, 'UTF-8')
-                elif type(value) == type([]):
-                    new_values = []
-                    for valueitem in value:
-                        if type(valueitem) == type(''):
-                            # result e.g. from ListField
-                            valueitem = unicode(valueitem, 'UTF-8')
-                        elif type(valueitem) == type(()):
-                            # result from ListTextAreaField
-                            valueitem = (unicode(valueitem[0], 'UTF-8'),
-                                         unicode(valueitem[1], 'UTF-8'))
-                        new_values.append(valueitem)
-                    value = new_values
-                new_result[key] = value
-            result = new_result
+            result = convert_unicode(result)
 
         changed = []
         for key, value in result.items():
