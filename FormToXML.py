@@ -1,6 +1,10 @@
 from StringIO import StringIO
 from cgi import escape
 import types
+try:
+    from types import BooleanType
+except ImportError:
+    BooleanType = None
 
 #def write(s):
 #    if type(s) == type(u''):
@@ -34,23 +38,34 @@ def formToXML(form, prologue=1):
         write('      <title>%s</title>\n' % escape(group))
         write('      <fields>\n\n')
         for field in form.get_fields_in_group(group, include_disabled=1):
-            write('      <field><id>%s</id> <type>%s</type>\n' % (field.id, field.meta_type))
+            write('      <field><id>%s</id> <type>%s</type>\n' %\
+                  (field.id, field.meta_type))
             write('        <values>\n')
             items = field.values.items()
             items.sort()
             for key, value in items:
                 if value is None:
                     continue
+                # convert boolean to int
+                if type(value) == BooleanType:
+                    value = value and 1 or 0
                 if type(value) == type(1.1):
-                    write('          <%s type="float">%s</%s>\n' % (key, escape(str(value)), key))
+                    write('          <%s type="float">%s</%s>\n' %
+                          (key, escape(str(value)), key))
                 if type(value) == type(1):
-                    write('          <%s type="int">%s</%s>\n' % (key, escape(str(value)), key))
-                elif type(value) == type([]):
-                    write('          <%s type="list">%s</%s>\n' % (key, escape(str(value)), key))
+                    write('          <%s type="int">%s</%s>\n' %
+                          (key, escape(str(value)), key))
+                elif type(value) == types.ListType:
+                    write('          <%s type="list">%s</%s>\n' %
+                          (key, escape(str(value)), key))
+                elif callable(value):
+                    write('          <%s type="method">%s</%s>\n' %
+                          (key, escape(str(value.method_name)), key))
                 else:
                     if type(value) not in (types.StringType, types.UnicodeType):
                         value = str(value)
-                    write('          <%s>%s</%s>\n' % (key, escape(value), key))
+                    write('          <%s>%s</%s>\n' \
+                          % (key, escape(value), key))
             write('        </values>\n')
 
             write('        <tales>\n')
@@ -58,7 +73,8 @@ def formToXML(form, prologue=1):
             items.sort()
             for key, value in items:
                 if value:
-                    write('          <%s>%s</%s>\n' % (key, escape(str(value._text)), key))
+                    write('          <%s>%s</%s>\n' %
+                          (key, escape(str(value._text)), key))
             write('        </tales>\n')
 
             write('        <messages>\n')

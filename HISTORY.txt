@@ -16,6 +16,13 @@ Formulator changes
       - Added 'refresh.txt'. I don't consider it a bug if this doesn't
         work for you though -- I'm not using it. :)
 
+      - XML representation of method-values attributes did not work
+      
+      - python 2.1.3 compatibility: boolean values like "required"
+        are tranlsated to int on XML serializations/deserialization
+
+        The last two fixes are due to Sebastien Robin
+
   1.6.1
   
     Bugs Fixed

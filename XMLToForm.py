@@ -1,5 +1,6 @@
 import XMLObjects
 from Products.Formulator.TALESField import TALESMethod
+from Products.Formulator.MethodField import Method
 
 def XMLToForm(s, form, override_encoding=None):
     """Takes an xml string and changes formulator form accordingly.
@@ -80,6 +81,8 @@ def XMLToForm(s, form, override_encoding=None):
                     field.values[name] = float(value.text)
                 elif value.attributes.get('type') == 'int':
                     field.values[name] = int(value.text)
+                elif value.attributes.get('type') == 'method':
+                    field.values[name] = Method(str(value.text))
                 elif value.attributes.get('type') == 'list':
                     # XXX bare eval here (this may be a security leak ?)
                     field.values[name] = eval(
