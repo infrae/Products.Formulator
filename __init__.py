@@ -20,7 +20,14 @@ def initialize(context):
     FieldRegistry.registerField(StandardFields.ListField,
                                 'www/ListField.gif')
     FieldRegistry.registerField(StandardFields.PasswordField,
-                                'www/PasswordField.gif')    
+                                'www/PasswordField.gif')
+    FieldRegistry.registerField(StandardFields.EmailField,
+                                'www/EmailField.gif')
+    FieldRegistry.registerField(StandardFields.FloatField,
+                                'www/FloatField.gif')
+    FieldRegistry.registerField(StandardFields.DateTimeField,
+                                'www/DateTimeField.gif')
+    
     # some helper fields
     FieldRegistry.registerField(HelperFields.ListTextAreaField)
     FieldRegistry.registerField(HelperFields.MethodField)

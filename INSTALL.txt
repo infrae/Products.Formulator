@@ -11,6 +11,13 @@ Installing Formulator
 
       http://www.zope.org/Members/mcdonc/Products/CoreSessionTracking
 
+  Upgrading
+
+    from 0.9 to 0.9.1
+
+      There should be no significant upgrade problems; your forms
+      should still work.
+
   Quickstart
 
     Formulator follows the normal Zope filesystem product installation
@@ -44,7 +51,6 @@ Installing Formulator
     Products screen ('/Control_Panel/Products'). In a Zope folder, you
     should now see a 'Formulator Form' in your 'Add' list. You should
     be able to add a form to a folder now.
-
 
 
 
