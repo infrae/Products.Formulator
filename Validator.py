@@ -103,8 +103,14 @@ class EmailValidator(StringValidator):
 
     not_email = 'You did not enter an email address.'
 
-    # contributed, I don't pretend to understand this..
-    pattern = re.compile("^([0-9a-z_&.+-]+!)*[0-9a-z_&.+-]+@(([0-9a-z]([0-9a-z-]*[0-9a-z])?\.)+[a-z]{2,4}|([0-9]{1,3}\.){3}[0-9]{1,3})$")
+    # This regex allows for a simple username or a username in a
+    # multi-dropbox (%). The host part has to be a normal fully
+    # qualified domain name, allowing for 6 characters (.museum) as a
+    # TLD.  No bang paths (uucp), no dotted-ip-addresses, no angle
+    # brackets around the address (we assume these would be added by
+    # some custom script if needed), and of course no characters that
+    # don't belong in an e-mail address.
+    pattern = re.compile('^[0-9a-zA-Z_&.%+-]+@([0-9a-zA-Z]([0-9a-zA-Z-]*[0-9a-zA-Z])?\.)+[a-zA-Z]{2,6}$')
     
     def validate(self, field, key, REQUEST):
         value = StringValidator.validate(self, field, key, REQUEST)
