@@ -120,13 +120,12 @@ class FormTestCase(unittest.TestCase):
         
         list_field = self.form.list_field
         list_field.values['items'] = [ ('foo', 'foo'), ('bar', 'bar') ]
-        list_field.values['first_item'] = 'on'
 
-        items1 = list_field.render()
+        items1 = list_field.render(  ('foo',) )
 
         list_field.tales['items'] = TALESMethod("python:('foo', 'bar')")
         self.assertEquals(('foo', 'bar'), list_field.get_value('items'))
-        items2 = list_field.render()
+        items2 = list_field.render( ('foo',) )
 
         # test render
         self.assertEquals(items1, items2)
