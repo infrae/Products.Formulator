@@ -13,6 +13,9 @@ Formulator changes
         display the ZMI. This interacted badly with the recent changes
         in Formulator to support unicode.
 
+      - Added 'refresh.txt'. I don't consider it a bug if this doesn't
+        work for you though -- I'm not using it. :)
+
   1.6.1
   
     Bugs Fixed
