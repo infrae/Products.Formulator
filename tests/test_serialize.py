@@ -454,6 +454,26 @@ class SerializeTestCase(ZopeTestCase.ZopeTestCase):
 
         self.assertEqualForms(form, form2)
 
+    def test_deserializeFlushesOldFields(self):
+        # test that deserializing a form removes old values which
+        # have been defined on that from previously
+        # this may be an issue if one edits a form directly
+        # via the ZMI "XML" tab; removing a field in the XML did not
+        # remove that field from the form contents
+        form = ZMIForm('test', 'Source')
+        form2 = ZMIForm('test2', 'Target')
+
+        form.manage_addField('date_field', 'Date Field', 'DateTimeField')
+        form2.manage_addField('another_field', 'String Field', 'StringField')
+
+        xml = formToXML(form)
+        XMLToForm(xml, form2)
+
+        self.assertEqualForms(form, form2)
+        self.failIf( form2.has_field('another_field') )
+        self.failIf('another_field' in form2.objectIds() )
+
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(SerializeTestCase, 'test'))
