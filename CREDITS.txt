@@ -80,6 +80,8 @@ Many thanks go to:
 
   Patrick Earl (pat at dril.com) -- Fixes for DateTime / CheckBox field rendering
 
+  He Wei (hewei at ied.org.cn) -- ZMI and Unicode related fixes
+
   Special thanks also goes to Rik Hoekstra.
 
   Also a thank you to those few valiant souls who suffered through the
