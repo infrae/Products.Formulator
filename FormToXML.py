@@ -6,6 +6,8 @@ try:
 except ImportError:
     BooleanType = None
 
+from DateTime import DateTime
+
 #def write(s):
 #    if type(s) == type(u''):
 #        print "Unicode:", repr(s)
@@ -61,6 +63,10 @@ def formToXML(form, prologue=1):
                 elif callable(value):
                     write('          <%s type="method">%s</%s>\n' %
                           (key, escape(str(value.method_name)), key))
+                elif type(value) == type(DateTime()):
+
+                    write('          <%s type="datetime">%s</%s>\n' %
+                          (key, escape(str(value)), key))
                 else:
                     if type(value) not in (types.StringType, types.UnicodeType):
                         value = str(value)
