@@ -9,10 +9,10 @@ from DateTime import DateTime
 from Testing import makerequest
 
 try:
-    from Products import PlacelessTranslationService
-    pts_installed=1
+    from Products.PlacelessTranslationService import translate
+    have_pts = 1
 except ImportError:
-    pts_installed=0
+    have_pts = 0
 
 
 from Products.Formulator.Form import ZMIForm
@@ -138,7 +138,7 @@ class FormTestCase(unittest.TestCase):
         # also works as "input sanitizer" here converting the insane
         # value returned from the tales expression to something Formulator's
         # ListFields want to see
-        if pts_installed:
+        if have_pts:
             self.assertEquals([('foo', 'foo'), ('bar', 'bar')], \
                               list_field.get_value('items'))
         else:
