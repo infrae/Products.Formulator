@@ -10,6 +10,10 @@ Formulator changes
         ZMIForm and ZMIField, as they are used from the Zope Management
         Interface and not from Python.
 
+      - Added render() method to form for basic form rendering.
+
+      - Added Formulator HOWTO document.
+
     Bugs Fixed
 
       - Removed some validation code that wasn't in use anymore (items_method).

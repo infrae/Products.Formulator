@@ -13,6 +13,13 @@ Installing Formulator
 
   Upgrading
 
+    to 0.9.4 from earlier versions
+
+      There should be no problems in upgrading from 0.9.3.
+
+      If you're upgrading from 0.9.2 or belower, the see the upgrading
+      note at 0.9.3.
+
     to 0.9.3 from earlier versions
      
       'items_method' in ListField is gone; you'll have to adjust make
