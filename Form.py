@@ -20,6 +20,7 @@ from Widget import render_tag
 from DummyField import fields
 from FormToXML import formToXML
 from XMLToForm import XMLToForm
+from helpers import convert_unicode
 
 # FIXME: manage_renameObject hack needs these imports
 from Acquisition import aq_base
@@ -685,6 +686,8 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
                                                'UTF-8', 'ISO-8859-1',
                                                unicode_mode)
         self.id = id
+        if unicode_mode:
+            title = convert_unicode(title)
         self.title = title
         self.row_length = 4
 
@@ -763,6 +766,8 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
         title = string.strip(title)
         if not title:
             title = id # title is always required, use id if not provided
+        if self.get_unicode_mode():
+            title = convert_unicode(title)
         # get the field class we want to add
         field_class = FieldRegistry.get_field_class(fieldname)
         # create field instance
