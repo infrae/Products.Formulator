@@ -387,6 +387,13 @@ class MultiSelectionValidator(Validator):
             value_dict[item_value] = 0
         # check whether all values are in dictionary
         for value in values:
+            # FIXME: hack to accept int values as well
+            try:
+                int_value = int(value)
+            except ValueError:
+                int_value = None
+            if int_value is not None and value_dict.has_key(int_value):
+                continue
             if not value_dict.has_key(value):
                 self.raise_error('unknown_selection', field)
         # everything checks out
