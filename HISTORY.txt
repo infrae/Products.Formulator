@@ -31,6 +31,9 @@ Formulator changes
       - 'render_view' method on fields to render the value outside a
         widget.
 
+      - Added some code support used by SilvaMetadata to enable rendering
+        of fields with Zope's ':record' syntax.
+
     Bugs Fixed
    
       - Fixed a Python2.2 compatibility bug in XMLObjects.py

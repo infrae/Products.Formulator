@@ -16,6 +16,9 @@ class Field:
     is_field = 1
     # this is not an internal field (can be overridden by subclass)
     internal_field = 0
+    # can alternatively render this field with Zope's :record syntax
+    # this will be the record's name
+    field_record = None
     
     def __init__(self, id, **kw):
         self.id = id
@@ -135,7 +138,11 @@ class Field:
         """
         return self.validator.message_names
 
+    security.declareProtected('Access contents information',
+                              'generate_field_key')
     def generate_field_key(self, validation=0):
+        """Generate the key Silva uses to render the field in the form.
+        """
         if self.field_record is None:
             return 'field_%s' % self.id
         elif validation:
@@ -144,6 +151,13 @@ class Field:
             return "%s.%s:record:list" % (self.field_record, self.id)
         else:
             return '%s.%s:record' % (self.field_record, self.id)
+
+    def generate_subfield_key(self, id, validation=0):
+        """Generate the key Silva uses to render a sub field.
+        """
+        if self.field_record is None or validation:
+            return 'subfield_%s_%s'%(self.id, id)
+        return '%s.subfield_%s_%s:record' % (self.field_record, self.id, id)
 
     security.declareProtected('View management screens', 'get_error_message')
     def get_error_message(self, name):
@@ -183,20 +197,20 @@ class Field:
         if value and REQUEST are both None, the 'default' property of
         the field will be used for the value.
         """
-        return self._render_helper('field_%s' % self.id, value, REQUEST)
+        return self._render_helper(self.generate_field_key(), value, REQUEST)
 
     security.declareProtected('View', 'render_view')
     def render_view(self, value):
         """Render value to be viewed.
         """
-        return self.widget.render_view(self, 'field_%s' % self.id, value)
+        return self.widget.render_view(self, value)
     
     security.declareProtected('View', 'render_from_request')
     def render_from_request(self, REQUEST):
         """Convenience method; render the field widget from REQUEST
         (unvalidated data), or default if no raw data is found.
         """
-        return self._render_helper('field_%s' % self.id, None, REQUEST)
+        return self._render_helper(self.generate_field_key(), None, REQUEST)
     
     security.declareProtected('View', 'render_sub_field')
     def render_sub_field(self, id, value=None, REQUEST=None):
@@ -204,7 +218,7 @@ class Field:
         a form. Works like render() but for sub field.
         """
         return self.sub_form.get_field(id)._render_helper(
-            "subfield_%s_%s" % (self.id, id), value, REQUEST)
+            self.generate_subfield_key(id), value, REQUEST)
 
     security.declareProtected('View', 'render_sub_field_from_request')
     def render_sub_field_from_request(self, id, REQUEST):
@@ -212,7 +226,7 @@ class Field:
         (unvalidated data), or default if no raw data is found.
         """
         return self.sub_form.get_field(id)._render_helper(
-            "subfield_%s_%s" % (self.id, id), None, REQUEST)
+            self.generate_subfield_key(id), None, REQUEST)
 
     security.declarePrivate('_validate_helper')
     def _validate_helper(self, key, REQUEST):
@@ -227,14 +241,15 @@ class Field:
     def validate(self, REQUEST):
         """Validate/transform the field.
         """
-        return self._validate_helper("field_%s" % self.id, REQUEST)
+        return self._validate_helper(
+            self.generate_field_key(validation=1), REQUEST)
 
     security.declareProtected('View', 'validate_sub_field')
     def validate_sub_field(self, id, REQUEST):
         """Validates a subfield (as part of field validation).
         """
         return self.sub_form.get_field(id)._validate_helper(
-            "subfield_%s_%s" % (self.id, id), REQUEST)
+            self.generate_subfield_key(id, validation=1), REQUEST)
 
 Globals.InitializeClass(Field)
     

@@ -87,7 +87,7 @@ class Widget:
                               value=value,
                               extra=extra)
 
-    def render_view(self, field, key, value):
+    def render_view(self, field, value):
         """Renders this widget for public viewing.
         """
         # default implementation
@@ -148,7 +148,7 @@ class TextWidget(Widget):
                                   size=field.get_value('display_width'),
                                   extra=field.get_value('extra'))
 
-    def render_view(self, field, key, value):
+    def render_view(self, field, value):
         if value is None:
             return ''
         return value
@@ -179,7 +179,7 @@ class PasswordWidget(TextWidget):
                                   size=field.get_value('display_width'),
                                   extra=field.get_value('extra'))
 
-    def render_view(self, field, key, value):
+    def render_view(self, field, value):
         return "[password]"
     
 PasswordWidgetInstance = PasswordWidget()
@@ -211,7 +211,7 @@ class CheckBoxWidget(Widget):
                                   css_class=field.get_value('css_class'),
                                   extra=field.get_value('extra'))
 
-    def render_view(self, field, key, value):
+    def render_view(self, field, value):
         if value:
             return 1
         else:
@@ -259,7 +259,7 @@ class TextAreaWidget(Widget):
                               contents=html_quote(value),
                               extra=field.get_value('extra'))
 
-    def render_view(self, field, key, value):
+    def render_view(self, field, value):
         if value is None:
             return ''
         return value
@@ -292,7 +292,7 @@ class LinesTextAreaWidget(TextAreaWidget):
         value = string.join(value, "\n")
         return TextAreaWidget.render(self, field, key, value, REQUEST)
 
-    def render_view(self, field, key, value):
+    def render_view(self, field, value):
         if value is None:
             return ''
         return string.join(value, field.get_value('view_separator'))
@@ -323,7 +323,7 @@ class FileWidget(TextWidget):
                                   size=field.get_value('display_width'),
                                   extra=field.get_value('extra'))
 
-    def render_view(self, field, key, value):
+    def render_view(self, field, value):
         return "[File]"
     
 FileWidgetInstance = FileWidget()
@@ -486,7 +486,7 @@ class MultiItemsWidget(ItemsWidget):
             result.append(d[e])
         return result
 
-    def render_view(self, field, key, value):
+    def render_view(self, field, value):
         if value is None:
             return ''
         return string.join(self.render_items_view(field, value),
@@ -524,7 +524,7 @@ class ListWidget(SingleItemsWidget):
         return render_element('option', contents=text, value=value,
                               selected=None)
 
-    def render_view(self, field, key, value):
+    def render_view(self, field, value):
         if value is None:
             return ''
         return value
@@ -606,7 +606,7 @@ class RadioWidget(SingleItemsWidget):
                               value=value,
                               checked=None) + text
 
-    def render_view(self, field, key, value):
+    def render_view(self, field, value):
         if value is None:
             return ''
         return value
@@ -792,7 +792,7 @@ class DateTimeWidget(Widget):
         else:
             return date_result
 
-    def render_view(self, field, key, value):
+    def render_view(self, field, value):
         if value is None:
             return ''
 
