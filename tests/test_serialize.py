@@ -21,22 +21,22 @@ class FakeRequest:
     """
 
     def __init__(self):
-        self.dict = {}
+        self.form = {}
 
     def __getitem__(self, key):
-        return self.dict[key]
+        return self.form[key]
 
     def __setitem__(self, key, value):
-        self.dict[key] = value
+        self.form[key] = value
 
     def get(self, key, default_value):
-        return self.dict.get(key, default_value)
+        return self.form.get(key, default_value)
 
     def update(self, other_dict):
-        self.dict.update(other_dict)
+        self.form.update(other_dict)
 
     def clear(self):
-        self.dict.clear()
+        self.form.clear()
 
     def __nonzero__(self):
         return 0
