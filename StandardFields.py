@@ -161,6 +161,12 @@ class DateTimeField(ZMIField):
                                                         'override_year_items')
         else:
             assert 0, "Unknown input_style."
+        self.on_value_css_class_changed(self.values['css_class'])
+
+    def on_value_css_class_changed(self, value):
+        for field in self.sub_form.get_fields():
+            field.values['css_class'] = value
+            field._p_changed = 1
     
     def override_year_items(self):
         """The method gets called to get the right amount of years.
