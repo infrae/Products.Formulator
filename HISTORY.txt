@@ -42,6 +42,22 @@ Formulator changes
         changed
              test_Form.py
 
+      - fixed bug where a set "default" for a checkbox field
+        would always render a checked checbox, even if redisplaying
+        a submitted form where the user has unchecked the checkbox
+         Actually the works only if the opening <form> tag is
+        rendered by the form.header() method, or if a hidden
+        field "formulator_submission" is included manually 
+        in the form.
+         Patch form Patrick Earl.
+
+        changed:
+           Form.py:  Form.header
+           StandardField.py: CheckBoxField._get_default (added)
+           dtml/formTest.dtml
+           tests/test_Form.py
+
+
   1.7.0
  
     Features Added
