@@ -64,7 +64,6 @@ def formToXML(form, prologue=1):
                     write('          <%s type="method">%s</%s>\n' %
                           (key, escape(str(value.method_name)), key))
                 elif type(value) == type(DateTime()):
-
                     write('          <%s type="datetime">%s</%s>\n' %
                           (key, escape(str(value)), key))
                 else:
