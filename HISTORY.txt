@@ -21,7 +21,8 @@ Formulator changes
 
     Bugs Fixed
 
-      - XML serialization should be more consistent now.
+      - XML serialization should be more consistent now; field properties
+        are now ordered by name upon serialization.
  
       - Allow XML export of BasicForm.
 
