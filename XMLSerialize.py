@@ -45,7 +45,7 @@ def formToXML(form):
             write('        </tales>\n')
             write('      </field>\n')
         write('      </fields>\n')
-    write('    </group>\n')
+        write('    </group>\n')
     write('  </groups>\n')
     write('</form>')
     
@@ -76,20 +76,20 @@ def XMLToForm(s, form):
         value = getattr(top.first.form.first, setting, None)
         if value is None:
             continue
-        setattr(form, setting, str(value.text)) 
+        setattr(form, setting, value.text.encode('latin1')) 
 
     # create groups
     has_default = 0
     for group in top.first.form.first.groups.elements.group:
         # get group title and create group
-        group_title = str(group.first.title.text)
+        group_title = group.first.title.text.encode('latin1')
         if group_title == 'Default':
             has_default = 1
         form.add_group(group_title)
         # create fields in group
         for entry in group.first.fields.elements.field:
-            id = str(entry.first.id.text)
-            meta_type = str(entry.first.type.text)
+            id = entry.first.id.text.encode('latin1')
+            meta_type = entry.first.type.text.encode('latin1')
             form.manage_addField(id, '', meta_type)
             field = form._getOb(id)
             if group_title != 'Default':
@@ -101,11 +101,12 @@ def XMLToForm(s, form):
                 if value.attributes.get('type') == 'int':
                     field.values[name] = int(value.text)
                 else:
-                    field.values[name] = value.text
+                    field.values[name] = value.text.encode('latin1')
             # set tales
             tales = entry.first.tales
             for name in tales.getElementNames():
-                field.tales[name] = TALESMethod(getattr(tales.first, name).text)
+                field.tales[name] = TALESMethod(
+                    getattr(tales.first, name).text.encode('latin1'))
             # for persistence machinery
             field.values = field.values
             field.tales = field.tales
