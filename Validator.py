@@ -6,7 +6,6 @@ from threading import Thread
 from urllib import urlopen
 from urlparse import urljoin
 from Errors import ValidationError
-from Products.PythonScripts.standard import html_quote
 
 class Validator:
     """Validates input and possibly transforms it to output.
@@ -56,7 +55,7 @@ class StringBaseValidator(Validator):
         value = string.strip(REQUEST.get(key, ""))
         if field.get_value('required') and value == "":
             self.raise_error('required_not_found', field)
-        return html_quote(value)
+        return value
     
 class StringValidator(StringBaseValidator):
     property_names = StringBaseValidator.property_names +\
