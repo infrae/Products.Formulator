@@ -1,5 +1,13 @@
 Formulator changes
 
+  1.7.0
+ 
+    Features Added
+
+      - Added FormulatorFormFile, which can be used to load XML
+        representations of forms from filesystem code like
+        PageTemplateFile.
+
   1.6.2
 
     Bugs Fixed
