@@ -566,12 +566,11 @@ class DateTimeWidget(Widget):
     property_names = Widget.property_names +\
                      ['default_now', 'date_separator', 'time_separator',
                       'input_style', 'input_order',
-                      'date_only']
+                      'date_only','ampm_time_style']
 
     default = fields.DateTimeField('default',
                                    title="Default",
-                                   description=(
-        "The default datetime."),
+                                   description=("The default datetime."),
                                    default=None,
                                    display_style="text",
                                    display_order="ymd",
@@ -633,13 +632,22 @@ class DateTimeWidget(Widget):
         "Display the date only, not the time."),
                                      default=0)
 
+    ampm_time_style = fields.CheckBoxField('ampm_time_style',
+                                           title="AM/PM time style",
+                                           description=(
+        "Display time in am/pm format."),
+                                           default=0)
+
+
     # FIXME: do we want to handle 'extra'?
     
     def render(self, field, key, value, REQUEST):
+        use_ampm = field.get_value('ampm_time_style')
         # FIXME: backwards compatibility hack:
         if not hasattr(field, 'sub_form'):
             from StandardFields import create_datetime_text_sub_form
             field.sub_form = create_datetime_text_sub_form()
+            
         if value is None and field.get_value('default_now'):
             value = DateTime()
         if value is None:
@@ -648,12 +656,17 @@ class DateTimeWidget(Widget):
             day = None
             hour = None
             minute = None
+            ampm = None
         else:
             year = "%04d" % value.year()
             month = "%02d" % value.month()
             day = "%02d" % value.day()
-            hour = "%02d" % value.hour()
+            if use_ampm:
+                hour = "%02d" % value.h_12()
+            else:
+                hour = "%02d" % value.hour()
             minute = "%02d" % value.minute()
+            ampm = value.ampm()
         
         input_order = field.get_value('input_order')
         if input_order == 'ymd':
@@ -677,6 +690,10 @@ class DateTimeWidget(Widget):
             time_result = (field.render_sub_field('hour', hour, REQUEST) +
                            field.get_value('time_separator') +
                            field.render_sub_field('minute', minute, REQUEST))
+            
+            if use_ampm:
+                time_result += '&nbsp;' + field.render_sub_field('ampm', ampm, REQUEST)
+                
             return date_result + '&nbsp;&nbsp;&nbsp;' + time_result
         else:
             return date_result

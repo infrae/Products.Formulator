@@ -6,6 +6,7 @@ from threading import Thread
 from urllib import urlopen
 from urlparse import urljoin
 from Errors import ValidationError
+from Products.PythonScripts.standard import html_quote
 
 class Validator:
     """Validates input and possibly transforms it to output.
@@ -55,7 +56,7 @@ class StringBaseValidator(Validator):
         value = string.strip(REQUEST.get(key, ""))
         if field.get_value('required') and value == "":
             self.raise_error('required_not_found', field)
-        return value
+        return html_quote(value)
     
 class StringValidator(StringBaseValidator):
     property_names = StringBaseValidator.property_names +\
@@ -593,7 +594,7 @@ class DateTimeValidator(Validator):
             if field.get_value('date_only'):
                 hour = 0
                 minute = 0
-            else:
+            else:                    
                 hour = field.validate_sub_field('hour', REQUEST)
                 minute = field.validate_sub_field('minute', REQUEST)
         except ValidationError:
@@ -612,6 +613,19 @@ class DateTimeValidator(Validator):
             (not field.get_value('date_only') and
              (hour == '' or minute == ''))):
             self.raise_error('not_datetime', field)
+
+
+        if field.get_value('ampm_time_style'):
+            ampm = field.validate_sub_field('ampm', REQUEST)
+            hour = int(hour)
+            # handling not am or pm
+            # handling hour > 12
+            if ((ampm != 'am') and (ampm != 'pm')) or (hour > 12):
+	        self.raise_error('not_datetime', field)
+	    if (ampm == 'pm') and (hour == 0):
+	        self.raise_error('not_datetime', field)
+            elif ampm == 'pm' and hour < 12:
+                hour += 12
 
         try:
             result = DateTime(int(year), int(month), int(day), hour, minute)

@@ -199,8 +199,16 @@ def create_datetime_text_sub_form():
                           display_maxwidth=2,
                           max_length=2)
 
+    ampm = StringField('ampm',
+                       title="am/pm",
+                       required=0,
+                       display_width=2,
+                       display_maxwidth=2,
+                       max_length=2)
+
     sub_form.add_group("time")
-    sub_form.add_fields([hour, minute], "time")
+
+    sub_form.add_fields([hour, minute, ampm], "time")
     return sub_form
 
 def create_datetime_list_sub_form():
@@ -244,8 +252,17 @@ def create_datetime_list_sub_form():
                           display_maxwidth=2,
                           max_length=2)
 
+    ampm = ListField('ampm',
+                     title="am/pm",
+                     required=0,
+                     default="am",
+                     items=[("am","am"),
+                            ("pm","pm")],
+                     size=1)
+    
     sub_form.add_group("time")
-    sub_form.add_fields([hour, minute], "time")
+
+    sub_form.add_fields([hour, minute, ampm], "time")
     return sub_form
 
 def create_items(start, end, digits=0):

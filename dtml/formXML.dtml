@@ -5,7 +5,7 @@
 XML Representation of this form.
 </p>
 
-<form action="set_xml" method="POST">
+<form action="manage_editXML" method="POST">
   <table cellspacing="0" cellpadding="2" border="0">
      <textarea wrap="off" style="width: 100%;" cols="50" rows="20" name="form_data"><dtml-var get_xml></textarea>
   </table>

@@ -401,14 +401,9 @@ class Form:
         return formToXML(self)
 
     security.declareProtected('Change Formulator Forms', 'set_xml')
-    def set_xml(self, form_data, REQUEST=None):
+    def set_xml(self, xml):
         """change form according to xml"""
-        XMLToForm(form_data, self)
-        if REQUEST is not None:
-            REQUEST.RESPONSE.redirect('%s/manage_main' % (
-                self.absolute_url(), ))
-            return ''                
-        
+        XMLToForm(xml, self)
     
 Globals.InitializeClass(Form)
 
@@ -662,7 +657,15 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
 
     security.declareProtected('View management screens', 'formXML')
     formXML = DTMLFile('dtml/formXML', globals())
-    
+
+    security.declareProtected('Change Formulator Forms', 'manage_editXML')
+    def manage_editXML(self, form_data, REQUEST):
+        """Change form using XML.
+        """
+        self.set_xml(form_data)
+        return self.formXML(self, REQUEST,
+                            manage_tabs_message="Changed form")
+        
     security.declareProtected('Change Formulator Forms', 'manage_settings')
     def manage_settings(self, REQUEST):
         """Change settings in settings screen.

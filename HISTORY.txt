@@ -17,6 +17,10 @@ Formulator changes
         UTF-8 (or whatever encoding you choose for the form) things
         should be okay, however.
 
+      - Can now also change forms using XML (not just view it).
+
+      - DateTime fields can now optionally input AM/PM.
+
       - Should fix XML export/import which currently is in latin1..
 
     Bugs Fixed
