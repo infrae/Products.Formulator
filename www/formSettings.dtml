@@ -11,7 +11,7 @@ Settings for this form.
   <dtml-in "settings_form.get_fields()"><dtml-let field=sequence-item>
   <tr>
     <td class="form-label"><dtml-var "field.get_value('title')"></td>
-    <td><dtml-var "field.render(_[field.id])"></td>
+    <td><dtml-if "_.has_key(field.id)"><dtml-var "field.render(_[field.id])"><dtml-else><dtml-var "field.render()"></dtml-if></td>
   </tr>
   </dtml-let></dtml-in>
 
