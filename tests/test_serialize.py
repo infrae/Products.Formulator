@@ -1,6 +1,7 @@
 import unittest
 import Zope
 from Testing import makerequest
+from DateTime import DateTime
 
 from Products.Formulator.Form import ZMIForm
 from Products.Formulator.XMLToForm import XMLToForm
@@ -151,22 +152,29 @@ class SerializeTestCase(unittest.TestCase):
 
     def assertEqualForms(self, form1, form2):
         """ test that the two forms are equal (except for their ids) """
+        # in case of failures the messages could be nicer ...
         
+        self.assertEquals( map(lambda x: x.getId(), form1.get_fields()), \
+                           map(lambda x: x.getId(), form2.get_fields()) )
         for field in form1.get_fields():
             self.assert_(form2.has_field(field.getId()))
             field2 = getattr(form2, field.getId())
-            # XXX test if values are the same
+            # test if values are the same
             self.assertEquals(field.values, field2.values)
             # test if default renderings are the same
             self.assertEquals(field.render(), field2.render())
             
-        # TODO: check that form2 does not have fields form1 does not have ...
-
         self.assertEquals(form1.title, form2.title)
+        # self.assertEquals(form1.row_lenght, form2.row_lenght) # not initialized ?
         self.assertEquals(form1.name, form2.name)
         self.assertEquals(form1.action, form2.action)
-        self.assertEquals(form1.enctype, form2.enctype)
         self.assertEquals(form1.method, form2.method)
+        self.assertEquals(form1.enctype, form2.enctype)
+        self.assertEquals(form1.encoding, form2.encoding)
+        self.assertEquals(form1.stored_encoding, form2.stored_encoding)
+        self.assertEquals(form1.unicode_mode, form2.unicode_mode)
+        self.assertEquals(form1.i18n_domain, form2.i18n_domain)
+        self.assertEquals(form1.i18n, form2.i18n)
 
         self.assertEquals(form1.get_groups(), form2.get_groups())
 
@@ -236,17 +244,16 @@ class SerializeTestCase(unittest.TestCase):
         self.assertEquals(text1, text2)
 
 
-
-
     def test_fieldValueTypes(self):
         """ test checking if the field values are of the proper type.
         after reading from XML some field values may not have the right type,
-        if they have a special type (currently int and "list").
+        if they have a special type (only for "int" and "list" yet).
         Also tests if rendering and validation are the same
         between the original form and the one after one form -> xml -> form
         roundtrip.
         """
         # tests for "method" and "datetime" values follow later on ...
+        # booleans are not tested yet
 
         form = ZMIForm('test', 'ValueTest')
         form.manage_addField('int_field', 'Test Integer Field', 'IntegerField')
@@ -266,7 +273,7 @@ class SerializeTestCase(unittest.TestCase):
 
         # XXX editing fields by messing with a fake request
         # -- any better way to do this?
-        # (could assign to "values" directly ...
+        # (could assign to "values" directly ...)
 
         default_values = {'field_title': 'Test Title',
                           'field_display_width': '92',
@@ -430,6 +437,20 @@ class SerializeTestCase(unittest.TestCase):
         XMLToForm(xml, form2)
         self.assertEquals('ok',
                           form2.string_field.get_value('external_validator')())
+
+
+    def test_serializeDateTimeValues(self):
+        form = ZMIForm('test', 'DateTime')
+
+        form.manage_addField('date_field', 'Date Field', 'DateTimeField')
+        form.date_field.values['start_datetime'] = DateTime('2004/01/01 12:01:00')
+
+        form2 = ZMIForm('test', 'DateTime2')
+
+        xml = formToXML(form)
+        XMLToForm(xml, form2)
+
+        self.assertEqualForms(form, form2)
 
 
 def test_suite():
