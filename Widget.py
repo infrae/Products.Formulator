@@ -86,7 +86,15 @@ class Widget:
                               name=key,
                               value=value,
                               extra=extra)
-    
+
+    def render_view(self, field, key, value):
+        """Renders this widget for public viewing.
+        """
+        # default implementation
+        if value is None:
+            return ''
+        return value
+
 class TextWidget(Widget):
     """Text widget
     """
@@ -140,6 +148,11 @@ class TextWidget(Widget):
                                   size=field.get_value('display_width'),
                                   extra=field.get_value('extra'))
 
+    def render_view(self, field, key, value):
+        if value is None:
+            return ''
+        return value
+    
 TextWidgetInstance = TextWidget()
 
 class PasswordWidget(TextWidget):
@@ -166,6 +179,9 @@ class PasswordWidget(TextWidget):
                                   size=field.get_value('display_width'),
                                   extra=field.get_value('extra'))
 
+    def render_view(self, field, key, value):
+        return "[password]"
+    
 PasswordWidgetInstance = PasswordWidget()
 
 class CheckBoxWidget(Widget):
@@ -195,6 +211,12 @@ class CheckBoxWidget(Widget):
                                   css_class=field.get_value('css_class'),
                                   extra=field.get_value('extra'))
 
+    def render_view(self, field, key, value):
+        if value:
+            return 1
+        else:
+            return 0
+        
 CheckBoxWidgetInstance = CheckBoxWidget()
 
 class TextAreaWidget(Widget):
@@ -236,7 +258,12 @@ class TextAreaWidget(Widget):
                               rows=height,
                               contents=html_quote(value),
                               extra=field.get_value('extra'))
-            
+
+    def render_view(self, field, key, value):
+        if value is None:
+            return ''
+        return value
+    
 TextAreaWidgetInstance = TextAreaWidget()
 
 class LinesTextAreaWidget(TextAreaWidget):
@@ -251,6 +278,11 @@ class LinesTextAreaWidget(TextAreaWidget):
         value = string.join(value, "\n")
         return TextAreaWidget.render(self, field, key, value, REQUEST)
 
+    def render_view(self, field, key, value):
+        if value is None:
+            return ''
+        return string.join(value, "<br />\n")
+        
 LinesTextAreaWidgetInstance = LinesTextAreaWidget()
 
 class FileWidget(TextWidget):
@@ -276,7 +308,10 @@ class FileWidget(TextWidget):
                                   value=value,
                                   size=field.get_value('display_width'),
                                   extra=field.get_value('extra'))
-        
+
+    def render_view(self, field, key, value):
+        return "[File]"
+    
 FileWidgetInstance = FileWidget()
 
 class ItemsWidget(Widget):
@@ -440,6 +475,11 @@ class ListWidget(SingleItemsWidget):
     def render_selected_item(self, text, value, key, css_class):
         return render_element('option', contents=text, value=value,
                               selected=None)
+
+    def render_view(self, field, key, value):
+        if value is None:
+            return ''
+        return value
     
 ListWidgetInstance = ListWidget()
 
@@ -475,6 +515,11 @@ class MultiListWidget(MultiItemsWidget):
     def render_selected_item(self, text, value, key, css_class):
         return render_element('option', contents=text, value=value,
                               selected=None)
+
+    def render_view(self, field, key, value):
+        if value is None:
+            return ''
+        return string.join(value, "<br />\n")
     
 MultiListWidgetInstance = MultiListWidget()
 
@@ -517,7 +562,12 @@ class RadioWidget(SingleItemsWidget):
                               name=key,
                               value=value,
                               checked=None) + text
-       
+
+    def render_view(self, field, key, value):
+        if value is None:
+            return ''
+        return value
+        
 RadioWidgetInstance = RadioWidget()
 
 class MultiCheckBoxWidget(MultiItemsWidget):
@@ -559,7 +609,12 @@ class MultiCheckBoxWidget(MultiItemsWidget):
                               name=key,
                               value=value,
                               checked=None) + text
-       
+
+    def render_view(self, field, key, value):
+        if value is None:
+            return ''
+        return string.join(value, "<br />\n")
+    
 MultiCheckBoxWidgetInstance = MultiCheckBoxWidget()
 
 class DateTimeWidget(Widget):
@@ -697,7 +752,40 @@ class DateTimeWidget(Widget):
             return date_result + '&nbsp;&nbsp;&nbsp;' + time_result
         else:
             return date_result
-                       
+
+    def render_view(self, field, key, value):
+        if value is None:
+            return ''
+
+        use_ampm = field.get_value('ampm_time_style')
+        
+        year = "%04d" % value.year()
+        month = "%02d" % value.month()
+        day = "%02d" % value.day()
+        if use_ampm:
+            hour = "%02d" % value.h_12()
+        else:
+            hour = "%02d" % value.hour()
+        minute = "%02d" % value.minute()
+        ampm = value.ampm()
+        
+        order = field.get_value('input_order')
+        if order == 'ymd':
+            output = [year, month, day]
+        elif order == 'dmy':
+            output = [day, month, year]
+        elif order == 'mdy':
+            output = [month, day, year]
+        date_result = string.join(output, field.get_value('date_separator'))
+        
+        if not field.get_value('date_only'):
+            time_result = hour + field.get_value('time_separator') + minute
+            if use_ampm:
+                time_result += '&nbsp;' + ampm                
+            return date_result + '&nbsp;&nbsp;&nbsp;' + time_result
+        else:
+            return date_result
+        
 DateTimeWidgetInstance = DateTimeWidget()
 
 def render_tag(tag, **kw):

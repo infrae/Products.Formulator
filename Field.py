@@ -176,6 +176,12 @@ class Field:
         """
         return self._render_helper('field_%s' % self.id, value, REQUEST)
 
+    security.declareProtected('View', 'render_view')
+    def render_view(self, value):
+        """Render value to be viewed.
+        """
+        return self.widget.render_view(self, 'field_%s' % self.id, value)
+    
     security.declareProtected('View', 'render_from_request')
     def render_from_request(self, REQUEST):
         """Convenience method; render the field widget from REQUEST

@@ -273,6 +273,28 @@ class Form:
         w(self.footer())
         return result.getvalue()
 
+    security.declareProtected('View', 'render_view')
+    def render_view(self, dict=None):
+        """Render contents (default simplistic way).
+        """
+        dict = dict or {}
+        result = StringIO()
+        w = result.write
+        for group in self.get_groups():
+            w('<h2>%s</h2>\n' % group)
+            w('<table border="0" cellspacing="0" cellpadding="2">\n')
+            for field in self.get_fields_in_group(group):
+                w('<tr>\n')
+                w('<td>%s</td>\n' % field.get_value('title'))
+                if dict.has_key(field.id):
+                    value = dict[field.id]
+                else:
+                    value = None
+                w('<td>%s</td>\n' % field.render_view(value))
+                w('</tr>\n')
+            w('</table>\n')
+        return result.getvalue()
+    
     security.declareProtected('View', 'validate')
     def validate(self, REQUEST):
         """Validate all fields in this form. Stop validating and
