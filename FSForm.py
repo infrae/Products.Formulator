@@ -7,7 +7,7 @@ from Products.FileSystemSite.DirectoryView import registerFileExtension,\
      registerMetaType, expandpath
 
 from Products.Formulator.Form import ZMIForm
-from Products.Formulator.XMLSerialize import XMLToForm
+from Products.Formulator.XMLToForm import XMLToForm
 
 class FSForm(FSObject, ZMIForm):
     """FSForm."""

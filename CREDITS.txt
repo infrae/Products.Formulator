@@ -30,7 +30,10 @@ Many thanks go to:
 
   Matt Behrens (matt.behrens@kohler.com) -- feedback and bugfixes.
 
-  Nikolay Kim (fafhrd@datacom.kz) -- code inspiration for XMLSerialize.
+  Nikolay Kim (fafhrd@datacom.kz) -- code inspiration for
+                                     XMLToForm/FormToXML.
+
+  Godefroid Chapelle (gotcha@swing.be) -- Bugfixes.
 
   Alan Runyan (runyaga@runyaga.com) -- Fix to email regular expression.
 
