@@ -244,7 +244,7 @@ class Form:
         pass
 
     security.declareProtected('View', 'get_field')
-    def get_field(self, id):
+    def get_field(self, id, include_disabled):
         """Get a field of a certain id.
         """
         # define in subclass
