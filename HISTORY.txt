@@ -8,6 +8,11 @@ Formulator changes
         representations of forms from filesystem code like
         PageTemplateFile.
 
+    Bugs Fixed
+
+      - changed way selection fields check whether their items
+        property is a list or single item.
+
   1.6.2
 
     Bugs Fixed
