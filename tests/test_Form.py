@@ -358,6 +358,19 @@ class FormTestCase(unittest.TestCase):
         self._helper_render_datetime(expected_values, rendered, type='text')
 
 
+    def test_checkbox_default_does_now_overwrite_submitted_values(self):
+        
+        self.form.manage_addField('checkbox_field','Test Checkbox','CheckBoxField')
+        checkbox_field = self.form.checkbox_field
+
+        checkbox_field.values['default'] = 1
+
+        request = FakeRequest()
+        request.form['formulator_submission']='1'
+
+        rendered = checkbox_field.render_from_request(request)
+        self.assertEquals(-1, rendered.find('checked'))
+
 def test_suite():
     suite = unittest.TestSuite()
 
