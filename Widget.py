@@ -6,7 +6,7 @@ class Widget:
     """
     
     property_names = ['title', 'description',
-                      'default', 'widget_name', 'css_class']
+                      'default', 'widget_name', 'css_class', 'hidden']
 
     title = fields.StringField('title',
                                title='Title',
@@ -44,12 +44,28 @@ class Widget:
         "formulator fields using cascading style sheets. Not required."),
                                    default="",
                                    required=0)
+
+    hidden = fields.CheckBoxField('hidden',
+                                  title="Hidden",
+                                  description=(
+        "This field will be on the form, but as a hidden field. The "
+        "contents of the hidden field will be the default value. "
+        "Hidden fields are not visible but will be validated."),
+                                  default=0)
     
-    def render(self, field, value=None):
+    def render(self, field, value):
         """Renders this widget as HTML using property values in field.
         """
         return "[widget]"
-    
+
+    def render_hidden(self, field, value):
+        """Renders this widget as a hidden field.
+        """
+        return render_element("input",
+                              type="hidden",
+                              name=field.get_field_key(),
+                              value=value)
+                              
 class TextWidget(Widget):
     """Text widget
     """
@@ -81,11 +97,9 @@ class TextWidget(Widget):
                                            default=0,
                                            required=1)
     
-    def render(self, field, value=None):
+    def render(self, field, value):
         """Render text input field.
         """
-        if value == None:
-            value = field.get_value('default')
         display_maxwidth = field.get_value('display_maxwidth')
         if display_maxwidth > 0:
             return render_element("input",
@@ -106,11 +120,9 @@ class TextWidget(Widget):
 TextWidgetInstance = TextWidget()
 
 class PasswordWidget(TextWidget):
-    def render(self, field, value=None):
+    def render(self, field, value):
         """Render password input field.
         """
-        if value == None:
-            value = field.get_value('default')
         display_maxwidth = field.get_value('display_maxwidth')
         if display_maxwidth > 0:
             return render_element("input",
@@ -141,11 +153,9 @@ class CheckBoxWidget(Widget):
         "(true or false)"),
                                    default=0)
     
-    def render(self, field, value=None):
+    def render(self, field, value):
         """Render checkbox.
         """
-        if value == None:
-            value = field.get_value('default')
         if value:
             return render_element("input",
                                   type="checkbox",
@@ -188,9 +198,7 @@ class TextAreaWidget(Widget):
                                  default=5,
                                  required=1)
 
-    def render(self, field, value=None):
-        if value == None:
-            value = field.get_value('default')
+    def render(self, field, value):
         width = field.get_value('width')
         height = field.get_value('height')
             
@@ -261,10 +269,7 @@ class ListWidget(Widget):
                                default=5,
                                required=1)
                           
-    def render(self, field, value=None):
-        if value == None:
-            value = field.get_value('default')
-
+    def render(self, field, value):
         # we always need a string value
         value = str(value)
             
@@ -309,6 +314,22 @@ class ListWidget(Widget):
                               
 ListWidgetInstance = ListWidget()
 
+class TestWidget(Widget):
+    property_names = Widget.property_names
+
+    default = fields.TestWidget('default',
+                                title='Default',
+                                description="The default value.",
+                                default=("Hoi", "Dag"),
+                                required=0)
+
+    def render(self, field, value):
+        return (field.render_sub_field('first_field', value[0]) +
+                field.render_sub_field('second_field', value[1]))
+    
+
+TestWidgetInstance = TestWidget()
+
 def render_tag(tag, **kw):
     """Render the tag. Well, not all of it, as we may want to / it.
     """
@@ -337,9 +358,6 @@ def render_element(tag, **kw):
     else:
         return apply(render_tag, (tag,), kw) + " />"
          
-
-
-
 
 
 

@@ -1,4 +1,5 @@
 from Field import PythonField
+from DummyField import fields
 import Validator, Widget
 import OFS
 
@@ -56,8 +57,25 @@ class ListField(PythonField):
     widget = Widget.ListWidgetInstance
     validator = Validator.SelectionValidatorInstance
 
+class TestField(PythonField):
+    meta_type = "TestField"
 
+    sub_field_names = PythonField.sub_field_names +\
+                      ['first_field', 'second_field']
+    
+    first_field = fields.StringField('first_field',
+                                     title="First field",
+                                     default="Foo",
+                                     required=0)
 
+    second_field = fields.StringField('second_field',
+                                      title="Second field",
+                                      default="Bar",
+                                      required=0)
+
+    widget = Widget.TestWidgetInstance
+    validator = Validator.TestValidatorInstance
+    
 
 
 

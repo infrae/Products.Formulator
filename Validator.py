@@ -1,5 +1,6 @@
 import string, re
 from DummyField import fields
+from DateTime import DateTime
 
 class ValidationError(Exception):
     __allow_access_to_unprotected_subobjects__ = 1
@@ -21,7 +22,7 @@ class Validator:
         raise ValidationError(error_key, field)
     
     def validate(self, field, REQUEST):
-        pass
+        return REQUEST.get(field.get_field_key(), None)
     
 class StringBaseValidator(Validator):
     """Simple string validator.
@@ -296,9 +297,13 @@ class SelectionValidator(StringBaseValidator):
             
 SelectionValidatorInstance = SelectionValidator()
 
+class TestValidator(Validator):
+    def validate(self, field, REQUEST):
+        first_value = field.validate_sub_field('first_field', REQUEST)
+        second_value = field.validate_sub_field('second_field', REQUEST)
+        return first_value, second_value
 
 
-
-
-
-
+TestValidatorInstance = TestValidator()
+        
+    
