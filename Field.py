@@ -13,7 +13,9 @@ class Field:
     """
     security = ClassSecurityInfo()
 
+    # this is a field
     is_field = 1
+    # this is not an internal field (can be overridden by subclass)
     internal_field = 0
     
     def __init__(self, id, **kw):
@@ -30,21 +32,19 @@ class Field:
 
     security.declareProtected('Change Formulator Fields', 'initialize_values')
     def initialize_values(self, dict):
-        """Initialize values for fields in associated form.
+        """Initialize values for properties, defined by fields in
+        associated form.
         """
         values = {}
+        overrides = {}
         for field in self.form.get_fields():
             id = field.id
             value = dict.get(id, field.get_value('default'))
             values[id] = value
+            overrides[id] = ""
         self.values = values
+        self.overrides = overrides
         
-    security.declareProtected('Access contents information', 'get_field_key')
-    def get_field_key(self):
-        """Field key to use inside forms.
-        """
-        pass
-
     security.declareProtected('Access contents information', 'has_value')
     def has_value(self, id):
         """Return true if the field defines such a value.
@@ -54,29 +54,44 @@ class Field:
         else:
             return 0
 
+    security.declareProtected('Access contents information', 'get_orig_value')
+    def get_orig_value(self, id):
+        """Get value for id; don't do any override calculation.
+        """
+        if self.values.has_key(id):
+            return self.values[id]
+        else:
+            return self.form.get_field(id).get_value('default')
+        
     security.declareProtected('Access contents information', 'get_value')
     def get_value(self, id):
         """Get value for id."""
-        try:
-            value = self.values[id]
-        except KeyError:
-            # try to return default value in case of error
-            # this way fields can be smoothly upgraded with new
-            # property fields.
-            # this may fail too if there is no field with this name;
-            # in that case we want it to be an error
-            value = self.form.get_field(id).get_value('default')
-            
+        # FIXME: backwards compatibility hack
+        if not hasattr(self, 'overrides'):
+            self.overrides = {}
+        override = self.overrides.get(id, "")
+        if override:
+            # call wrapped method
+            value = override.__of__(self)()
+        else:
+            # get normal value
+            value = self.get_orig_value(id)
+        # if normal value is a callable itself, wrap it
         if callable(value):
             return value.__of__(self)
         else:
             return value
+        
+    security.declareProtected('Access contents information', 'get_override')
+    def get_override(self, id):
+        """Get override method for id (not wrapped)."""
+        return self.overrides.get(id, "")
 
-    security.declareProtected('View management screens', 'get_form')
-    def get_form(self):
-        """Get the property form for this field.
+    security.declareProtected('Access contents information', 'is_required')
+    def is_required(self):
+        """Check whether this field is required (utility function)
         """
-        return self.form
+        return self.has_value('required') and self.get_value('required')
     
     security.declareProtected('View management screens', 'get_error_names')
     def get_error_names(self):
@@ -93,28 +108,81 @@ class Field:
                 return getattr(self.validator, name)
             else:
                 return "Unknown error: %s" % name
+    
+    security.declarePrivate('_render_helper')
+    def _render_helper(self, key, value, REQUEST):
+        value = self._get_default(key, value, REQUEST)
+        if self.get_value('hidden'):
+            return self.widget.render_hidden(self, key, value, REQUEST)
+        else:
+            return self.widget.render(self, key, value, REQUEST)
 
-    security.declareProtected('View management screens', 'get_description')
-    def get_description(self, property_field_id):
-        """Get the description of a particular property field.
-        """
-        # look in widget and in validator
-        if hasattr(self.widget, property_field_id):
-            property_field = getattr(self.widget, property_field_id)
-        elif hasattr(self.validator, property_field_id):
-            property_field = getattr(self.widget, property_field_id)
-        
+    security.declarePrivate('_get_default')
+    def _get_default(self, key, value, REQUEST):
+        if value is not None:
+            return value
+        elif REQUEST is not None and REQUEST.form.has_key(key):
+            return REQUEST.form[key]
+        else:
+            return self.get_value('default')
+
     security.declareProtected('View', 'render')
-    def render(self, value=None):
-        """Render the field widget
+    def render(self, value=None, REQUEST=None):
+        """Render the field widget.
+        value -- the value the field should have (for instance
+                 from validation).
+        REQUEST -- REQUEST can contain raw (unvalidated) field
+                 information. If value is None, REQUEST is searched
+                 for this value.
+        if value and REQUEST are both None, the 'default' property of
+        the field will be used for the value.
         """
-        return self.widget.render(self, value)
+        return self._render_helper('field_%s' % self.id, value, REQUEST)
 
+    security.declareProtected('View', 'render_from_request')
+    def render_from_request(self, REQUEST):
+        """Convenience method; render the field widget from REQUEST
+        (unvalidated data), or default if no raw data is found.
+        """
+        return self._render_helper('field_%s' % self.id, None, REQUEST)
+    
+    security.declareProtected('View', 'render_sub_field')
+    def render_sub_field(self, id, value=None, REQUEST=None):
+        """Render a sub field, as part of complete rendering of widget in
+        a form. Works like render() but for sub field.
+        """
+        return self.sub_form.get_field(id)._render_helper(
+            "subfield_%s_%s" % (self.id, id), value, REQUEST)
+
+    security.declareProtected('View', 'render_sub_field_from_request')
+    def render_sub_field_from_request(self, id, REQUEST):
+        """Convenience method; render the field widget from REQUEST
+        (unvalidated data), or default if no raw data is found.
+        """
+        return self.sub_form.get_field(id)._render_helper(
+            "subfield_%s_%s" % (self.id, id), None, REQUEST)
+
+    security.declarePrivate('_validate_helper')
+    def _validate_helper(self, key, REQUEST):
+        value = self.validator.validate(self, key, REQUEST)
+        # now call external validator after all other validation
+        external_validator = self.get_value('external_validator')
+        if external_validator and not external_validator(value, REQUEST):
+            self.validator.raise_error('external_validator_failed', self)
+        return value
+    
     security.declareProtected('View', 'validate')    
     def validate(self, REQUEST):
         """Validate/transform the field.
         """
-        return self.validator.validate(self, REQUEST)
+        return self._validate_helper("field_%s" % self.id, REQUEST)
+
+    security.declareProtected('View', 'validate_sub_field')
+    def validate_sub_field(self, id, REQUEST):
+        """Validates a subfield (as part of field validation).
+        """
+        return self.sub_form.get_field(id)._validate_helper(
+            "subfield_%s_%s" % (self.id, id), REQUEST)
 
 Globals.InitializeClass(Field)
     
@@ -134,6 +202,8 @@ class PythonField(
     manage_options = (
         {'label':'Edit',       'action':'manage_main',
          'help':('Formulator', 'fieldEdit.txt')},
+        {'label':'Override',    'action':'manage_overrideForm',
+         'help':('Formulator', 'fieldOverride.txt')},
         {'label':'Messages',   'action':'manage_messagesForm',
          'help':('Formulator', 'fieldMessages.txt')},
         {'label':'Test',       'action':'fieldTest',
@@ -165,9 +235,23 @@ class PythonField(
             else:
                 raise
 
-        # update values of field with results
-        self.values.update(result)
-        self.values = self.values
+        # first check for any changes  
+        values = self.values
+        changed = []
+        for key, value in result.items():
+            # store keys for which we want to notify change
+            if not values.has_key(key) or values[key] != value:
+                changed.append(key)
+                          
+        # now do actual update of values
+        values.update(result)
+        self.values = values
+
+        # finally notify field of all changed values if necessary
+        for key in changed:
+            method_name = "on_value_%s_changed" % key
+            if hasattr(self, method_name):
+                getattr(self, method_name)(values[key])
         
         if REQUEST:
             message="Content changed."
@@ -189,6 +273,39 @@ class PythonField(
         # update group info in form
         if hasattr(item.aq_explicit, 'is_field'):
             container.field_added(item.id)
+
+    # methods screen
+    security.declareProtected('View management screens',
+                              'manage_overrideForm')
+    manage_overrideForm = DTMLFile('www/fieldOverride', globals())
+
+    security.declareProtected('Change Formulator Forms', 'manage_override')
+    def manage_override(self, REQUEST):
+        """Change override methods.
+        """
+        try:
+            # validate the form and get results
+            result = self.override_form.validate(REQUEST)
+        except ValidationError, err:
+            if REQUEST:
+                message = "Error: %s - %s" % (err.field.get_value('title'),
+                                              err.error_text)
+                return self.manage_overrideForm(self,REQUEST,
+                                                manage_tabs_message=message)
+            else:
+                raise
+
+        # update overrides of field with results
+        if not hasattr(self, "overrides"):
+            self.overrides = result
+        else:
+            self.overrides.update(result)
+            self.overrides = self.overrides
+        
+        if REQUEST:
+            message="Content changed."
+            return self.manage_overrideForm(self,REQUEST,
+                                            manage_tabs_message=message)
     
     # display test screen
     security.declareProtected('View management screens', 'fieldTest')
@@ -221,14 +338,10 @@ class PythonField(
                                             manage_tabs_message=message)
         
     security.declareProtected('View', 'index_html')
-    def index_html(self):
+    def index_html(self, REQUEST):
         """Render this field.
         """
-        return self.render()
-
-    security.declareProtected('View', 'get_field_key')
-    def get_field_key(self):
-        return "field_%s" % self.id
+        return self.render(REQUEST=REQUEST)
 
 Globals.InitializeClass(PythonField)
 

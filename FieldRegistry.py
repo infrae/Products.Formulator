@@ -32,7 +32,7 @@ class FieldRegistry:
         # put it in registry dictionary
         self._fields[field_class.meta_type] = field_class
         # set up dummy fields in field's form
-        initializeFieldForm(field_class)   
+        initializeFieldForm(field_class)
         # set up the icon if a filename is supplied
         if icon:
             setupIcon(field_class, icon, 'Formulator')
@@ -70,22 +70,41 @@ class FieldRegistry:
         # fully defined.
         for field_class in self._fields.values():
             field_class.form._realize_fields()
-        
+            field_class.override_form._realize_fields()
+            
 # initialize registry as a singleton
 FieldRegistry = FieldRegistry()
         
 def initializeFieldForm(field_class):
     """Initialize the properties (fields and values) on a particular
-    field class.
+    field class. Also add the override methods.
     """
     from Form import BasicForm
+    from DummyField import fields
+    
     form = BasicForm()
+    override_form = BasicForm()
     for field in getPropertyFields(field_class.widget):
         form.add_field(field, "widget")
+        method_field = fields.MethodField(field.id,
+                                          title=field.get_value("title"),
+                                          description="",
+                                          default="",
+                                          required=0)
+        override_form.add_field(method_field, "widget")
+        
     for field in getPropertyFields(field_class.validator): 
         form.add_field(field, "validator")
+        method_field = fields.MethodField(field.id,
+                                          title=field.get_value("title"),
+                                          description="",
+                                          default="",
+                                          required=0)
+        override_form.add_field(method_field, "validator")
+        
     field_class.form = form         
-    
+    field_class.override_form = override_form
+        
 def getPropertyFields(obj):
     """Get property fields from a particular widget/validator.
     """
