@@ -117,6 +117,56 @@ class StringValidatorTestCase(ValidatorTestCase):
             'f', {'f' : ' foo '})
         self.assertEqual(' foo ', result)
 
+class LinesValidatorTestVase(ValidatorTestCase):
+
+    def setUp(self):
+        self.v = Validator.LinesValidatorInstance
+
+    def test_whitespace_preserve(self):
+        result = self.v.validate(
+            TestField('f', max_lenght=0, truncate=0, required=1, unicode=0),
+            'f', {'f': 'Two Lines \n of Text'})
+        self.assertEquals(['Two Lines','of Text'], result)
+        # without stripping whitespace
+        result = self.v.validate(
+            TestField('f', max_lenght=0, whitespace_preserve=1,
+                      truncate=0, required=1, unicode=0),
+            'f', {'f': 'Two Lines \n of Text'})
+        self.assertEquals(['Two Lines ',' of Text'], result)
+
+    def test_maxlength(self):
+        # currently the validator checks the max lenght before stripping whitespace
+        # from each line (and includes the linebreaks)
+        self.assertValidatorRaises(
+            Validator.ValidationError, 'too_long',
+            self.v.validate,
+            TestField('f', max_length=12, truncate=0, required=1, unicode=0),
+            'f', {'f': 'Too long\n text'} )
+        # empty lines in the middle count for "max_lines"
+        self.assertValidatorRaises(
+            Validator.ValidationError, 'too_many_lines',
+            self.v.validate,
+            TestField('f', max_lines=2, truncate=0, required=1, unicode=0),
+            'f', {'f': 'Too long\n\n text'} )
+        # when stripping whitespace, only leading \n will be stripped
+        self.v.validate(
+            TestField('f', max_lines=2, truncate=0, required=1, unicode=0),
+            'f', {'f': '\nToo long\n text'} )
+        # without stripping whitespace not even these will ne stripped
+        self.assertValidatorRaises(
+            Validator.ValidationError, 'too_many_lines',
+            self.v.validate,
+            TestField('f', max_lines=2, whitespace_preserve=1,
+                      truncate=0, required=1, unicode=0),
+            'f', {'f': '\nToo long\n text'} )
+        # check max_linelength works
+        self.assertValidatorRaises(
+            Validator.ValidationError, 'line_too_long',
+            self.v.validate,
+            TestField('f', max_linelength=8, whitespace_preserve=1,
+                      truncate=0, required=1, unicode=0),
+            'f', {'f': '\nToo long \ntext'} )
+
 class EmailValidatorTestCase(ValidatorTestCase):
 
     def setUp(self):
@@ -472,6 +522,7 @@ def test_suite():
     suite = unittest.TestSuite()
 
     suite.addTest(unittest.makeSuite(StringValidatorTestCase, 'test'))
+    suite.addTest(unittest.makeSuite(LinesValidatorTestVase, 'test'))
     suite.addTest(unittest.makeSuite(EmailValidatorTestCase, 'test'))
     suite.addTest(unittest.makeSuite(BooleanValidatorTestCase, 'test'))
     suite.addTest(unittest.makeSuite(IntegerValidatorTestCase, 'test'))
