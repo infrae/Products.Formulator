@@ -13,7 +13,8 @@ class XMLObject:
         self.text = ''
         
     def getElementNames(self):
-        return dir(self.elements)
+        return [element for element in dir(self.elements)
+                if not element.startswith('__')]
 
     def getAttributes(self):
         return self.attributes
@@ -32,7 +33,7 @@ def elementToObject(parent, node):
     l = getattr(parent.elements, name, [])
     l.append(object)
     setattr(parent.elements, name, l)
-
+    
 def attributeToObject(parent, node):
     # should never be called
     pass
