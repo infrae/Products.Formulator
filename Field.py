@@ -99,6 +99,14 @@ class Field:
         tales_expr = self.tales.get(id, "")
         
         if tales_expr:
+            # For some reason, path expressions expect 'here' and 'request'
+            # to exist, otherwise they seem to fail. python expressions
+            # don't seem to have this problem.
+            
+            # add 'here' if not in kw
+            if not kw.has_key('here'):
+                kw['here'] = self.aq_parent
+            kw['request'] = self.REQUEST
             value = tales_expr.__of__(self)(
                 field=self,
                 form=self.aq_parent, **kw)
