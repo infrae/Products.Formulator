@@ -33,6 +33,17 @@ class PatternField(ZMIField):
 class CheckBoxField(ZMIField):
     meta_type = "CheckBoxField"
 
+    # XXX have to override this to avoid overwriting
+    # submitted values by the default in case of unchecking
+    def _get_default(self, key, value, REQUEST):
+        if value is not None:
+            return value
+        # if there are submitted form values in the request then use that value
+        if REQUEST is not None and REQUEST.form.has_key('formulator_submission'):
+            return REQUEST.form.get(key)
+        else:
+            return self.get_value('default')
+
     widget = Widget.CheckBoxWidgetInstance
     validator = Validator.BooleanValidatorInstance
 
