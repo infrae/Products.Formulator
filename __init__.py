@@ -22,9 +22,9 @@ def initialize(context):
     FieldRegistry.registerField(StandardFields.PasswordField,
                                 'www/PasswordField.gif')
     FieldRegistry.registerField(StandardFields.EmailField,
-                                'www/StringField.gif')
+                                'www/EmailField.gif')
     FieldRegistry.registerField(StandardFields.FloatField,
-                                'www/IntegerField.gif')
+                                'www/FloatField.gif')
     
     # some helper fields
     FieldRegistry.registerField(HelperFields.ListTextAreaField)
