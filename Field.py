@@ -105,18 +105,48 @@ class Field:
 
     security.declareProtected('View', 'render')
     def render(self, value=None, REQUEST=None):
-        """Render the field widget
+        """Render the field widget.
+        value -- the value the field should have (for instance
+                 from validation).
+        REQUEST -- REQUEST can contain raw (unvalidated) field
+                 information. If value is None, REQUEST is searched
+                 for this value.
+        if value and REQUEST are both None, the 'default' property of
+        the field will be used for the value.
         """
         return self._render_helper('field_%s' % self.id, value, REQUEST)
 
+    def render_from_value(self, value):
+        """Convenience method; render the field from value (or default).
+        """
+        return self._render_helper('field_%s' % self.id, value, None)
+    
+    def render_from_request(self, REQUEST):
+        """Convenience method; render the field widget from REQUEST
+        (unvalidated data), or default if no raw data is found.
+        """
+        return self._render_helper('field_%s' % self.id, None, REQUEST)
+    
     security.declareProtected('View', 'render_sub_field')
     def render_sub_field(self, id, value=None, REQUEST=None):
         """Render a sub field, as part of complete rendering of widget in
-        a form.
+        a form. Works like render() but for sub field.
         """
         return self.sub_form.get_field(id)._render_helper(
-            "subfield_%s_%s" % (self.id, id),
-            value, REQUEST)
+            "subfield_%s_%s" % (self.id, id), value, REQUEST)
+
+    def render_sub_field_from_value(self, id, value):
+        """Convenience method; render the sub field from value (or default).
+        """
+        return self.sub_form.get_field(id)._render_helper(
+            "subfield_%s_%s" % (self.id, id), value, None)
+
+    def render_sub_field_from_request(self, id, REQUEST):
+        """Convenience method; render the field widget from REQUEST
+        (unvalidated data), or default if no raw data is found.
+        """
+        return self.sub_form.get_field(id)._render_helper(
+            "subfield_%s_%s" % (self.id, id), None, REQUEST)
     
     security.declarePrivate('_validate_helper')
     def _validate_helper(self, key, REQUEST):
