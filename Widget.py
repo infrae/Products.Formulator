@@ -443,19 +443,19 @@ class SingleItemsWidget(ItemsWidget):
 
         return rendered_items
 
-
     def render_view(self, field, value):
-        if value is None:
+        if value is None or value == '':
+            # check for empty string too, for situations
+            # where no default value is set.
             return ''
         items = field.get_value('items')
         for item in items:
-            
             if is_sequence(item):
                 item_text, item_value = item
             else:
                 item_text = item
                 item_value = item
-            if value==item_value:
+            if value == item_value:
                 return item_text
         raise KeyError, "Wrong item value [[%s]]" % (value,)
 
