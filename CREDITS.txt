@@ -41,10 +41,10 @@ Many thanks go to:
   Sascha Welter (welter@network-ag.com) -- Extensive help with email
                                            regular expression.
 
-  Clemens Klein-Robbenhaar (robbenhaar@espresto.com) -- Bugfixes and     
-                                      feature additions to XML
-                                      serialization.
-       
+  Clemens Klein-Robbenhaar (robbenhaar@espresto.com) -- Many bugfixes
+                                                        and feature
+                                                        additions.
+              
   Christian Zagrodnick (cz@gocept.com) -- Unicode awareness fixes and 
                                           XML entry form.
 

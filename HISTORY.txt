@@ -9,23 +9,25 @@ Formulator changes
          * XML filesystem representation of Formulator forms can now
            also be used with CMF (if FileSystemSite is not installed).
 
-         * Formulator forms should have better updating behavior from
-           the filesystem in development mode. (This is buggy, so disabled)
-
          * FSForm gets automatically registered with the directory
            view system if CMF or FileSystemSite is installed.
 
       - Infrastructure for Validators not to get taken into account in
         validation procedures (need_validate).
       
-      - A new label field. Doesn't participate in validation, but
-        does show its text as a label in the form.
+      - A new label field. Doesn't participate in validation. It shows
+        its text as a label in the form.
 
+      - Unicode mode. A form can now be put in 'unicode mode', which
+        means it stores all its textual data as unicode strings. This
+        allows for easier integration with Zope systems that use unicode
+        internally, such as Silva.
+ 
     Bugs Fixed
 
-      - The css_class value of a DateTime foeld has been ignored.
-        It is now properly passed down to its subfields, so all
-        subfield elements are rendered with the given css_class value.
+      - The css_class value of a DateTime field had been ignored.  It
+        is now properly passed down to its subfields, so all subfield
+        elements are rendered with the given css_class value.
 
   1.5.0
 
