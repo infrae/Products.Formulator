@@ -19,6 +19,12 @@ Formulator changes
       - Test framework now uses (and requires) ZopeTestCase. This allowed
         some testing setup cruft to be removed.
 
+
+    Bugs Fixed
+
+      - Added explicit security declatation for the "fieldAdd" DTML-file.
+        Fixed a problem with copy & paste fields in Zope 2.7.3.
+
   1.7.0
  
     Features Added
