@@ -2,33 +2,19 @@ Installing Formulator
 
   Requirements
 
-    Formulator should work with Zope versions 2.3 or higher:
+    Formulator should work with Zope versions 2.5 or higher:
 
       http://www.zope.org/Products/Zope
-
-    My development Zope is now Zope 2.5 however, and I plan to require
-    Zope 2.5 in the future.
-
-    No other Zope products are required, though Zope Page Templates
-    are recommended, to enable the TALES tab:
-
-      http://www.zope.org/Members/4am/ZPT
-
-    In Zope 2.5, Zope Page Templates are included by default, so 
-    the TALES tab is automatically enabled.
-
-    Core Session Tracking can also be used with Formulator if
-    available:
-
-      http://www.zope.org/Members/mcdonc/Products/CoreSessionTracking
-
-    In Zope 2.5, Core Sesssion Tracking is included by default.
 
     For reading in forms as XML you need to have minidom installed;
     this should come with a normal python 2.1 distribution. This is
     not required to use Formulator, however.
 
   Upgrading
+
+    to 1.4.0 from earlier versions
+
+      There should be no problems.
 
     to 1.3.1 from earlier versions
 
