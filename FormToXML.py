@@ -1,6 +1,11 @@
 from StringIO import StringIO
 from cgi import escape
+import types
 
+#def write(s):
+#    if type(s) == type(u''):
+#        print "Unicode:", repr(s)
+    
 def formToXML(form, prologue=1):
     """Takes a formulator form and serializes it to an XML representation.
     """
@@ -8,15 +13,20 @@ def formToXML(form, prologue=1):
     write = f.write
 
     if prologue:
-        write('<?xml version="1.0" encoding="iso-8859-1"?>\n\n')
+        write('<?xml version="1.0"?>\n\n')
     write('<form>\n')
     # export form settings
-    # XXX Should we be encoding some text?
-    write('  <title>%s</title>\n' % escape(form.title))
-    write('  <name>%s</name>\n' % escape(form.name))
-    write('  <action>%s</action>\n' % form.action)
-    write('  <enctype>%s</enctype>\n' % form.enctype)
-    write('  <method>%s</method>\n\n' % form.method)
+    for field in form.settings_form.get_fields():
+        id = field.id
+        value = getattr(form, id)
+        if id == 'title':
+            value = escape(value)
+        if id == 'unicode_mode':
+            if value:
+                value = 'true'
+            else:
+                value = 'false'
+        write('  <%s>%s</%s>\n' % (id, value, id))
     # export form groups
     write('  <groups>\n')
     for group in form.get_groups():
@@ -38,7 +48,9 @@ def formToXML(form, prologue=1):
                 elif type(value) == type([]):
                     write('          <%s type="list">%s</%s>\n' % (key, escape(str(value)), key))
                 else:
-                    write('          <%s>%s</%s>\n' % (key, escape(str(value)), key))
+                    if type(value) not in (types.StringType, types.UnicodeType):
+                        value = str(value)
+                    write('          <%s>%s</%s>\n' % (key, escape(value), key))
             write('        </values>\n')
 
             write('        <tales>\n')
@@ -60,4 +72,7 @@ def formToXML(form, prologue=1):
     write('  </groups>\n')
     write('</form>')
 
-    return f.getvalue()
+    if form.unicode_mode:
+        return f.getvalue().encode('UTF-8')
+    else:
+        return unicode(f.getvalue(), form.stored_encoding).encode('UTF-8')

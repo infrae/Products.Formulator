@@ -1,3 +1,4 @@
+<dtml-call "REQUEST.set('management_page_charset', 'UTF-8')">
 <dtml-var manage_page_header>
 <dtml-var manage_tabs>
 

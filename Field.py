@@ -348,6 +348,17 @@ class ZMIField(
     def _edit(self, result):
         # first check for any changes  
         values = self.values
+        # if we are in unicode mode, convert result to unicode
+        # acquire get_unicode_mode and get_stored_encoding from form..
+        if self.get_unicode_mode():
+            new_result = {}
+            for key, value in result.items():
+                if type(value) == type(''):
+                    # in unicode mode, Formulator UI always uses UTF-8
+                    value = unicode(value, 'UTF-8')
+                new_result[key] = value
+            result = new_result
+
         changed = []
         for key, value in result.items():
             # store keys for which we want to notify change

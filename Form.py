@@ -30,10 +30,14 @@ class Form:
     """
     security = ClassSecurityInfo()
 
-    encoding = 'UTF-8' # XXX unfortunately needed to make settings form upgrade
+    # need to make settings form upgrade
+    encoding = 'UTF-8'
+    stored_encoding = 'ISO-8859-1'
+    unicode_mode = 0
     
     # CONSTRUCTORS    
-    def __init__(self, action, method, enctype, name, encoding):
+    def __init__(self, action, method, enctype, name,
+                 encoding, stored_encoding, unicode_mode):
         """Initialize form.
         """
         # make groups dict with entry for default group
@@ -46,6 +50,8 @@ class Form:
         self.method = method
         self.enctype = enctype
         self.encoding = encoding
+        self.stored_encoding = stored_encoding
+        self.unicode_mode = unicode_mode
         
     # MANIPULATORS
     security.declareProtected('Change Formulator Forms', 'field_added')
@@ -248,6 +254,18 @@ class Form:
         """
         return getattr(self, 'encoding', 'UTF-8')
     
+    security.declareProtected('View', 'get_stored_encoding')
+    def get_stored_encoding(self):
+        """Get the encoding of the stored field properties.
+        """
+        return getattr(self, 'stored_encoding', 'ISO-8859-1')
+    
+    security.declareProtected('View', 'get_unicode_mode')
+    def get_unicode_mode(self):
+        """Get unicode mode information.
+        """
+        return getattr(self, 'unicode_mode', 0)
+    
     security.declareProtected('View', 'render')
     def render(self, dict=None, REQUEST=None):
         """Render form in a default way.
@@ -429,9 +447,35 @@ class Form:
         return formToXML(self)
 
     security.declareProtected('Change Formulator Forms', 'set_xml')
-    def set_xml(self, xml):
+    def set_xml(self, xml, override_encoding=None):
         """change form according to xml"""
-        XMLToForm(xml, self)
+        XMLToForm(xml, self, override_encoding)
+
+    security.declareProtected('Access contents information',
+                              'management_page_charset')
+    def management_page_charset(self):
+        """manage_before_header calls this to determine management
+        screen encodings.
+        """
+        if not self.unicode_mode:
+            return self.stored_encoding
+        else:
+            return 'UTF-8'
+        
+    security.declareProtected('View', 'set_encoding_header')
+    def set_encoding_header(self):
+        """Set the encoding in the RESPONSE object.
+
+        This can be used to make sure a page is in the same encoding the
+        textual form contents is in.
+        """
+        if not self.unicode_mode:
+            encoding = self.stored_encoding
+        else:
+            encoding = 'UTF-8'
+        self.REQUEST.RESPONSE.setHeader(
+            'Content-Type',
+            'text/html;charset=%s' % encoding)
     
 Globals.InitializeClass(Form)
 
@@ -442,10 +486,11 @@ class BasicForm(Persistent, Acquisition.Implicit, Form):
     security = ClassSecurityInfo()
        
     def __init__(self, action="", method="POST", enctype="", name="",
-                 encoding="UTF-8"):
-        BasicForm.inheritedAttribute('__init__')(self,
-                                                 action, method, enctype,
-                                                 name, encoding)
+                 encoding="UTF-8", stored_encoding='ISO-8859-1',
+                 unicode_mode=0):
+        BasicForm.inheritedAttribute('__init__')(
+            self, action, method, enctype,
+            name, encoding, stored_encoding, unicode_mode)
         self.title = 'Basic Form' # XXX to please FormToXML..
         self.fields = {}
 
@@ -538,12 +583,21 @@ def create_settings_form():
                                default=None) 
 
     encoding = fields.StringField('encoding',
-                                  title='Page encoding',
+                                  title='Encoding of pages the form is in',
                                   default="UTF-8",
                                   required=1)
-                                  
+
+    stored_encoding = fields.StringField('stored_encoding',
+                                      title='Encoding of form properties',
+                                      default='ISO-8859-1',
+                                      required=1)
+    unicode_mode = fields.CheckBoxField('unicode_mode',
+                                        title='Form properties are unicode',
+                                        default=0,
+                                        required=1)
+    
     form.add_fields([title, row_length, name, action, method,
-                     enctype, encoding])
+                     enctype, encoding, stored_encoding, unicode_mode])
     return form
 
 class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
@@ -577,13 +631,14 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
         Item.manage_options
         )
 
-    def __init__(self, id, title):
+    def __init__(self, id, title, unicode_mode=0):
         """Initialize form.
         id    -- id of form
         title -- the title of the form
         """
         ZMIForm.inheritedAttribute('__init__')(self, "", "POST", "", id,
-                                               'UTF-8')
+                                               'UTF-8', 'ISO-8859-1',
+                                               unicode_mode)
         self.id = id
         self.title = title
         self.row_length = 4
@@ -707,15 +762,36 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
                                               error.error_text), e.errors), "<br />")
             return self.formSettings(self, REQUEST,
                                      manage_tabs_message=message)
-        else:
-            # this should be entirely safe due to validation!
-            for key, value in result.items():
-                setattr(self, key, value)
-    
-            message="Settings changed."
-            return self.formSettings(self, REQUEST,
-                                     manage_tabs_message=message)
+        # if we need to switch encoding, get xml representation before setting
+        if result['unicode_mode'] != self.unicode_mode:
+            xml = self.get_xml()
+        # now set the form settings
         
+        # convert XML to or from unicode mode if necessary
+        unicode_message = None
+        if result['unicode_mode'] != self.unicode_mode:
+            # get XML (using current stored_encoding)
+            xml = self.get_xml()
+
+            # now save XML data again using specified encoding
+            if result['unicode_mode']:
+                encoding = 'unicode'
+                unicode_message = "Converted to unicode."
+            else:
+                encoding = result['stored_encoding']
+                unicode_message = ("Converted from unicode to %s encoding" %
+                                   encoding)
+            self.set_xml(xml, encoding)
+            
+        # now set the form settings
+        for key, value in result.items():
+            setattr(self, key, value)
+        message="Settings changed."
+        if unicode_message is not None:
+            message = message + ' ' + unicode_message
+        return self.formSettings(self, REQUEST,
+                                 manage_tabs_message=message)
+    
     security.declareProtected('Change Formulator Forms', 'manage_refresh')
     def manage_refresh(self, REQUEST):
         """Refresh internal data structures of this form.
@@ -882,14 +958,14 @@ Globals.InitializeClass(ZMIForm)
         
 manage_addForm = DTMLFile("dtml/formAdd", globals())
 
-def manage_add(self, id, title="", REQUEST=None):
+def manage_add(self, id, title="", unicode_mode=0, REQUEST=None):
     """Add form to folder.
     id     -- the id of the new form to add
     title  -- the title of the form to add
     Result -- empty string
     """
     # add actual object
-    id = self._setObject(id, ZMIForm(id, title))
+    id = self._setObject(id, ZMIForm(id, title, unicode_mode))
     # respond to the add_and_edit button if necessary
     add_and_edit(self, id, REQUEST)
     return ''

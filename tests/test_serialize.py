@@ -151,7 +151,9 @@ class SerializeTestCase(unittest.TestCase):
         (Actually this test is very incomplete)
         """
         form = ZMIForm('test', '<EncodingTest>')
-        form.name='&<stupid "name"'+" 'actually'"
+        # XXX don't test escaping of name, as needs to be javascript
+        # valid anyway?
+        form.name = 'name'
         form.add_group('a & b')
 
         form.manage_addField('string_field', '<string> Field', 'StringField')

@@ -35,6 +35,17 @@ Formulator Forms allow you to create solid web forms more easily.
 
   <tr>
     <td align="left" valign="top">
+    <div class="form-label">
+    Unicode mode
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="checkbox" name="unicode_mode" size="40" />
+    </td>
+  </tr>
+
+  <tr>
+    <td align="left" valign="top">
     </td>
     <td align="left" valign="top">
     <div class="form-element">

@@ -857,7 +857,7 @@ class LabelWidget(Widget):
     """Widget that is a label only. It simply returns its default value.
     """
     property_names = ['title', 'description',
-                      'default', 'css_class', 'extra']
+                      'default', 'css_class', 'hidden', 'extra']
 
     default = fields.TextAreaField(
         'default',
