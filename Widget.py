@@ -76,11 +76,16 @@ class Widget:
     def render_hidden(self, field, key, value, REQUEST):
         """Renders this widget as a hidden field.
         """
+        try:
+            extra = field.get_value('extra')
+        except KeyError:
+    # In case extra is not defined as in DateTimeWidget
+            extra = ''
         return render_element("input",
                               type="hidden",
                               name=key,
                               value=value,
-                              extra=field.get_value('extra'))
+                              extra=extra)
                               
 class TextWidget(Widget):
     """Text widget
