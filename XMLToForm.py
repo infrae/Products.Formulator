@@ -33,6 +33,10 @@ def XMLToForm(s, form):
         for entry in group.first.fields.elements.field:
             id = entry.first.id.text.encode('latin1')
             meta_type = entry.first.type.text.encode('latin1')
+            try:
+                form._delObject(id)
+            except (KeyError, AttributeError):
+                pass
             form.manage_addField(id, '', meta_type)
             field = form._getOb(id)
             if group_title != 'Default':

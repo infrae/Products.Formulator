@@ -10,13 +10,14 @@ import Acquisition
 from urllib import quote
 import os
 import string
-from cStringIO import StringIO
+from TAL.TALInterpreter import FasterStringIO 
 
 from Errors import ValidationError, FormValidationError
 from FieldRegistry import FieldRegistry
 from Widget import render_tag
 from DummyField import fields
 from FormToXML import formToXML
+from XMLToForm import XMLToForm
 
 # FIXME: manage_renameObject hack needs these imports
 from Acquisition import aq_base
@@ -252,7 +253,7 @@ class Form:
         """Render form in a default way.
         """
         dict = dict or {}
-        result = StringIO()
+        result = FasterStringIO()
         w = result.write
         w(self.header())
         for group in self.get_groups():
@@ -398,6 +399,16 @@ class Form:
         """Get this form in XML serialization.
         """
         return formToXML(self)
+
+    security.declareProtected('Change Formulator Forms', 'set_xml')
+    def set_xml(self, form_data, REQUEST=None):
+        """change form according to xml"""
+        XMLToForm(form_data, self)
+        if REQUEST is not None:
+            REQUEST.RESPONSE.redirect('%s/manage_main' % (
+                self.absolute_url(), ))
+            return ''                
+        
     
 Globals.InitializeClass(Form)
 
