@@ -27,6 +27,9 @@ def XMLToForm(s, form):
             has_default = 1
         form.add_group(group_title)
         # create fields in group
+        if not hasattr(group.first.fields.elements, 'field'):
+            # empty <fields> element
+            continue
         for entry in group.first.fields.elements.field:
             id = entry.first.id.text.encode('latin1')
             meta_type = entry.first.type.text.encode('latin1')
