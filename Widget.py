@@ -791,13 +791,14 @@ class DateTimeWidget(Widget):
             from StandardFields import create_datetime_text_sub_form
             field.sub_form = create_datetime_text_sub_form()
 
-        if value is None:
-            # no value given ... maybe it is in the request?
-            if REQUEST is not None and \
-                   REQUEST.form.get(field.generate_subfield_key('year'), None) is None:
-                # no, it is not either; check if it defaults to now
-                if field.get_value('default_now'):
-                    value = DateTime()
+        if value is None and field.get_value('default_now'):
+            value = DateTime()
+            
+        # Allow subfields to get their values even when default_now is set.
+        if REQUEST is not None and \
+                   REQUEST.form.has_key(field.generate_subfield_key('year')):
+            value = None
+
         if value is None:
             year = None
             month = None
