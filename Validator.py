@@ -162,7 +162,7 @@ class RangedIntegerValidator(IntegerValidator):
         # we need to add this check again
         if value == "" and not field.get_value('required'):
             return value
-        if not field.get_value('start') <= value <= field.get_value('end'):
+        if not field.get_value('start') <= value < field.get_value('end'):
             self.raise_error('integer_out_of_range', field)
 
         return value
@@ -297,13 +297,90 @@ class SelectionValidator(StringBaseValidator):
             
 SelectionValidatorInstance = SelectionValidator()
 
-class TestValidator(Validator):
+class DateTimeValidator(Validator):
+
+    property_names = Validator.property_names + ['required',
+                                                 'start_datetime',
+                                                 'end_datetime']
+
+    required = fields.CheckBoxField('required',
+                                    title='Required',
+                                    description=(
+        "Checked if the field is required; the user has to enter something "
+        "in the field."),
+                                    default=1)
+
+    start_datetime = fields.DateTimeField('start_datetime',
+                                          title="Start datetime",
+                                          description=(
+        "The date and time entered must be later than or equal to "
+        "this date/time. If left empty, no check is performed."),
+                                          default=None,
+                                          required=0)
+
+    end_datetime = fields.DateTimeField('end_datetime',
+                                        title="End datetime",
+                                        description=(
+        "The date and time entered must be earlier than "
+        "this date/time. If left empty, no check is performed."),
+                                        default=None,
+                                        required=0)
+    
+    message_names = Validator.message_names + ['required_not_found',
+                                               'not_datetime',
+                                               'datetime_out_of_range']
+    
+    required_not_found = 'Input is required but no input given.'
+    not_datetime = 'You did not enter a valid date and time.'
+    datetime_out_of_range = 'The date and time you entered were out of range.'
+    
     def validate(self, field, key, REQUEST):
-        first_value = field.validate_sub_field('first_field', REQUEST)
-        second_value = field.validate_sub_field('second_field', REQUEST)
-        return first_value, second_value
+        try:
+            year = field.validate_sub_field('text_year', REQUEST)
+            month = field.validate_sub_field('text_month', REQUEST)
+            day = field.validate_sub_field('text_day', REQUEST)
+            
+            if field.get_value('date_only'):
+                hour = 0
+                minute = 0
+            else:
+                hour = field.validate_sub_field('hour', REQUEST)
+                minute = field.validate_sub_field('minute', REQUEST)
+        except ValidationError:
+            self.raise_error('not_datetime', field)
 
+        # handling of completely empty sub fields
+        if ((year == '' and month == '' and day == '') and
+            (field.get_value('date_only') or (hour == '' and minute == ''))): 
+            if field.get_value('required'):
+                self.raise_error('required_not_found', field)
+            else:
+                # field is not required, return None for no entry
+                return None
+        # handling of partially empty sub fields; invalid datetime
+        if ((year == '' or month == '' or day == '') or
+            (not field.get_value('date_only') and
+             (hour == '' or minute == ''))):
+            self.raise_error('not_datetime', field)
 
-TestValidatorInstance = TestValidator()
+        try:
+            result = DateTime(year, month, day, hour, minute)
+        # ugh, a host of string based exceptions
+        except ('DateTimeError', 'Invalid Date Components', 'TimeError'):
+            self.raise_error('not_datetime', field)
+
+        # check if things are within range
+        start_datetime = field.get_value('start_datetime')
+        if (start_datetime is not None and
+            result < start_datetime):
+            self.raise_error('datetime_out_of_range', field)
+        end_datetime = field.get_value('end_datetime')
+        if (end_datetime is not None and
+            result >= end_datetime):
+            self.raise_error('datetime_out_of_range', field)
+
+        return result
+    
+DateTimeValidatorInstance = DateTimeValidator()
         
     

@@ -57,24 +57,50 @@ class ListField(PythonField):
     widget = Widget.ListWidgetInstance
     validator = Validator.SelectionValidatorInstance
 
-class TestField(PythonField):
-    meta_type = "TestField"
+class DateTimeField(PythonField):
+    meta_type = "DateTimeField"
 
     sub_field_names = PythonField.sub_field_names +\
-                      ['first_field', 'second_field']
+                      ['text_year', 'text_month', 'text_day',
+                       'hour', 'minute']
+
+    text_year = fields.IntegerField('text_year',
+                                   title="Year",
+                                   required=0,
+                                   display_width=4,
+                                   display_maxwidth=4,
+                                   max_length=4)
     
-    first_field = fields.StringField('first_field',
-                                     title="First field",
-                                     required=0,
-                                     display_width=5)
+    text_month = fields.IntegerField('text_month',
+                                    title="Month",
+                                    required=0,
+                                    display_width=2,
+                                    display_maxwidth=2,
+                                    max_length=2)
 
-    second_field = fields.StringField('second_field',
-                                      title="Second field",
-                                      required=0,
-                                      display_width=5)
+    text_day = fields.IntegerField('text_day',
+                                   title="Day",
+                                   required=0,
+                                   display_width=2,
+                                   display_maxwidth=2,
+                                   max_length=2)
 
-    widget = Widget.TestWidgetInstance
-    validator = Validator.TestValidatorInstance
+    hour = fields.IntegerField('hour',
+                               title="Hour",
+                               required=0,
+                               display_width=2,
+                               display_maxwidth=2,
+                               max_length=2)
+    
+    minute = fields.IntegerField('minute',
+                                 title="Minute",
+                                 required=0,
+                                 display_width=2,
+                                 display_maxwidth=2,
+                                 max_length=2)
+
+    widget = Widget.DateTimeWidgetInstance
+    validator = Validator.DateTimeValidatorInstance
     
 
 
