@@ -29,9 +29,13 @@ Information
   management screens. If you want your brain to explode, read the
   'How Formulator Eats its Own Dogfood' help topic.
 
-  Install the FormulatorExample folder to see Formulator in action in
-  a few simple demonstrations.
+  Information is also available at the Formulator web site:
+
+     http://www.zope.org/Members/faassen/Formulator
+
+  There are also instructions to join the Formulator mailing list there. 
+  Discussion about Formulator should preferably happen on the mailing list
+  first, though you can always mail me as well. But please consider the
+  list if you have questions or suggestions.
   
   Even more info can be found by reading the source. :)
-
-

@@ -2,27 +2,34 @@ Installing Formulator
 
   Requirements
 
-    Formulator requires Zope versions 2.3 or higher:
+    Formulator should work with Zope versions 2.3 or higher:
 
       http://www.zope.org/Products/Zope
 
-    My development Zope is now Zope 2.4 however, and I plan to require
-    Zope 2.4 in the future.
+    My development Zope is now Zope 2.5 however, and I plan to require
+    Zope 2.5 in the future.
 
     No other Zope products are required, though Zope Page Templates
     are recommended, to enable the TALES tab:
 
       http://www.zope.org/Members/4am/ZPT
 
+    In Zope 2.5, Zope Page Templates are included by default, so 
+    the TALES tab is automatically enabled.
+
     Core Session Tracking can also be used with Formulator if
     available:
 
       http://www.zope.org/Members/mcdonc/Products/CoreSessionTracking
 
-    Once Zope 2.5 is released, both these products should become part
-    of the Zope distribution.
+    In Zope 2.5, Core Sesssion Tracking is included by default.
 
   Upgrading
+
+    to 1.2.0 from earlier versions
+
+      There should be no problems, but see the note if you're upgrading
+      from version 0.9.2 or below.
 
     to 1.1.0 from earlier versions
 
