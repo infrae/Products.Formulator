@@ -6,7 +6,12 @@ import OFS
 from Shared.DC.Scripts.Bindings import Bindings
 from Errors import ValidationError
 from Products.Formulator.Widget import MultiItemsWidget
-from Products.PlacelessTranslationService import translate, getLanguages
+
+try:
+    from Products.PlacelessTranslationService import translate, getLanguages
+    have_pts = 1
+except ImportError:
+    have_pts = 0
 
 class Field:
     """Base class of all fields.
@@ -119,13 +124,9 @@ class Field:
             else:
                 # get normal value
                 value = self.get_orig_value(id)
-        # construct i18n id:
-        # add id to form
-        # then concatenate: formid+fieldid+title
-        # eg: getvalue(uploadform_title_title) and translate then
         
         # check if an i18n id exist
-        if id in ['title', 'description']:
+        if id in ['title', 'description'] and have_pts:
             i18n_domain, i18n = self.get_i18n_info()
             if i18n_domain and i18n:
                 msgid = "%s_%s_%s" % (i18n, self.id, id)
