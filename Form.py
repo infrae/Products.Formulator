@@ -441,26 +441,30 @@ class Form:
 
         if self.enctype is not "":
             if name:
-                return render_tag("form",
-                                  name=name,
-                                  action=self.action,
-                                  method=self.method,
-                                  enctype=self.enctype) + ">"
+                res = render_tag("form",
+                                 name=name,
+                                 action=self.action,
+                                 method=self.method,
+                                 enctype=self.enctype) + ">"
             else:
-                return render_tag("form",
-                                  action=self.action,
-                                  method=self.method,
-                                  enctype=self.enctype) + ">"
+                res = render_tag("form",
+                                 action=self.action,
+                                 method=self.method,
+                                 enctype=self.enctype) + ">"
         else:
             if name:
-                return render_tag("form",
-                                  name=name,
-                                  action=self.action,
-                                  method=self.method) + ">"
+                res = render_tag("form",
+                                 name=name,
+                                 action=self.action,
+                                 method=self.method) + ">"
             else:
-                return render_tag("form",
-                                  action=self.action,
-                                  method=self.method) + ">"
+                res = render_tag("form",
+                                 action=self.action,
+                                 method=self.method) + ">"
+        res += '\n'
+        res += '<input type="hidden" name="formulator_submission" value="1" />'
+        res += '\n'
+        return res
 
     security.declareProtected('View', 'footer')
     def footer(self):
