@@ -5,17 +5,23 @@
 Settings for this form.
 </p>
 
-<form action="manage_settings" method="POST">
+<dtml-var "settings_form.header()">
+
 <table border="0">
+  <dtml-in "settings_form.get_fields()"><dtml-let field=sequence-item>
   <tr>
-    <td class="form-label">Number of groups in a row (in order tab)</td>
-    <td><input type="text" name="row_length" value="&dtml-row_length;" size="4"></td>
+    <td class="form-label"><dtml-var "field.get_value('title')"></td>
+    <td><dtml-var "field.render(_[field.id])"></td>
   </tr>
+  </dtml-let></dtml-in>
+
   <tr>
     <td><input type="submit" value="Change"></td>
   </tr>
 </table>
-</form>
+
+<dtml-var "settings_form.footer()">
+
 
 <p>Upgrade</p>
 <form action="manage_refresh" method="POST">

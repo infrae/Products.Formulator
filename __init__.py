@@ -46,9 +46,9 @@ def initialize(context):
                         Form.manage_add),
         icon = 'www/Form.gif')
 
-    # do initialization of Form class to make fields addable
-    Form.initializeForm(FieldRegistry)
-
     # make Dummy Fields into real fields
     FieldRegistry.initializeFields()
     
+    # do initialization of Form class to make fields addable
+    Form.initializeForm(FieldRegistry)
+

@@ -6,6 +6,8 @@ Formulator Credits
 
   Yury Don (yura@vpcit.ru) -- contributed EmailField and FloatField,
                               design and implementation help.
+
+  Nicola Larosa (nico@tekNico.net) -- feedback and bugfixes.
                              
   Also a thank you to those few valiant souls who suffered through the
   bugs of ZFormulator, the previous implementation. Let's hope this

@@ -11,6 +11,8 @@ import string
 
 from Validator import ValidationError
 from FieldRegistry import FieldRegistry
+from Widget import render_tag
+from DummyField import fields
 
 class FormValidationError(Exception):
     __allow_access_to_unprotected_subobjects__ = 1
@@ -28,14 +30,18 @@ class Form:
     security = ClassSecurityInfo()
 
     # CONSTRUCTORS    
-    def __init__(self):
+    def __init__(self, action, method, enctype):
         """Initialize form.
         """
         # make groups dict with entry for default group
         self.groups = {"Default": []}
         # the display order of the groups
         self.group_list = ["Default"]
-        
+        # form submit info
+        self.action = action
+        self.method = method
+        self.enctype = enctype
+
     # MANIPULATORS
     security.declareProtected('Change Formulator Forms', 'field_added')
     def field_added(self, field_id, group=None):
@@ -311,6 +317,26 @@ class Form:
             id = field.id
             REQUEST.set(id, data.get(id))
 
+    security.declareProtected('View', 'header')
+    def header(self):
+        """Starting form tag.
+        """
+        if self.enctype is not "":
+            return render_tag("form",
+                              action=self.action,
+                              method=self.method,
+                              enctype=self.enctype) + ">"
+        else:
+            return render_tag("form",
+                              action=self.action,
+                              method=self.method) + ">"
+
+    security.declareProtected('View', 'footer')
+    def footer(self):
+        """Closing form tag.
+        """
+        return "</form>"
+    
 Globals.InitializeClass(Form)
 
 class BasicForm(Form):
@@ -319,8 +345,8 @@ class BasicForm(Form):
     """
     security = ClassSecurityInfo()
        
-    def __init__(self):
-        Form.__init__(self)
+    def __init__(self, action="", method="POST", enctype=""):
+        Form.__init__(self, action, method, enctype)
         self.fields = {}
 
     security.declareProtected('Change Formulator Forms', 'add_field')
@@ -333,6 +359,13 @@ class BasicForm(Form):
         self.fields[field.id] = field
         self.fields = self.fields
 
+    security.declareProtected('Change Formulator Forms', 'add_fields')
+    def add_fields(self, fields, group=None):
+        """Add a number of fields to the form at once (in a group).
+        """
+        for field in fields:
+            self.add_field(field, group)
+            
     security.declareProtected('Change Formulator Forms', 'remove_field')
     def remove_field(self, field):
         """Remove field from form.
@@ -365,6 +398,40 @@ class BasicForm(Form):
 
 Globals.InitializeClass(BasicForm)
 
+def create_settings_form():
+    """Create settings form for PythonForm.
+    """
+    form = BasicForm('manage_settings')
+    
+    row_length = fields.IntegerField('row_length',
+                                     title='Number of groups in row (in order tab)',
+                                     required=1,
+                                     default=4)
+    action = fields.StringField('action',
+                                title='Form action',
+                                required=0,
+                                default="")
+    method = fields.ListField('method',
+                              title='Form method',
+                              items=[('POST', 'POST'),
+                                     ('GET', 'GET')],
+                              required=1,
+                              size=1,
+                              default='POST')
+    enctype = fields.ListField('enctype',
+                               title='Form enctype',
+                               items=[('No enctype', ""),
+                                      ('application/x-www-form-urlencoded',
+                                       'application/x-www-form-urlencoded'),
+                                      ('multipart/form-data',
+                                       'multipart/form-data')],
+                               required=0,
+                               size=1,
+                               default=None) 
+
+    form.add_fields([row_length, action, method, enctype])
+    return form
+
 class PythonForm(ObjectManager, Item, Form):
     """
     A Formulator Form, fields are managed by ObjectManager.
@@ -390,13 +457,13 @@ class PythonForm(ObjectManager, Item, Form):
         AccessControl.Role.RoleManager.manage_options +
         Item.manage_options
         )
-    
+
     def __init__(self, id, title):
         """Initialize form.
         id    -- id of form
         title -- the title of the form
         """
-        PythonForm.inheritedAttribute('__init__')(self)
+        PythonForm.inheritedAttribute('__init__')(self, "", "POST", None)
         self.id = id
         self.title = title
         self.row_length = 4
@@ -459,6 +526,8 @@ class PythonForm(ObjectManager, Item, Form):
     security.declareProtected('View management screens', 'formTest')
     formTest = DTMLFile('www/formTest', globals())
 
+    settings_form = create_settings_form()
+
     security.declareProtected('View management screens', 'formSettings')
     formSettings = DTMLFile('www/formSettings', globals())
 
@@ -466,11 +535,22 @@ class PythonForm(ObjectManager, Item, Form):
     formOrder = DTMLFile('www/formOrder', globals())
 
     security.declareProtected('Change Formulator Forms', 'manage_settings')
-    def manage_settings(self, row_length, REQUEST):
+    def manage_settings(self, REQUEST):
         """Change settings in settings screen.
         """
-        self.row_length = int(row_length)
-        if REQUEST:
+        try:
+            result = self.settings_form.validate_all(REQUEST)
+        except FormValidationError, e:
+            message = "Validation error(s).<br>" + string.join(
+                map(lambda error: "%s: %s" % (error.field.get_value('title'),
+                                              error.error_text), e.errors), "<br>")
+            return self.formSettings(self, REQUEST,
+                                     manage_tabs_message=message)
+        else:
+            # this should be entirely safe due to validation!
+            for key, value in result.items():
+                setattr(self, key, value)
+    
             message="Settings changed."
             return self.formSettings(self, REQUEST,
                                      manage_tabs_message=message)
@@ -666,7 +746,7 @@ def add_and_edit(self, id, REQUEST):
     if REQUEST['submit'] == " Add and Edit ":
         u = "%s/%s" % (u, quote(id))
     REQUEST.RESPONSE.redirect(u+'/manage_main')
-        
+
 def initializeForm(field_registry):
     """Sets up PythonForm with fields from field_registry.
     """
@@ -690,6 +770,9 @@ def initializeForm(field_registry):
         
     # set up meta_types that can be added to form
     form_class._meta_types = tuple(meta_types)
+
+    # set up settings form
+    form_class.settings_form._realize_fields()
     
 
 
