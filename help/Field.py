@@ -36,13 +36,32 @@ class Field:
         """
 
     def get_value(id):
-        """
-        Get property value for an id. Call override if override
-        is defined, otherwise use property value.
-
+        """    
+        Get property value for an id. Call override if override is
+        defined, otherwise use property value. Alternatively the
+        dictionary interface can also be used ('__getitem__()').
+    
         Permission -- 'Access contents information'
         """
 
+    def __getitem__(self, key):
+        """
+        Get property value for an id. Call override if override is
+        defined, otherwise use property value. Alternatively
+        'get_value()' can be used to do this explicitly.
+
+        In Python, you can access property values using::
+
+          form.field['key']
+
+        and in Zope Page Templates you can use the following path
+        notation::
+
+          form/field/key
+
+        Permission -- 'Access contents information'
+        """
+        
     def get_override(id):
         """
         Get the override method for an id, or empty string

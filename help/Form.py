@@ -147,6 +147,15 @@ class Form:
         Returns a dictionary with as keys the field ids and as values
         the validated and processed field values.
 
+        Exceptions that are raised can be caught in the following way
+        (also in through the web Python scripts)::
+
+          from Products.Formulator.Errors import ValidationError
+          try:
+             myform.validate(REQUEST)
+          except ValidationError, e:
+             print 'error' # handle error 'e'
+          
         Permission -- 'View'
         """
 
@@ -161,6 +170,15 @@ class Form:
         result will also be added to REQUEST (also with the field ids
         as keys).
 
+        Exceptions that are raised can be caught in the following way
+        (also in through the web Python scripts)::
+
+          from Products.Formulator.Errors import ValidationError
+          try:
+             myform.validate_to_request(REQUEST)
+          except ValidationError, e:
+             print 'error' # handle error 'e'
+
         Permission -- 'View'
         """
 
@@ -174,6 +192,15 @@ class Form:
 
         Returns a dictionary with as keys the field ids and as values
         the validated and processed field values.
+
+        Exceptions that are raised can be caught in the following way
+        (also in through the web Python scripts)::
+
+          from Products.Formulator.Errors import ValidationError, FormValidationError
+          try:
+             myform.validate_all(REQUEST)
+          except FormValidationError, e:
+             print 'error' # handle error 'e', which contains 'errors'
 
         Permission -- 'View'
         """
@@ -192,6 +219,15 @@ class Form:
         'validate_to_request()'. This will always be done for all
         fields that validated successfully, even if the validation of
         other fields failed and a FormValidationError is raised.
+
+        Exceptions that are raised can be caught in the following way
+        (also in through the web Python scripts)::
+
+          from Products.Formulator.Errors import ValidationError, FormValidationError
+          try:
+             myform.validate_all_to_request(REQUEST)
+          except FormValidationError, e:
+             print 'error' # handle error 'e', which contains 'errors'
 
         Permission -- 'View'
         """
