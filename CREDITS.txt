@@ -1,8 +1,13 @@
 Formulator Credits
 
+Developers
+
   Martijn Faassen (faassen@vet.uu.nl) -- Main developer, design and
                               implementation.
 
+  Clemens Klein-Robbenhaar (robbenhaar at espresto.com) -- Many bugfixes
+                                                        and feature
+                                                        additions.
 
 Many thanks go to:
 
@@ -41,9 +46,6 @@ Many thanks go to:
   Sascha Welter (welter at network-ag.com) -- Extensive help with email
                                            regular expression.
 
-  Clemens Klein-Robbenhaar (robbenhaar at espresto.com) -- Many bugfixes
-                                                        and feature
-                                                        additions.
 
   Christian Zagrodnick (cz at gocept.com) -- Unicode awareness fixes and
                                           XML entry form.
