@@ -10,7 +10,7 @@ import Acquisition
 from urllib import quote
 import os
 import string
-from TAL.TALInterpreter import FasterStringIO 
+from StringIO import StringIO
 
 from Errors import ValidationError, FormValidationError
 from FieldRegistry import FieldRegistry
@@ -253,7 +253,7 @@ class Form:
         """Render form in a default way.
         """
         dict = dict or {}
-        result = FasterStringIO()
+        result = StringIO()
         w = result.write
         w(self.header())
         for group in self.get_groups():
