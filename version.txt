@@ -1,1 +1,1 @@
-Formulator 1.4.2
+Formulator 1.5.0
