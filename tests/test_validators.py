@@ -10,6 +10,8 @@ import unittest
 from ZPublisher.TaintedString import TaintedString
 from Products.Formulator import Validator
 from Products.Formulator.StandardFields import DateTimeField
+from Products.Formulator.StandardFields import LinesField
+from DateTime import DateTime
 
 class TestField:
     def __init__(self, id, **kw):
@@ -27,6 +29,24 @@ class TestField:
         # XXX fake ... what if installed python does not support utf-8?
         return "utf-8"
 
+class FakeSaxHandler:
+    def __init__(self):
+        self._xml = ''
+
+    def characters(self, characters):
+        # a real sax handler would encode the output to something like utf-8
+        # here we just output the unicode strings directly
+        self._xml = self._xml + characters
+    
+    def startElement(self, key):
+        self._xml = self._xml + '<%s>' % key
+
+    def endElement(self, key):
+        self._xml = self._xml + '</%s>' % key
+
+    def getXml(self):
+        return self._xml
+        
 class ValidatorTestCase(ZopeTestCase.ZopeTestCase):
     def assertValidatorRaises(self, exception, error_key, f, *args, **kw):
         try:
@@ -133,8 +153,14 @@ class StringValidatorTestCase(ValidatorTestCase):
             TestField('f', max_length=0, truncate=0, required=0, unicode=0),
             'f', {'f' : TaintedString('<foo>')})
         self.assertEqual('<foo>', result)
-
-
+    
+    def test_serializeValue(self):
+        handler = FakeSaxHandler()
+        string = 'This is the string value'
+        field = TestField('f', max_length=0, truncate=0, required=0, unicode=1)
+        self.v.serializeValue(field, string, handler)
+        self.assertEqual('This is the string value', handler.getXml())
+        
 class LinesValidatorTestVase(ValidatorTestCase):
 
     def setUp(self):
@@ -185,6 +211,13 @@ class LinesValidatorTestVase(ValidatorTestCase):
                       truncate=0, required=1, unicode=0),
             'f', {'f': '\nToo long \ntext'} )
 
+    def test_serializeValue(self):
+        handler = FakeSaxHandler()
+        value = ['Two Lines ',' of Text']
+        field = TestField('f', max_lenght=0, truncate=0, required=1, unicode=0)
+        self.v.serializeValue(field, value, handler)
+        self.assertEqual('Two Lines \n of Text', handler.getXml())
+            
 class EmailValidatorTestCase(ValidatorTestCase):
 
     def setUp(self):
@@ -221,6 +254,13 @@ class EmailValidatorTestCase(ValidatorTestCase):
             TestField('f', max_length=0, truncate=0, required=1, unicode=0),
             'f', {'f': ''})
 
+    def test_serializeValue(self):
+        handler = FakeSaxHandler()
+        string = 'eric@infrae.com'
+        field = TestField('f', max_length=0, truncate=0, required=0, unicode=1)
+        self.v.serializeValue(TestField, string, handler)
+        self.assertEqual('eric@infrae.com', handler.getXml())
+            
 # skip PatternValidator for now
 
 class BooleanValidatorTestCase(ValidatorTestCase):
@@ -248,6 +288,17 @@ class BooleanValidatorTestCase(ValidatorTestCase):
             'f', {})
         self.assertEquals(0, result)
 
+    def test_serializeValue(self):
+        handler = FakeSaxHandler()
+        value = False
+        field = TestField('f', max_length=0, truncate=0, required=0, unicode=1)
+        self.v.serializeValue(field, value, handler)
+        self.assertEqual('False', handler.getXml())
+        handler2 = FakeSaxHandler()
+        value = True
+        self.v.serializeValue(field, value, handler2)
+        self.assertEqual('True', handler2.getXml())
+    
 class IntegerValidatorTestCase(ValidatorTestCase):
     def setUp(self):
         self.v = Validator.IntegerValidatorInstance
@@ -372,6 +423,13 @@ class IntegerValidatorTestCase(ValidatorTestCase):
                       start="", end=""),
             'f', {})
 
+    def test_serializeValue(self):
+        handler = FakeSaxHandler()
+        value = 1337
+        field = TestField('f', max_length=0, truncate=0, required=0, unicode=1)
+        self.v.serializeValue(field, value, handler)
+        self.assertEqual('1337', handler.getXml())
+            
 class FloatValidatorTestCase(ValidatorTestCase):
     def setUp(self):
         self.v = Validator.FloatValidatorInstance
@@ -401,6 +459,13 @@ class FloatValidatorTestCase(ValidatorTestCase):
            self.v.validate,
            TestField('f', max_length=0, truncate=0, required=1),
            'f', {'f': '1f'})
+
+    def test_serializeValue(self):
+        handler = FakeSaxHandler()
+        value = 1.00001
+        field = TestField('f', max_length=0, truncate=0, required=0, unicode=1)
+        self.v.serializeValue(field, value, handler)
+        self.assertEqual('1.00001', handler.getXml())
 
 class DateTimeValidatorTestCase(ValidatorTestCase):
     def setUp(self):
@@ -536,6 +601,20 @@ class DateTimeValidatorTestCase(ValidatorTestCase):
                   'subfield_f_hour': '10',
                   'subfield_f_minute': '61'})
 
+    def test_serializeValue(self):
+        handler = FakeSaxHandler()
+        value = self.v.validate(
+            DateTimeField('f', allow_empty_time=1),
+            'f', {'subfield_f_year': '2002',
+                  'subfield_f_month': '12',
+                  'subfield_f_day': '1',
+                  'subfield_f_hour': '10',
+                  'subfield_f_minute': '30'})
+        field = DateTimeField('f')
+        self.v.serializeValue(field, value, handler)
+        date = DateTime(2002,12,01,10,30,00)
+        self.assertEqual(date.HTML4(), handler.getXml())
+                  
 def test_suite():
     suite = unittest.TestSuite()
 
