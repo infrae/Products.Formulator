@@ -65,12 +65,30 @@ class ListField(ZMIField):
     widget = Widget.ListWidgetInstance
     validator = Validator.SelectionValidatorInstance
 
+class MultiListField(ZMIField):
+    meta_type = "MultiListField"
+
+    widget = Widget.MultiListWidgetInstance
+    validator = Validator.MultiSelectionValidatorInstance
+
+class LinesField(ZMIField):
+    meta_type = "LinesField"
+
+    widget = Widget.LinesTextAreaWidgetInstance
+    validator = Validator.LinesValidatorInstance
+   
 class RadioField(ZMIField):
     meta_type = "RadioField"
 
     widget = Widget.RadioWidgetInstance
     validator = Validator.SelectionValidatorInstance
 
+class MultiCheckBoxField(ZMIField):
+    meta_type = "MultiCheckBoxField"
+
+    widget = Widget.MultiCheckBoxWidgetInstance
+    validator = Validator.MultiSelectionValidatorInstance
+    
 class FileField(ZMIField):
      meta_type = "FileField"
  

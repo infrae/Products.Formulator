@@ -233,7 +233,22 @@ class TextAreaWidget(Widget):
             
 TextAreaWidgetInstance = TextAreaWidget()
 
+class LinesTextAreaWidget(TextAreaWidget):
+    default = fields.LinesField('default',
+                                title='Default',
+                                description=(
+        "Default value of the lines in the widget."),
+                                default=[],
+                                width=20, height=3,
+                                required=0)
+    def render(self, field, key, value, REQUEST):
+        value = string.join(value, "\n")
+        return TextAreaWidget.render(self, field, key, value, REQUEST)
+
+LinesTextAreaWidgetInstance = LinesTextAreaWidget()
+
 class FileWidget(TextWidget):
+
     def render(self, field, key, value, REQUEST):
         """Render text input field.
         """
@@ -287,6 +302,14 @@ class SingleItemsWidget(ItemsWidget):
     """A widget with a number of items that has only a single
     selectable item.
     """
+    default = fields.StringField('default',
+                                 title='Default',
+                                 description=(
+        "The default value of the widget; this should be one of the "
+        "elements in the list of items."),
+                                 default="",
+                                 required=0)
+
     first_item = fields.CheckBoxField('first_item',
                                       title="Select First Item",
                                       description=(
@@ -304,7 +327,7 @@ class SingleItemsWidget(ItemsWidget):
                 text, value = items[0]
             except ValueError:
                 value = items[0]
-
+                
         css_class = field.get_value('css_class')
         
         # FIXME: what if we run into multiple items with same value?
@@ -335,9 +358,41 @@ class MultiItemsWidget(ItemsWidget):
     """A widget with a number of items that has multiple selectable
     items.
     """
-    
+    default = fields.LinesField('default',
+                                title='Default',
+                                description=(
+        "The initial selections of the widget. This is a list of "
+        "zero or more values. If you override this property from Python "
+        "your code should return a Python list."),
+                                width=20, height=3,
+                                default=[],
+                                required=0)
+        
     def render_items(self, field, key, value, REQUEST):
-        pass
+        items = field.get_value('items')
+        css_class = field.get_value('css_class')
+        rendered_items = []
+        for item in items:
+            try:
+                item_text, item_value = item
+            except ValueError:
+                item_text = item
+                item_value = item
+
+            if item_value in value:
+                rendered_item = self.render_selected_item(item_text,
+                                                          item_value,
+                                                          key,
+                                                          css_class)
+            else:
+                rendered_item = self.render_item(item_text,
+                                                 item_value,
+                                                 key,
+                                                 css_class)
+
+            rendered_items.append(rendered_item)
+
+        return rendered_items
 
 class ListWidget(SingleItemsWidget):
     """List widget.
@@ -345,14 +400,6 @@ class ListWidget(SingleItemsWidget):
     property_names = Widget.property_names +\
                      ['first_item', 'items', 'size', 'extra']
     
-    default = fields.StringField('default',
-                                 title='Default',
-                                 description=(
-        "The default value of the widget; this should be one of the "
-        "elements in the list."),
-                                 default="",
-                                 required=0)
-
     size = fields.IntegerField('size',
                                title='Size',
                                description=(
@@ -381,20 +428,47 @@ class ListWidget(SingleItemsWidget):
     
 ListWidgetInstance = ListWidget()
 
+class MultiListWidget(MultiItemsWidget):
+    """List widget with multiple select.
+    """
+    property_names = Widget.property_names +\
+                     ['items', 'size', 'extra']
+    
+    size = fields.IntegerField('size',
+                               title='Size',
+                               description=(
+        "The display size in rows of the field. If set to 1, the "
+        "widget will be displayed as a drop down box by many browsers, "
+        "if set to something higher, a list will be shown. Required."),
+                               default=5,
+                               required=1)
+
+    def render(self, field, key, value, REQUEST):
+        rendered_items = self.render_items(field, key, value, REQUEST)
+
+        return render_element('select',
+                              name=key,
+                              multiple=None,
+                              css_class=field.get_value('css_class'),
+                              size=field.get_value('size'),
+                              contents=string.join(rendered_items, "\n"),
+                              extra=field.get_value('extra'))
+    
+    def render_item(self, text, value, key, css_class):
+        return render_element('option', contents=text, value=value)
+
+    def render_selected_item(self, text, value, key, css_class):
+        return render_element('option', contents=text, value=value,
+                              selected=None)
+    
+MultiListWidgetInstance = MultiListWidget()
+
 class RadioWidget(SingleItemsWidget):
-    """List widget.
+    """radio buttons widget.
     """
     property_names = Widget.property_names +\
                      ['first_item', 'items', 'orientation']
     
-    default = fields.StringField('default',
-                                 title='Default',
-                                 description=(
-        "The default value of the widget; this should be one of the "
-        "elements in the list."),
-                                 default="",
-                                 required=0)
-
     orientation = fields.ListField('orientation',
                                    title='Orientation',
                                    description=(
@@ -430,6 +504,48 @@ class RadioWidget(SingleItemsWidget):
                               checked=None) + text
        
 RadioWidgetInstance = RadioWidget()
+
+class MultiCheckBoxWidget(MultiItemsWidget):
+    """multiple checkbox widget.
+    """
+    property_names = Widget.property_names +\
+                     ['items', 'orientation']
+    
+    orientation = fields.ListField('orientation',
+                                   title='Orientation',
+                                   description=(
+        "Orientation of the check boxes. The check boxes will "
+        "be drawn either vertically or horizontally."),
+                                   default="vertical",
+                                   required=1,
+                                   size=1,
+                                   items=[('Vertical', 'vertical'),
+                                          ('Horizontal', 'horizontal')])
+                                   
+    def render(self, field, key, value, REQUEST):
+        rendered_items = self.render_items(field, key, value, REQUEST)
+        orientation = field.get_value('orientation')
+        if orientation == 'horizontal':
+            return string.join(rendered_items, "&nbsp;&nbsp;")
+        else:
+            return string.join(rendered_items, "<br />")
+        
+    def render_item(self, text, value, key, css_class):
+        return render_element('input',
+                              type="checkbox",
+                              css_class=css_class,
+                              name=key,
+                              value=value) + text
+    
+    def render_selected_item(self, text, value, key, css_class):
+        return render_element('input',
+                              type="checkbox",
+                              css_class=css_class,
+                              name=key,
+                              value=value,
+                              checked=None) + text
+       
+MultiCheckBoxWidgetInstance = MultiCheckBoxWidget()
 
 class DateTimeWidget(Widget):
     property_names = Widget.property_names +\

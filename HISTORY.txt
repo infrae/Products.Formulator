@@ -15,6 +15,9 @@ Formulator changes
       - Made ListField and RadioField happy to deal with non-tuples too in the 
         items list. In this case, the item text and value will be identical.
 
+      - Refactored ListWidget and RadioWidget so they share code; they both
+        inherit from SingleItemsWidget now.
+
    Bugs Fixed
 
   0.9.4

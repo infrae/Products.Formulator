@@ -227,7 +227,6 @@ class LinesValidator(StringBaseValidator):
     message_names = StringBaseValidator.message_names +\
                     ['too_many_lines', 'line_too_long', 'too_long']
 
-    
     too_many_lines = 'You entered too many lines.'
     line_too_long = 'A line was too long.'
     too_long = 'You entered too many characters.'
@@ -236,7 +235,7 @@ class LinesValidator(StringBaseValidator):
         value = StringBaseValidator.validate(self, field, key, REQUEST)
         # we need to add this check again
         if value == "" and not field.get_value('required'):
-            return value
+            return []
         # check whether the entire input is too long
         max_length = field.get_value('max_length') or 0
         if max_length and len(value) > max_length:
@@ -268,7 +267,7 @@ class TextValidator(LinesValidator):
         value = LinesValidator.validate(self, field, key, REQUEST)
         # we need to add this check again
         if value == [] and not field.get_value('required'):
-            return value
+            return ""
 
         # join everything into string again with \n and return
         return string.join(value, "\n")
@@ -291,22 +290,70 @@ class SelectionValidator(StringBaseValidator):
         # get the text and the value from the list of items
         for item in field.get_value('items'):
             try:
-                option_text, option_value = item
+                item_text, item_value = item
             except ValueError:
-                option_text = item
-                option_value = item
+                item_text = item
+                item_value = item
             
             # check if the value is equal to the *string* version of
-            # option_value; if that's the case, we can return the *original*
+            # item_value; if that's the case, we can return the *original*
             # value in the list (not the submitted value). This way, integers
             # will remain integers.
-            if str(option_value) == value:
-                return option_value
+            if str(item_value) == value:
+                return item_value
             
         # if we didn't find the value, return error
         self.raise_error('unknown_selection', field)
             
 SelectionValidatorInstance = SelectionValidator()
+
+class MultiSelectionValidator(Validator):
+    property_names = Validator.property_names + ['required']
+
+    required = fields.CheckBoxField('required',
+                                    title='Required',
+                                    description=(
+        "Checked if the field is required; the user has to fill in some "
+        "data."),
+                                    default=1)
+
+    message_names = Validator.message_names + ['required_not_found',
+                                               'unknown_selection']
+    
+    required_not_found = 'Input is required but no input given.'
+    unknown_selection = 'You selected an item that was not in the list.'
+    
+    def validate(self, field, key, REQUEST):
+        values = REQUEST.get(key, [])
+        # NOTE: a hack to deal with single item selections
+        if type(values) is not type([]):
+            # put whatever we got in a list
+            values = [values]
+        # if we selected nothing and entry is required, give error, otherwise
+        # give entry list
+        if len(values) == 0:
+            if field.get_value('required'):
+                self.raise_error('required_not_found', field)
+            else:
+                return values
+            
+        # create a dictionary of possible values
+        value_dict = {}
+        for item in field.get_value('items'):
+            try:
+                item_text, item_value = item
+            except ValueError:
+                item_text = item
+                item_value = item
+            value_dict[item_value] = 0
+        # check whether all values are in dictionary
+        for value in values:
+            if not value_dict.has_key(value):
+                self.raise_error('unknown_selection', field)
+        # everything checks out
+        return values
+            
+MultiSelectionValidatorInstance = MultiSelectionValidator()
 
 class FileValidator(Validator):
     def validate(self, field, key, REQUEST):
