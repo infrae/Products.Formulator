@@ -70,3 +70,6 @@ msgstr "De ingevoerde datum/tijd was buiten de grenzen."
 #: /Validator.py:93 /Validator.py:447 /Validator.py:635
 msgid "Input is required but no input given."
 msgstr "Verplichte invoer niet ontvangen"
+
+msgid "short title"
+msgstr "Korte titel (formulator)"

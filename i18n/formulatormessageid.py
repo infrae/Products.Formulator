@@ -10,6 +10,6 @@ class FormulatorMessageIDUnicode(MessageIDUnicode):
         """
         self.mapping = mapping
 
-def FormulatorMessageIDFactory(ustr, default=None):
-    return FormulatorMessageIDUnicode(ustr, domain='formulator')
+def FormulatorMessageIDFactory(ustr, domain='formulator'):
+    return FormulatorMessageIDUnicode(ustr, domain)
     
