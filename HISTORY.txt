@@ -74,7 +74,8 @@ Formulator changes
 
         changed:
           Field.py: ZMIField._edit
-					tests/test_Form.py: test_edit_listitem (added)
+          helpers.py: convert_unicode (added)
+          tests/test_Form.py: test_edit_listitem (added)
 
   1.7.0
  
