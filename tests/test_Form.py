@@ -21,7 +21,10 @@ class FormTestCase(unittest.TestCase):
 
     def setUp(self):
         get_transaction().begin()
-        self.connection = Zope.DB.open()
+        # XXX compatibility with 2.7: the following does not work any longer
+        # self.connection = Zope.DB.open()
+        # instead do it ugly:
+        self.connection = Zope.app()._p_jar
         self.root = makerequest.makerequest(
             self.connection.root()['Application'])
 
