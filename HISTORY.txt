@@ -1,5 +1,11 @@
 Formulator changes
  
+  1.1.0
+   
+    Bugs Fixed
+
+       - Fixed bug in form settings tab.
+
   1.0.9
 
     Features Added
