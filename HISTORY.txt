@@ -41,7 +41,7 @@ Formulator changes
              XMLToForm.py, FormToXML.py.
              test/test_serialize.py
 
-      - Fixed bug with rendering of Listfields similar to the
+      - Fixed bug with rendering of ListField's similar to the
         "single element list with one two-char string" bug fixed
         for validation in 1.6.2
          changed:
@@ -60,7 +60,7 @@ Formulator changes
              tests/test_Form.py
 
       - Fixed bug where a set "default" for a checkbox field
-        would always render a checked checbox, even if redisplaying
+        would always render a checked checkbox, even if redisplaying
         a submitted form where the user has unchecked the checkbox
          Actually the works only if the opening <form> tag is
         rendered by the form.header() method, or if a hidden
