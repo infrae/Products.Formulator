@@ -479,8 +479,6 @@ class Form:
         """change form according to xml"""
         XMLToForm(xml, self, override_encoding)
 
-    security.declareProtected('Access contents information',
-                              'management_page_charset')
     def _management_page_charset(self):
         """manage_before_header calls this to determine management
         screen encodings.
