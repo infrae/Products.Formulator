@@ -1,16 +1,15 @@
 Formulator changes
 
-  0.9.6
-
-    Features Added
-
-       - nothing yet
+  1.0
 
     Bugs Fixed
 
        - Fixed minor bug in year handling of DateTimeField.
 
        - Now hidden fields also take text from 'extra' property.
+
+       - Fixed bug in MultiItemsWidget; would not deal with only a
+         single item being selected.
 
   0.9.5
 
@@ -36,8 +35,6 @@ Formulator changes
         MultiItemsWidget and MultiSelectionValidator.
 
       - Added EXPERIMENTAL PatternField.
-
-    Bugs Fixed
 
   0.9.4
 

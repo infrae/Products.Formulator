@@ -16,6 +16,8 @@ Formulator Credits
   Nicola Larosa (nico@tekNico.net) -- feedback and bugfixes.
 
   Magnus Heino (magus.heino@rivermen.se) -- feedback and bugfixes.
+
+  Joel Burton (jburton@scw.org) -- feedback and bugfixes.
                        
   Also a thank you to those few valiant souls who suffered through the
   bugs of ZFormulator, the previous implementation. Let's hope this

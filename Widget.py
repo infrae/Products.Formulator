@@ -370,6 +370,9 @@ class MultiItemsWidget(ItemsWidget):
                                 required=0)
         
     def render_items(self, field, key, value, REQUEST):
+        # need to deal with single item selects
+        if type(value) is not type([]):
+            value = [value]
         items = field.get_value('items')
         css_class = field.get_value('css_class')
         rendered_items = []
