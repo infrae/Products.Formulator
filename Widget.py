@@ -291,7 +291,8 @@ class LinesTextAreaWidget(TextAreaWidget):
                                         required=1)
 
     def render(self, field, key, value, REQUEST):
-        value = string.join(value, "\n")
+        if is_sequence(value):
+            value = string.join(value, "\n")
         return TextAreaWidget.render(self, field, key, value, REQUEST)
 
     def render_view(self, field, value):
@@ -302,8 +303,10 @@ class LinesTextAreaWidget(TextAreaWidget):
     def render_hidden(self, field, key, value, REQUEST):
         if value is None:
             return ''
+        if is_sequence(value):
+            value = '\n'.join(value)
         # reuse method from base class
-        return Widget.render_hidden(self,field,key,'\n'.join(value), REQUEST)
+        return Widget.render_hidden(self,field,key, value, REQUEST)
 
 
 LinesTextAreaWidgetInstance = LinesTextAreaWidget()
