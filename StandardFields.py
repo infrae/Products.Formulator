@@ -1,7 +1,7 @@
 from Form import BasicForm
 from Field import PythonField
 from DummyField import fields
-from MethodField import Method
+from MethodField import BoundMethod
 from DateTime import DateTime
 import Validator, Widget
 import OFS
@@ -70,16 +70,6 @@ class RadioField(PythonField):
 
     widget = Widget.RadioWidgetInstance
     validator = Validator.SelectionValidatorInstance
-
-class HaxorMethod(Method):
-    def __init__(self, field, method_name):
-        HaxorMethod.inheritedAttribute('__init__')(self, method_name)
-        self.field = field
-        
-        
-    def __call__(self, *arg, **kw):
-        method = getattr(self.field, self.method_name)
-        return apply(method, arg, kw)
     
 class DateTimeField(PythonField):
     meta_type = "DateTimeField"
@@ -99,7 +89,7 @@ class DateTimeField(PythonField):
         elif value == 'list':
             self.sub_form = create_datetime_list_sub_form()
             year_field = self.sub_form.get_field('year')
-            year_field.overrides['items'] = HaxorMethod(self,
+            year_field.overrides['items'] = BoundMethod(self,
                                                         'override_year_items')
         else:
             assert 0, "Unknown input_style."

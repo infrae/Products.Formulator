@@ -38,6 +38,18 @@ class Method(Persistent, Acquisition.Implicit):
         getSecurityManager().checkPermission('View', method)
         # okay, execute it with supplied arguments
         return apply(method, arg, kw)
+
+class BoundMethod(Method):
+    """A bound method calls a method on a particular object.
+    Should be used internally only.
+    """
+    def __init__(self, object, method_name):
+        BoundMethod.inheritedAttribute('__init__')(self, method_name)
+        self.object = object
+          
+    def __call__(self, *arg, **kw):
+        method = getattr(self.object, self.method_name)
+        return apply(method, arg, kw)
     
 class MethodValidator(Validator.StringBaseValidator):
 
