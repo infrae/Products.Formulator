@@ -232,16 +232,7 @@ class Form:
         """Get a list of all groups, in display order.
         """
         return self.group_list
-            
-    security.declareProtected('View', 'has_field_id')
-    def has_field_id(self, id):
-        """Check whether an id occurs at all.
-        """
-        for field in self.get_fields():
-            if field.id == id:
-                return 1
-        return 0
-    
+                
     security.declareProtected('View', 'validate')
     def validate(self, REQUEST):
         """Validate all fields in this form. Stop validating and
@@ -440,7 +431,7 @@ def create_settings_form():
     form.add_fields([row_length, action, method, enctype])
     return form
 
-class PythonForm(ObjectManager, Item, Form):
+class ZMIForm(ObjectManager, Item, Form):
     """
     A Formulator Form, fields are managed by ObjectManager.
     """
@@ -723,8 +714,9 @@ class PythonForm(ObjectManager, Item, Form):
             message = "Can't move group %s down" % group
         return self.formOrder(self, REQUEST,
                               manage_tabs_message=message)
-        
-Globals.InitializeClass(PythonForm)
+
+PythonForm = ZMIForm # NOTE: backwards compatibility
+Globals.InitializeClass(ZMIForm)
         
 manage_addForm = DTMLFile("www/formAdd", globals())
 
