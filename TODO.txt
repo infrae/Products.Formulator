@@ -17,9 +17,3 @@ Formulator TODO
 
   - Add unit tests!
 
-  - Fix restart 'Installed product Formulator by Zope' spurious transaction
-    weirdness. A debugging run shows that this message is generated
-    by all products, so why does only Formulator show up each time we
-    restart? (did this message stop now?) 
-
-

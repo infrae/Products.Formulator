@@ -1,5 +1,23 @@
 Formulator changes
 
+  1.3.0
+ 
+    Features Added
+
+      - XMLSerialize module has functions to serialize (most of) form to XML 
+        and read it in again (over an existing form).
+
+      - FSForm.py uses XMLSerialize to provide a formulator form
+        version for FileSystemSite. It does not get imported by
+        default (only if FileSystemSite exists).
+
+    Bugs Fixed
+
+      - The email validator has an improved regular expression.
+
+      - Fix error that occured when trying to render DateTimeField as
+        hidden.
+
   1.2.0
 
     Features Added

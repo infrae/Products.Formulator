@@ -19,6 +19,8 @@ Features
 
   * online help.
 
+  * serialization of form to XML and back.
+
 Installation and Requirements
 
   See INSTALL.txt for more information on installing Formulator.

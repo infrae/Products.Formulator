@@ -1,1 +1,1 @@
-Formulator 1.2.0 
+Formulator 1.3.0 
