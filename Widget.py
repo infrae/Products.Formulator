@@ -95,6 +95,7 @@ class Widget:
             return ''
         return value
 
+    
 class TextWidget(Widget):
     """Text widget
     """
@@ -851,6 +852,31 @@ class DateTimeWidget(Widget):
             return date_result
         
 DateTimeWidgetInstance = DateTimeWidget()
+
+class LabelWidget(Widget):
+    """Widget that is a label only. It simply returns its default value.
+    """
+    property_names = ['title', 'description',
+                      'default', 'css_class', 'extra']
+
+    default = fields.TextAreaField(
+        'default',
+        title="Label text",
+        description="Label text to render",
+        default="",
+        width=20, height=3,
+        required=0)
+    
+    def render(self, field, key, value, REQUEST):
+        return render_element("div",
+                              css_class=field.get_value('css_class'),
+                              contents=field.get_value('default'))
+                              
+    # XXX should render view return the same information as render?
+    def render_view(self, field, value):
+        return field.get_value('default')
+    
+LabelWidgetInstance = LabelWidget()
 
 def render_tag(tag, **kw):
     """Render the tag. Well, not all of it, as we may want to / it.

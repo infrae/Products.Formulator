@@ -7,10 +7,28 @@ from urllib import urlopen
 from urlparse import urljoin
 from Errors import ValidationError
 
-class Validator:
+class ValidatorBase:
+    """Even more minimalistic base class for validators.
+    """
+    property_names = []
+
+    message_names = []
+    
+    def raise_error(self, error_key, field):
+        raise ValidationError(error_key, field)
+    
+    def validate(self, field, key, REQUEST):    
+        pass # override in subclass
+
+    def need_validate(self, field, key, REQUEST):
+        """Default behavior is always validation.
+        """
+        return 1
+    
+class Validator(ValidatorBase):
     """Validates input and possibly transforms it to output.
     """
-    property_names = ['external_validator']
+    property_names = ValidatorBase.property_names + ['external_validator']
 
     external_validator = fields.MethodField('external_validator',
                                             title="External Validator",
@@ -25,15 +43,9 @@ class Validator:
                                             default="",
                                             required=0)
     
-    message_names = ['external_validator_failed']
+    message_names = ValidatorBase.message_names + ['external_validator_failed']
 
     external_validator_failed = "The input failed the external validator."
-    
-    def raise_error(self, error_key, field):
-        raise ValidationError(error_key, field)
-    
-    def validate(self, field, key, REQUEST):    
-        pass # override in subclass
     
 class StringBaseValidator(Validator):
     """Simple string validator.
@@ -678,3 +690,12 @@ class DateTimeValidator(Validator):
 DateTimeValidatorInstance = DateTimeValidator()
         
     
+class SuppressValidator(ValidatorBase):
+    """A validator that is actually not used.
+    """ 
+    def need_validate(self, field, key, REQUEST):
+        """Don't ever validate; suppress result in output.
+        """
+        return 0
+    
+SuppressValidatorInstance = SuppressValidator()

@@ -218,7 +218,7 @@ class Field:
         the field will be used for the value.
         """
         return self._render_helper(self.generate_field_key(), value, REQUEST)
-
+    
     security.declareProtected('View', 'render_view')
     def render_view(self, value):
         """Render value to be viewed.
@@ -247,7 +247,7 @@ class Field:
         """
         return self.sub_form.get_field(id)._render_helper(
             self.generate_subfield_key(id), None, REQUEST)
-
+    
     security.declarePrivate('_validate_helper')
     def _validate_helper(self, key, REQUEST):
         value = self.validator.validate(self, key, REQUEST)
@@ -264,6 +264,13 @@ class Field:
         return self._validate_helper(
             self.generate_field_key(validation=1), REQUEST)
 
+    security.declareProtected('View', 'need_validate')
+    def need_validate(self, REQUEST):
+        """Return true if validation is needed for this field.
+        """
+        return self.validator.need_validate(
+            self, self.generate_field_key(validation=1), REQUEST)
+    
     security.declareProtected('View', 'validate_sub_field')
     def validate_sub_field(self, id, REQUEST):
         """Validates a subfield (as part of field validation).

@@ -113,6 +113,14 @@ class LinkField(ZMIField):
     widget = Widget.TextWidgetInstance
     validator = Validator.LinkValidatorInstance
 
+class LabelField(ZMIField):
+    """Just a label, doesn't really validate.
+    """
+    meta_type = "LabelField"
+    
+    widget = Widget.LabelWidgetInstance
+    validator = Validator.SuppressValidatorInstance
+
 class DateTimeField(ZMIField):
     meta_type = "DateTimeField"
 
@@ -288,6 +296,4 @@ def create_items(start, end, digits=0):
         s = format_string % i
         result.append((s, s))
     return result
-
-
 

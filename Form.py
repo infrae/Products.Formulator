@@ -260,12 +260,12 @@ class Form:
             w('<h2>%s</h2>\n' % group)
             w('<table border="0" cellspacing="0" cellpadding="2">\n')
             for field in self.get_fields_in_group(group):
-                w('<tr>\n')
-                w('<td>%s</td>\n' % field.get_value('title'))
                 if dict.has_key(field.id):
                     value = dict[field.id]
                 else:
                     value = None
+                w('<tr>\n')
+                w('<td>%s</td>\n' % field.get_value('title'))
                 w('<td>%s</td>\n' % field.render(value, REQUEST))
                 w('</tr>\n')
             w('</table>\n')
@@ -284,12 +284,12 @@ class Form:
             w('<h2>%s</h2>\n' % group)
             w('<table border="0" cellspacing="0" cellpadding="2">\n')
             for field in self.get_fields_in_group(group):
-                w('<tr>\n')
-                w('<td>%s</td>\n' % field.get_value('title'))
                 if dict.has_key(field.id):
                     value = dict[field.id]
                 else:
                     value = None
+                w('<tr>\n')
+                w('<td>%s</td>\n' % field.get_value('title'))
                 w('<td>%s</td>\n' % field.render_view(value))
                 w('</tr>\n')
             w('</table>\n')
@@ -302,6 +302,9 @@ class Form:
         """
         result = {}
         for field in self.get_fields():
+            # skip any fields we don't need to validate
+            if not field.need_validate(REQUEST):
+                continue
             value = field.validate(REQUEST)
             # store under id
             result[field.id] = value
@@ -329,6 +332,9 @@ class Form:
         result = {}
         errors = []
         for field in self.get_fields():
+            # skip any field we don't need to validate
+            if not field.need_validate(REQUEST):
+                continue
             try:
                 value = field.validate(REQUEST)
                 # store under id

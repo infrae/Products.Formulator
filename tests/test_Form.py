@@ -97,6 +97,18 @@ class FormTestCase(unittest.TestCase):
         #
         #self.assertEquals(items1, items2)
 
+    def test_labels(self):
+        self.form.manage_addField(
+            'label_field', 'Test Label Field', 'LabelField')
+
+        self.form.label_field.overrides['default'] = "Some label"
+
+        self.form.manage_addField(
+            'int_field', 'Test integer field', 'IntegerField')
+
+        result = self.form.validate_all(
+            {'field_int_field': '3'})
+        self.assertEquals({'int_field': 3}, result)
 
         
 def test_suite():

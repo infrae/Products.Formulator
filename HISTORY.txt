@@ -15,6 +15,12 @@ Formulator changes
          * FSForm gets automatically registered with the directory
            view system if CMF or FileSystemSite is installed.
 
+      - Infrastructure for Validators not to get taken into account in
+        validation procedures (need_validate).
+      
+      - A new label field. Doesn't participate in validation, but
+        does show its text as a label in the form.
+
   1.5.0
 
     Features Added
