@@ -19,9 +19,12 @@ Formulator changes
       - XML representation of method-values attributes did not work
       
       - python 2.1.3 compatibility: boolean values like "required"
-        are tranlsated to int on XML serializations/deserialization
+        are translated to int on XML serializations/deserialization
 
         The last two fixes are due to Sebastien Robin
+
+      - render_hidden of DateTimeField's and fields allowing multiple
+        selections did not lead to something useful for validation
 
   1.6.1
   

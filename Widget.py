@@ -1,4 +1,4 @@
-import string
+import string, types
 from DummyField import fields
 from DocumentTemplate.DT_Util import html_quote
 from DateTime import DateTime
@@ -297,7 +297,14 @@ class LinesTextAreaWidget(TextAreaWidget):
         if value is None:
             return ''
         return string.join(value, field.get_value('view_separator'))
+
+    def render_hidden(self, field, key, value, REQUEST):
+        if value is None:
+            return ''
+        # reuse method from base class 
+        return Widget.render_hidden(self,field,key,'\n'.join(value), REQUEST)
         
+    
 LinesTextAreaWidgetInstance = LinesTextAreaWidget()
 
 class FileWidget(TextWidget):
@@ -512,7 +519,17 @@ class MultiItemsWidget(ItemsWidget):
             return ''
         return string.join(self.render_items_view(field, value),
                            field.get_value('view_separator'))
-    
+
+    def render_hidden(self, field, key, value, REQUEST):
+        if value is not None and type(value) is not types.ListType:
+            value = [value]
+        # reuse method from base class 
+        render_item_hidden = Widget.render_hidden
+        result = []
+        for v in value:
+            result.append(render_item_hidden(self, field, key, v, REQUEST))
+        return ''.join(result)
+
 class ListWidget(SingleItemsWidget):
     """List widget.
     """
@@ -818,6 +835,36 @@ class DateTimeWidget(Widget):
         else:
             return date_result
 
+    def render_hidden(self, field, key, value, REQUEST):
+        result = []
+        if value is None and field.get_value('default_now'):
+            value = DateTime()
+        sub_values = {}
+        subfields = ['year','month','day']
+        if value is not None:                
+            sub_values['year']  = '%04d' % value.year()
+            sub_values['month'] = "%02d" % value.month()
+            sub_values['day']   = "%02d" % value.day()
+            if not field.get_value('date_only'):
+                use_ampm = field.get_value('ampm_time_style')
+                subfields.extend(['hour','minute'])
+                if use_ampm: subfields.append('ampm')
+                if value is not None:
+                    if use_ampm:
+                        sub_values['hour'] = "%02d" % value.h_12()
+                        sub_values['ampm'] = value.ampm()
+                    else:
+                        sub_values['hour'] = "%02d" % value.hour()
+                    sub_values['minute'] = "%02d" % value.minute()
+        for subfield in subfields:
+            # XXX it would be nicer to pass the hidden value somewhere
+            # to the subfields, but ...
+            sub_key = field.generate_subfield_key(subfield)
+            sub_field = field.sub_form.get_field(subfield)
+            result.append(sub_field.widget.render_hidden(sub_field,
+                                    sub_key, sub_values.get(subfield), REQUEST))
+        return ''.join(result)
+    
     def render_view(self, field, value):
         if value is None:
             return ''
