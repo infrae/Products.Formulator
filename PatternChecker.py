@@ -140,8 +140,7 @@ if __name__ == '__main__':
     # German phone number (international)
     print val.validate_value(['+49 (d*) d*'], '+49 (3574) 7253')
     print val.validate_value(['+49 (d*) d*'], '+49  (3574)  7253')
-    
-    print val.validate_value(['dd'], '12')
+
 
 
 

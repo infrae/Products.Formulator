@@ -7,6 +7,11 @@ Formulator Credits
   Yury Don (yura@vpcit.ru) -- contributed EmailField and FloatField,
                               design and implementation help.
 
+  Stephan Richter (srichter@iuveno-net.de) -- contributed LinkField and
+                              FileField. Contributed PatternChecker
+                              module used by PatternField. Other 
+                              design and implementation help.
+
   Nicola Larosa (nico@tekNico.net) -- feedback and bugfixes.
                              
   Also a thank you to those few valiant souls who suffered through the

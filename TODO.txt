@@ -12,5 +12,7 @@ Formulator TODO
 
   - HTML filtering field?
 
-  - Phone/Zipcode/etc field, with ####-##### style patterns. 
+  - Add render_view() to widgets, so that fields can be displayed
+    view-only.
 
+  - Add unit tests!
