@@ -6,6 +6,7 @@ from threading import Thread
 from urllib import urlopen
 from urlparse import urljoin
 from Errors import ValidationError
+from helpers import is_sequence
 
 class ValidatorBase:
     """Even more minimalistic base class for validators.
@@ -389,7 +390,7 @@ class SelectionValidator(StringBaseValidator):
 
         # get the text and the value from the list of items
         for item in field.get_value('items'):
-            if type(item) in [type(()), type([])]:
+            if is_sequence(item):
                 item_text, item_value = item
             else:
                 item_text = item
@@ -440,7 +441,7 @@ class MultiSelectionValidator(Validator):
     def validate(self, field, key, REQUEST):
         values = REQUEST.get(key, [])
         # NOTE: a hack to deal with single item selections
-        if type(values) is not type([]):
+        if not is_sequence(values):
             # put whatever we got in a list
             values = [values]
         # if we selected nothing and entry is required, give error, otherwise
@@ -458,7 +459,7 @@ class MultiSelectionValidator(Validator):
         # create a dictionary of possible values
         value_dict = {}
         for item in field.get_value('items'):
-            if type(item) in [type(()), type([])]:
+            if is_sequence(item):
                 item_text, item_value = item
             else:
                 item_text = item

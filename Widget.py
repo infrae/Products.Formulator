@@ -2,6 +2,7 @@ import string, types
 from DummyField import fields
 from DocumentTemplate.DT_Util import html_quote
 from DateTime import DateTime
+from helpers import is_sequence
 
 class Widget:
     """A field widget that knows how to display itself as HTML.
@@ -480,7 +481,7 @@ class MultiItemsWidget(ItemsWidget):
 
     def render_items(self, field, key, value, REQUEST):
         # need to deal with single item selects
-        if type(value) is not type([]):
+        if not is_sequence(value):
             value = [value]
 
         items = field.get_value('items')
@@ -512,7 +513,7 @@ class MultiItemsWidget(ItemsWidget):
         return rendered_items
 
     def render_items_view(self, field, value):
-        if type(value) is not type([]):
+        if not is_sequence(value):
             value = [value]
 
         items = field.get_value('items')
@@ -536,7 +537,7 @@ class MultiItemsWidget(ItemsWidget):
                            field.get_value('view_separator'))
 
     def render_hidden(self, field, key, value, REQUEST):
-        if value is not None and type(value) is not types.ListType:
+        if value is not None and not is_sequence(value):
             value = [value]
         # reuse method from base class
         render_item_hidden = Widget.render_hidden
