@@ -6,7 +6,9 @@ Change the display order and grouping of the fields in this form.
 </p>
 
 <table border="1" cellspacing="1" cellpadding="3">
-<dtml-let all_groups="get_groups()" group_length="get_largest_group_length()">
+<dtml-let all_groups="get_groups()" 
+          group_length="get_largest_group_length()"
+          first_group="all_groups[0]">
 <dtml-in "get_group_rows()">
 <tr>
 <dtml-let groups=sequence-item>
@@ -69,7 +71,7 @@ Change the display order and grouping of the fields in this form.
   </td></tr>
 
 
-  <dtml-if "group != 'Default'">
+  <dtml-if "group != first_group">
   
   <tr><td align="center" class="list-header">
     <div class="list-item">
@@ -88,6 +90,14 @@ Change the display order and grouping of the fields in this form.
   </td></tr>
 
   <tr><td align="center">
+    <input type="text" name="new_name" value="" size="10">
+  </td></tr>
+
+  <tr><td align="center">
+    <input class="form-element" type="submit" name="manage_rename_group:method"
+           value="Rename"><br>
+  </td></tr>
+  <tr><td align="center">
     <input class="form-element" type="submit" name="manage_remove_group:method"
            value="Remove"><br>
   </td></tr>
@@ -96,7 +106,7 @@ Change the display order and grouping of the fields in this form.
 
   <tr><td align="center" class="list-header">
     <div class="list-item">
-    New group
+    Group
     </div>
   </td></tr>
   
@@ -105,7 +115,16 @@ Change the display order and grouping of the fields in this form.
   </td></tr>
 
   <tr><td align="center">
-    <input type="submit" name="manage_add_group:method" value="Create">
+    <input type="submit" name="manage_add_group:method" value="Create"><br><br>
+  </td></tr>
+
+  <tr><td align="center">
+    <input type="text" name="new_name" value="" size="10">
+  </td></tr>
+
+  <tr><td align="center">
+    <input class="form-element" type="submit" name="manage_rename_group:method"
+           value="Rename"><br>
   </td></tr>
 
   </dtml-if>

@@ -35,12 +35,14 @@ class Form:
         self.groups = {"Default": []}
         # the display order of the groups
         self.group_list = ["Default"]
-       
+        
     # MANIPULATORS
     security.declareProtected('Change Formulator Forms', 'field_added')
-    def field_added(self, field_id, group="Default"):
+    def field_added(self, field_id, group=None):
         """A field was added to the form.
         """
+        # get indicated group or the first group if none was indicated
+        group = group or self.group_list[0]
         # add it to the indicated group (create group if nonexistent)
         groups = self.groups
         field_list = groups.get(group, [])
@@ -122,13 +124,13 @@ class Form:
     def remove_group(self, group):
         """Remove a group.
         """
-        if group == 'Default':
-            return 0 # can't remove Default group! (NOTE: raise instead?)
         groups = self.groups
+        if group == self.group_list[0]:
+            return 0 # can't remove first group
         if not groups.has_key(group):
             return 0 # group does not exist (NOTE: should we raise instead?)
-        # move whatever is in the group now to the end of the default group
-        groups['Default'].extend(groups[group])
+        # move whatever is in the group now to the end of the first group
+        groups[self.group_list[0]].extend(groups[group])
         # now remove the key
         del groups[group]
         # remove it from the group order list as well
@@ -138,6 +140,23 @@ class Form:
         self.groups = groups
         return 1
     
+    security.declareProtected('Change Formulator Forms', 'rename_group')
+    def rename_group(self, group, name):
+        """Rename a group.
+        """
+        group_list = self.group_list
+        groups = self.groups
+        if not groups.has_key(group):
+            return 0 # can't rename unexisting group
+        if groups.has_key(name):
+            return 0 # can't rename into existing name
+        i = group_list.index(group)
+        group_list[i] = name
+        groups[name] = groups[group]
+        del groups[group]
+        return 1
+
+    security.declareProtected('Change Formulator forms', 'move_group_up')
     def move_group_up(self, group):
         """Move a group up in the group list.
         """
@@ -150,6 +169,7 @@ class Form:
         self.group_list = group_list
         return 1
     
+    security.declareProtected('Change Formulator forms', 'move_group_down')  
     def move_group_down(self, group):
         """Move a group down in the group list.
         """
@@ -292,7 +312,7 @@ class BasicForm(Form):
         self.fields = {}
 
     security.declareProtected('Change Formulator Forms', 'add_field')
-    def add_field(self, field, group="Default"):
+    def add_field(self, field, group=None):
         """Add a field to the form to a certain group. 
         """
         # update group info
@@ -563,6 +583,23 @@ class PythonForm(ObjectManager, Item, Form):
         return self.formOrder(self, REQUEST,
                               manage_tabs_message=message)
 
+    security.declareProtected('Change Formulator Forms',
+                              'manage_rename_group')
+    def manage_rename_group(self, group, REQUEST):
+        """Renames group.
+        """
+        if REQUEST.has_key('new_name'):
+            new_name = string.strip(REQUEST['new_name'])
+            if self.rename_group(group, new_name):
+                message = "Group %s renamed to %s." % (group, new_name)
+            else:
+                message = "Can't rename group."
+        else:
+            message = "No new name supplied."
+
+        return self.formOrder(self, REQUEST,
+                              manage_tabs_message=message)
+    
     security.declareProtected('Change Formulator Forms',
                               'manage_move_group_up')
     def manage_move_group_up(self, group, REQUEST):

@@ -1,5 +1,15 @@
 Formulator changes
 
+  0.9.2
+
+    Features Added
+
+      - Ability to rename groups, including the first 'Default' group.
+
+    Bugs Fixed
+
+      - Added more missing security declarations.
+
   0.9.1
 
     Features Added

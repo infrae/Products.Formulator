@@ -6,8 +6,8 @@ Formulator Form - Order
     should be displayed in the form. You can also group fields together;
     this may be helpful when you create a complicated form.
 
-    Any field that gets added to the form ends up in the 'Default'
-    group. The 'Default' group always exists and cannot be removed.
+    Any field that gets added to the form ends up in the first  
+    group. This group always exists and cannot be removed.
 
     You can click on the field id to go directly to the field management
     screen.
@@ -34,10 +34,10 @@ Formulator Form - Order
 
   Creating a new group
 
-    The 'Default' group has a 'New group' input box at the
-    bottom. Fill in the name of the new group that you want to create
-    there, and press the 'Create' button. The new group will be added
-    (as the last group visible).
+    The first group has a button called 'Create' at the bottom,
+    with an input box above it. Fill in the name of the new group that
+    you want to create there, and press the 'Create' button. The new group
+    will be added (as the last group visible).
 
   How the groups are displayed
 
@@ -66,15 +66,19 @@ Formulator Form - Order
 
     You can change the order of the gropus by using the 'Move Up' and
     'Move Dn' buttons in the 'Group' section of a group. This moves
-    the entire group in the group order. You cannot move the 'Default'
-    group (and it therefore has no group movement buttons), and the
-    'Default' group is always the first group.
+    the entire group in the group order. You cannot move the first 
+    group (and it therefore has no group movement buttons).
 
+  Renaming groups
+
+    You can rename a group by filling in the new name in the input
+    box above the 'Rename' button, and then pressing that button.
+  
   Removing groups
 
     You can remove a group by pressing the 'Remove' button in the 'Group'
     section of the group. The entire group will disappear. Any fields that
-    were in the group will move to the bottom of the 'Default' group;
+    were in the group will move to the bottom of the first group;
     you cannot lose any fields this way.
 
 
