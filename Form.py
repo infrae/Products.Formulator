@@ -440,6 +440,7 @@ class BasicForm(Persistent, Acquisition.Implicit, Form):
         BasicForm.inheritedAttribute('__init__')(self,
                                                  action, method, enctype,
                                                  name, encoding)
+        self.title = 'Basic Form' # XXX to please FormToXML..
         self.fields = {}
 
     security.declareProtected('Change Formulator Forms', 'add_field')

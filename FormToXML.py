@@ -1,16 +1,14 @@
 from StringIO import StringIO
 from cgi import escape
 
-def formToXML(form):
+def formToXML(form, prologue=1):
     """Takes a formulator form and serializes it to an XML representation.
     """
-    id = form.getId()
-    id = id + '.form'
-
     f = StringIO()
     write = f.write
-    
-    write('<?xml version="1.0" encoding="iso-8859-1"?>\n\n')
+
+    if prologue:
+        write('<?xml version="1.0" encoding="iso-8859-1"?>\n\n')
     write('<form>\n')
     # export form settings
     # XXX Should we be encoding some text?

@@ -8,9 +8,13 @@ Formulator changes
         Formulator.BasicForm, allowing it to be created inside a
         product but used outside it.
 
+      - Allow turning off of XML prologue section.
+
     Bugs Fixed
 
       - XML serialization should be more consistent now.
+ 
+      - Allow XML export of BasicForm.
 
   1.4.2
   
