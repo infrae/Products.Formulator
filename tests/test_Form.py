@@ -465,7 +465,33 @@ class FormTestCase(ZopeTestCase.ZopeTestCase):
         text = self.form.text
         text.tales['default'] = TALESMethod('nothing')
         self.assertEquals(1, text.render().count('value=""') )
+
+    def test_add_unicode_form(self):
+        # test bugfix when adding a form with a non-ascii title
+        # and the unicode flag set
+        self.root.manage_addProduct['Formulator'] \
+                 .manage_add('form2', 'Test Form b\xef\xbf\xbdr', unicode_mode=1)
+
+        form2 = self.root.form2
+        self.assertEquals(1, form2.get_unicode_mode())
+        self.assertEquals( type(u' '), type(form2.title))
+        self.assertEquals( u'Test Form b\ufffdr', form2.title)
+
+    def test_add_unicode_field(self):
+        # test bugfix when adding a field with a non-ascii title
+        # to a form with the unicode flag set
+        self.root.manage_addProduct['Formulator'] \
+                 .manage_add('form2', 'Test Form b\xef\xbf\xbdr', unicode_mode=1)
+
+        form2 = self.root.form2
+        self.assertEquals(1, form2.get_unicode_mode())
         
+        form2.manage_addField('testfield', 'Test field b\xef\xbf\xbdr', \
+                              'StringField')
+        self.assertEquals(type(u' '), type(form2.testfield.title()))
+        self.assertEquals(u'Test field b\ufffdr', form2.testfield.title())
+        self.assertEquals(u'Test field b\ufffdr', form2.testfield.get_value('title'))
+
 
 def test_suite():
     suite = unittest.TestSuite()
