@@ -1,5 +1,13 @@
 Formulator changes
 
+  Under Development
+  
+    Bugs Fixed
+ 
+      - Adding Fields to empty Groups had not been possible
+
+      - ZMI "Order" tab of an empty form did raise an exception
+
   1.6.0
   
     Features Added
