@@ -828,7 +828,7 @@ def add_and_edit(self, id, REQUEST):
         u = self.DestinationURL()
     except:
         u = REQUEST['URL1']
-    if REQUEST['submit'] == " Add and Edit ":
+    if hasattr(REQUEST, 'submit_add_and_edit'):
         u = "%s/%s" % (u, quote(id))
     REQUEST.RESPONSE.redirect(u+'/manage_main')
 
