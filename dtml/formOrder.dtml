@@ -20,8 +20,8 @@ Change the display order and grouping of the fields in this form.
   <input type="hidden" name="group" value="&dtml-group;">
   <tr><td align="center" class="list-header">
     <div class="list-nav">
-    <dtml-var group>
-    </div
+    <dtml-var group html_quote>
+    </div>
     </td></tr>
   
   <tr><td align="left">
@@ -36,7 +36,6 @@ Change the display order and grouping of the fields in this form.
 	  </td></tr>
     </dtml-let>
     </dtml-in>
-    </select>
     <dtml-in "_.range(group_length - fields_amount)">
        <tr><td height="25"></td></tr>
     </dtml-in>
@@ -59,7 +58,7 @@ Change the display order and grouping of the fields in this form.
     <select class="form-element" name="to_group" size="1">
       <option>Move to:</option>
       <dtml-in all_groups>
-        <option><dtml-var sequence-item></option>
+        <option><dtml-var sequence-item html_quote></option>
       </dtml-in>
     </select>
     </div>
