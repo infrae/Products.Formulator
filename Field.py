@@ -413,8 +413,10 @@ class ZMIField(
                     new_values = []
                     for valueitem in value:
                         if type(valueitem) == type(''):
+                            # result e.g. from ListField
                             valueitem = unicode(valueitem, 'UTF-8')
                         elif type(valueitem) == type(()):
+                            # result from ListTextAreaField
                             valueitem = (unicode(valueitem[0], 'UTF-8'),
                                          unicode(valueitem[1], 'UTF-8'))
                         new_values.append(valueitem)
