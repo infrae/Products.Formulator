@@ -44,7 +44,6 @@ class FSForm(FSObject, ZMIForm):
         return None
 
     def _readFile(self, reparse):
-##        print 'reading FSForm file'
         file = open(expandpath(self._filepath), 'rb')
         try:
             data = file.read()
@@ -57,54 +56,57 @@ class FSForm(FSObject, ZMIForm):
         except:
             # bare except here, but I hope this is ok, as the
             # exception should be reraised
-            # (except if the LOG raises another one ... should we be more paranoid here?)
+            # (except if the LOG raises another one ...
+            # should we be more paranoid here?)
             import zLOG
-            zLOG.LOG('Formulator.FSForm',zLOG.ERROR,
-                     'error reading form from file '+expandpath(self._filepath))
+            zLOG.LOG(
+                'Formulator.FSForm', zLOG.ERROR,
+                'error reading form from file ' +
+                expandpath(self._filepath))
             raise
 
     #### The following is mainly taken from Form.py ACCESSORS section ###
 
-    def get_field_ids(self):
-        self._updateFromFS()
-        return ZMIForm.get_field_ids(self)
+##     def get_field_ids(self):
+##         self._updateFromFS()
+##         return ZMIForm.get_field_ids(self)
 
-    def get_fields_in_group(self, group):
-        self._updateFromFS()
-        return ZMIForm.get_fields_in_group(self, group)
+##     def get_fields_in_group(self, group):
+##         self._updateFromFS()
+##         return ZMIForm.get_fields_in_group(self, group)
 
-    def has_field(self, id):
-        self._updateFromFS()
-        return ZMIForm.has_field(self, id)
+##     def has_field(self, id):
+##         self._updateFromFS()
+##         return ZMIForm.has_field(self, id)
 
-    def get_field(self, id):
-        self._updateFromFS()
-        return ZMIForm.get_field(self, id)
+##     def get_field(self, id):
+##         self._updateFromFS()
+##         return ZMIForm.get_field(self, id)
 
-    def get_groups(self):
-        self._updateFromFS()
-        return ZMIForm.get_groups(self)
+##     def get_groups(self):
+##         self._updateFromFS()
+##         return ZMIForm.get_groups(self)
 
-    def get_form_encoding(self):
-        self._updateFromFS()
-        return ZMIForm.get_form_encoding(self)
+##     def get_form_encoding(self):
+##         self._updateFromFS()
+##         return ZMIForm.get_form_encoding(self)
 
-    def header(self):
-        self._updateFromFS()
-        return ZMIForm.header(self)
+##     def header(self):
+##         self._updateFromFS()
+##         return ZMIForm.header(self)
 
-    def get_xml(self):
-        self._updateFromFS()
-        return ZMIForm.get_xml(self)
+##     def get_xml(self):
+##         self._updateFromFS()
+##         return ZMIForm.get_xml(self)
 
-    def all_meta_types(self):
-        self._updateFromFS()
-        return ZMIForm.all_meta_types(self)
+##     def all_meta_types(self):
+##         self._updateFromFS()
+##         return ZMIForm.all_meta_types(self)
 
-    security.declareProtected('View management screens', 'get_group_rows')
-    def get_group_rows(self):
-        self._updateFromFS()
-        return ZMIForm.get_group_rows(self)
+##     security.declareProtected('View management screens', 'get_group_rows')
+##     def get_group_rows(self):
+##         self._updateFromFS()
+##         return ZMIForm.get_group_rows(self)
 
 Globals.InitializeClass(FSForm)
 
