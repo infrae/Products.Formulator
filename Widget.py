@@ -93,10 +93,10 @@ class TextWidget(Widget):
                                            title='Maximum input',
                                            description=(
         "The maximum input in characters that the widget will allow. "
-        "Required. If set to 0, there is no maximum. Note that is "
-        "client side behavior only."),
-                                           default=0,
-                                           required=1)
+        "Required. If set to 0 or is left empty, there is no maximum. "
+        "Note that is client side behavior only."),
+                                           default="",
+                                           required=0)
 
     extra = fields.StringField('extra',
                                title='Extra',
@@ -111,7 +111,7 @@ class TextWidget(Widget):
     def render(self, field, key, value, REQUEST):
         """Render text input field.
         """
-        display_maxwidth = field.get_value('display_maxwidth')
+        display_maxwidth = field.get_value('display_maxwidth') or 0
         if display_maxwidth > 0:
             return render_element("input",
                                   type="text",
@@ -137,7 +137,7 @@ class PasswordWidget(TextWidget):
     def render(self, field, key, value, REQUEST):
         """Render password input field.
         """
-        display_maxwidth = field.get_value('display_maxwidth')
+        display_maxwidth = field.get_value('display_maxwidth') or 0
         if display_maxwidth > 0:
             return render_element("input",
                                   type="password",

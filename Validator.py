@@ -70,10 +70,11 @@ class StringValidator(StringBaseValidator):
                                      title='Maximum length',
                                      description=(
         "The maximum amount of characters that can be entered in this "
-        "field. If set to 0, there is no maximum. Note that this is "
-        "server side validation. Required."),
-                                     default=0,
-                                     required=1)
+        "field. If set to 0 or is left empty, there is no maximum. "
+        "Note that this is server side validation."),
+                                     default="",
+                                     required=0)
+    
     truncate = fields.CheckBoxField('truncate',
                                     title='Truncate',
                                     description=(
@@ -90,7 +91,7 @@ class StringValidator(StringBaseValidator):
     def validate(self, field, key, REQUEST):
         value = StringBaseValidator.validate(self, field, key, REQUEST)
 
-        max_length = field.get_value('max_length')
+        max_length = field.get_value('max_length') or 0
         truncate = field.get_value('truncate')
         
         if max_length > 0 and len(value) > max_length:
@@ -211,25 +212,25 @@ class LinesValidator(StringBaseValidator):
                                     title='Maximum lines',
                                     description=(
         "The maximum amount of lines a user can enter. If set to 0, "
-        "there is no maximum. Required."),
-                                    default=0,
-                                    required=1)
+        "or is left empty, there is no maximum."),
+                                    default="",
+                                    required=0)
 
     max_linelength = fields.IntegerField('max_linelength',
                                          title="Maximum length of line",
                                          description=(
-        "The maximum length of a line. If set to 0, there is no "
-        "maximum. Required."),
-                                         default=0,
-                                         required=1)
+        "The maximum length of a line. If set to 0 or is left empty, there "
+        "is no maximum."),
+                                         default="",
+                                         required=0)
 
     max_length = fields.IntegerField('max_length',
                                      title="Maximum length (in characters)",
                                      description=(
         "The maximum total length in characters that the user may enter. "
-        "If set to 0, there is no maximum. Required."),
-                                     default=0,
-                                     required=1)
+        "If set to 0 or is left empty, there is no maximum."),
+                                     default="",
+                                     required=0)
     
     message_names = StringBaseValidator.message_names +\
                     ['too_many_lines', 'line_too_long', 'too_long']
@@ -245,20 +246,20 @@ class LinesValidator(StringBaseValidator):
         if value == "" and not field.get_value('required'):
             return value
         # check whether the entire input is too long
-        max_length = field.get_value('max_length')
+        max_length = field.get_value('max_length') or 0
         if max_length and len(value) > max_length:
             self.raise_error('too_long', field)
         # split input into separate lines
         lines = string.split(value, "\n")
 
         # check whether we have too many lines
-        max_lines = field.get_value('max_lines')
+        max_lines = field.get_value('max_lines') or 0
         if max_lines and len(lines) > max_lines:
             self.raise_error('too_many_lines', field)
 
         # strip extraneous data from lines and check whether each line is
         # short enough
-        max_linelength = field.get_value('max_linelength')
+        max_linelength = field.get_value('max_linelength') or 0
         result = []
         for line in lines:
             line = string.strip(line)
