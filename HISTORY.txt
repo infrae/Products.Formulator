@@ -1,5 +1,15 @@
 Formulator changes
 
+  0.9.6
+
+    Features Added
+
+       - nothing yet
+
+    Bugs Fixed
+
+       - Fixed minor bug in year handling of DateTimeField.
+
   0.9.5
 
     Features Added
