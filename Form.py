@@ -243,7 +243,13 @@ class Form:
         """
         result = {}
         for field in self.get_fields():
-            result[field.id] = field.validate(REQUEST)
+            value = field.validate(REQUEST)
+            # store under id
+            result[field.id] = value
+            # store as alternate name as well if necessary
+            alternate_name = field.get_value('alternate_name')
+            if alternate_name:
+                result[alternate_name] = value   
         return result
 
     security.declareProtected('View', 'validate_to_request')
@@ -265,7 +271,13 @@ class Form:
         errors = []
         for field in self.get_fields():
             try:
-                result[field.id] = field.validate(REQUEST)
+                value = field.validate(REQUEST)
+                # store under id
+                result[field.id] = value
+                # store as alternate name as well if necessary
+                alternate_name = field.get_value('alternate_name')
+                if alternate_name:
+                    result[alternate_name] = value
             except ValidationError, err:
                 errors.append(err)
         if len(errors) > 0:

@@ -6,7 +6,8 @@ class Widget:
     """
     
     property_names = ['title', 'description',
-                      'default', 'css_class', 'hidden']
+                      'default', 'css_class', 'alternate_name',
+                      'hidden']
 
     title = fields.StringField('title',
                                title='Title',
@@ -34,6 +35,16 @@ class Widget:
                                    default="",
                                    required=0)
 
+    alternate_name = fields.StringField('alternate_name',
+                                        title='Alternate name',
+                                        description=(
+        "An alternative name for this field. This name will show up in "
+        "the result dictionary when doing validation, and in the REQUEST "
+        "if validation goes to request. This can be used to support names "
+        "that cannot be used as Zope ids."),
+                                        default="",
+                                        required=0)
+    
     hidden = fields.CheckBoxField('hidden',
                                   title="Hidden",
                                   description=(
