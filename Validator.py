@@ -628,7 +628,8 @@ class DateTimeValidator(Validator):
 
         # handling of completely empty sub fields
         if ((year == '' and month == '' and day == '') and
-            (field.get_value('date_only') or (hour == '' and minute == ''))): 
+            (field.get_value('date_only') or (hour == '' and minute == '')
+            or (hour == 0 and minute == 0))): 
             if field.get_value('required'):
                 self.raise_error('required_not_found', field)
             else:

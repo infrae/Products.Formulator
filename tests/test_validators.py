@@ -440,6 +440,11 @@ class DateTimeValidatorTestCase(ValidatorTestCase):
         self.assertEquals(1, result.day())
         self.assertEquals(10, result.hour())
         self.assertEquals(30, result.minute())
+
+    def test_allow_empty_time2(self):
+        result = self.v.validate(
+            DateTimeField('f', allow_empty_time=1, required=0), 'f', {})
+        self.assertEquals(None, result)
         
 def test_suite():
     suite = unittest.TestSuite()
