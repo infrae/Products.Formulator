@@ -53,7 +53,20 @@ class Widget:
         "contents of the hidden field will be the default value. "
         "Hidden fields are not visible but will be validated."),
                                   default=0)
-    
+
+    # NOTE: for ordering reasons (we want extra at the end),
+    # this isn't in the base class property_names list, but
+    # instead will be referred to by the subclasses.
+    extra = fields.StringField('extra',
+                               title='Extra',
+                               description=(
+        "A string containing extra HTML code for attributes. This "
+        "string will be literally included in the rendered field."
+        "This property can be useful if you want "
+        "to add an onClick attribute to use with JavaScript, for instance."),
+                               default="",
+                               required=0)
+      
     def render(self, field, key, value, REQUEST):
         """Renders this widget as HTML using property values in field.
         """
@@ -97,17 +110,7 @@ class TextWidget(Widget):
         "Note that is client side behavior only."),
                                            default="",
                                            required=0)
-
-    extra = fields.StringField('extra',
-                               title='Extra',
-                               description=(
-        "A string containing extra HTML code for attributes. This "
-        "string will be literally included in the rendered field."
-        "This property can be useful if you want "
-        "to add an onClick attribute to use with JavaScript, for instance."),
-                               default="",
-                               required=0)
-    
+   
     def render(self, field, key, value, REQUEST):
         """Render text input field.
         """
@@ -167,17 +170,7 @@ class CheckBoxWidget(Widget):
         "Default setting of the widget; either checked or unchecked. "
         "(true or false)"),
                                    default=0)
-
-    extra = fields.StringField('extra',
-                               title='Extra',
-                               description=(
-        "A string containing extra HTML code for attributes. This "
-        "string will be literally included in the rendered field."
-        "This property can be useful if you want "
-        "to add an onClick attribute to use with JavaScript, for instance."),
-                               default="",
-                               required=0)
-        
+    
     def render(self, field, key, value, REQUEST):
         """Render checkbox.
         """
@@ -224,16 +217,6 @@ class TextAreaWidget(Widget):
         "The height (rows) in characters. Required."),
                                  default=5,
                                  required=1)
-
-    extra = fields.StringField('extra',
-                               title='Extra',
-                               description=(
-        "A string containing extra HTML code for attributes. This "
-        "string will be literally included in the rendered field."
-        "This property can be useful if you want "
-        "to add an onClick attribute to use with JavaScript, for instance."),
-                               default="",
-                               required=0)
 
     def render(self, field, key, value, REQUEST):
         width = field.get_value('width')
@@ -306,16 +289,6 @@ class ListWidget(Widget):
         "if set to something higher, a list will be shown. Required."),
                                default=5,
                                required=1)
-
-    extra = fields.StringField('extra',
-                               title='Extra',
-                               description=(
-        "A string containing extra HTML code for attributes. This "
-        "string will be literally included in the rendered field."
-        "This property can be useful if you want "
-        "to add an onClick attribute to use with JavaScript, for instance."),
-                               default="",
-                               required=0)
 
     def render(self, field, key, value, REQUEST):
         # we always need a string value
