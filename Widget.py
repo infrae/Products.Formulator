@@ -438,6 +438,21 @@ class SingleItemsWidget(ItemsWidget):
             rendered_items.append(rendered_item)
 
         return rendered_items
+
+
+    def render_view(self, field, value):
+        if value is None:
+            return ''
+        items = field.get_value('items')
+        for item in items:
+            try:
+                item_text, item_value = item
+            except ValueError:
+                item_text = item
+                item_value = item
+            if value==item_value:
+                return item_text
+        raise KeyError, "Wrong item value [[%s]]" % (value,)
         
 class MultiItemsWidget(ItemsWidget):
     """A widget with a number of items that has multiple selectable
@@ -562,11 +577,6 @@ class ListWidget(SingleItemsWidget):
     def render_selected_item(self, text, value, key, css_class, extra_item):
         return render_element('option', contents=text, value=value,
                               selected=None, extra=extra_item)
-
-    def render_view(self, field, value):
-        if value is None:
-            return ''
-        return value
     
 ListWidgetInstance = ListWidget()
 
@@ -647,11 +657,6 @@ class RadioWidget(SingleItemsWidget):
                               value=value,
                               checked=None,
                               extra=extra_item) + text
-
-    def render_view(self, field, value):
-        if value is None:
-            return ''
-        return value
         
 RadioWidgetInstance = RadioWidget()
 

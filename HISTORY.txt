@@ -26,6 +26,9 @@ Formulator changes
       - render_hidden of DateTimeField's and fields allowing multiple
         selections did not lead to something useful for validation
 
+      - RadioField and ListField did not display the text but the value
+        in render_view
+
   1.6.1
   
     Bugs Fixed
