@@ -183,8 +183,7 @@ class PatternValidator(StringValidator):
         "alphanumeric characters ('f'). Any other character in the pattern "
         "should appear literally in the value in that place. Internal "
         "whitespace is checked as well but may be included in any amount. "
-        "Example: 'dddd ee' is a Dutch zipcode (postcode). "
-        "NOTE: currently experimental and details may change!")
+        "Example: 'dddd ee' is a Dutch zipcode (postcode). ")
                                  )
 
     message_names = StringValidator.message_names +\
