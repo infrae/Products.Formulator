@@ -23,7 +23,10 @@ Many thanks go to:
 
   Ulrich Eck (ueck@net-labs.de) -- much help and patience with the
                                    TALES tab.
-                       
+  
+  Dirk Datzert (Dirk.Datzert@rasselstein-hoesch.de) -- help with the
+                                    LinkValidator
+
   Also a thank you to those few valiant souls who suffered through the
   bugs of ZFormulator, the previous implementation. Let's hope this
   one's better!
