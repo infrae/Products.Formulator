@@ -28,6 +28,10 @@ Formulator changes
       - Fields having been removed via the XML tab in the ZMI still
         showed up in the "Contents" tab.
 
+      - As a convenience TALES expressions now may return "None" for
+        the default value, which is rendered as the empty string.
+        (previously it has been rendered as "value".)
+
   1.7.0
  
     Features Added

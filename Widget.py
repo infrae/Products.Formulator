@@ -961,8 +961,11 @@ def render_tag(tag, **kw):
 
     # handle other attributes
     for key, value in kw.items():
-        if value == None:
-            value = key
+        if value is None:
+            if key == 'value':
+                value = ''
+            else:
+                value = key
         attr_list.append('%s="%s"' % (key, html_quote(value)))
 
     attr_str = string.join(attr_list, " ")
