@@ -1,5 +1,47 @@
 Formulator changes
 
+  Recent Development
+
+    Bugs Fixed
+
+      - Zope 2.7 compatibility: Because in Zope 2.7 the behaviour
+        of constructing invalid DateTime object changes from raising
+        string exceptions to class based exceptions.
+         This caused the DateTimeField's to pass through the new
+        exceptions instead of convering them to ValidationError
+        changed:
+             Validator.py:DateTimeValidator and import section;
+             test/test_validators.py:DateTimeValidatorTestCase
+
+      - PatternFields are no longer documented as "experimental"
+        in the Help system.
+        changed 
+             Validator.py:PatternValidator
+
+      - DateTime values field values (like start or end time) have
+        been wrongly represented as strings in the XML representation.
+        changed:
+             XMLToForm.py, FormToXML.py.
+             test/test_serialize.py
+
+      - fix bug with rendering of listfields similar to the
+        "single element list with one two-char string" bug fixed
+        for validation in 1.6.2
+        changed:
+           Widgets.py: SingleItemsWidget, MultiItemsWidget
+           test/test_Form.py
+
+      - fixed bug in DateTime field where a set "default to now" overwrote
+        values in the request 
+        changed:
+          Widgets.py:DateTimeWidget.render
+          tests/test_serialize.py:FakeRequest
+          tests/test_Form.py
+
+      - several spelling bugs
+        changed
+             test_Form.py
+
   1.7.0
  
     Features Added
