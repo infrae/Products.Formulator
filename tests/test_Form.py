@@ -432,7 +432,7 @@ class FormTestCase(unittest.TestCase):
         values = {'field_title' : 'Title\xc3\xbc' ,
                   'field_default' : 'item\xc3\xbc',
                   'field_items': 'item\xc3\xbc | item_ue\nitem2 | item2',
-                  'field_size': '5',
+                  'field_size': '7',
                   }
         request.update(values)
         list_field.manage_edit(request)
@@ -441,6 +441,8 @@ class FormTestCase(unittest.TestCase):
         expected_items = [ (u'item\xfc',u'item_ue'), ('item2','item2') ]
         self.assertEquals(expected_items,
                           list_field.get_value('items') )
+
+        self.assertEquals(7, list_field.get_value('size'))
 
         # the lines field has a plain list of string as 'default'
         request = FakeRequest()
