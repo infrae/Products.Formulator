@@ -6,9 +6,37 @@ Formulator changes
 
       - Ability to rename groups, including the first 'Default' group.
 
+      - Improved support for sticky forms; form.render() can now
+        take an optional second argument, REQUEST, which can come
+        from a previous form submit. Even unvalidated fields will
+        then be sticky.
+
+      - fields can call an extra optional external validation 
+        function (such as a Python script).
+
+      - New alternate name property: the alternate name is added to
+        the result dictionary or REQUEST object after validation. This
+        can be useful to support field names which wouldn't be valid
+        field names, which can occur in some locales.
+
+      - New extra property; can be used to add extra attributes to
+        a HTML tag.
+
+      - Some IntegerField properties can now be left empty if 
+        no value is required, instead of having to set them to 0.
+
+      - Merged functionality of RangedIntegerField into IntegerField.
+        RangedIntegerField is not addable anymore, though supported
+        as a clone of IntegerField for backwards compatibility. Leaving
+        'start' and 'end' empty in the new IntegerField will mean those
+        checks will not be performed.
+
     Bugs Fixed
 
       - Added more missing security declarations.
+
+      - html_quote added in various places to make fields display
+        various HTML entities the right way.
 
   0.9.1
 
