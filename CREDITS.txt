@@ -20,6 +20,9 @@ Many thanks go to:
   Magnus Heino (magus.heino@rivermen.se) -- feedback and bugfixes.
 
   Joel Burton (jburton@scw.org) -- feedback and bugfixes.
+
+  Ulrich Eck (ueck@net-labs.de) -- much help and patience with the
+                                   TALES tab.
                        
   Also a thank you to those few valiant souls who suffered through the
   bugs of ZFormulator, the previous implementation. Let's hope this
