@@ -1,6 +1,7 @@
 import unittest
 import ZODB
 import OFS.Application
+from ZPublisher.TaintedString import TaintedString
 from Products.Formulator import Validator
 from Products.Formulator.StandardFields import DateTimeField
 
@@ -116,6 +117,17 @@ class StringValidatorTestCase(ValidatorTestCase):
                       whitespace_preserve=1),
             'f', {'f' : ' foo '})
         self.assertEqual(' foo ', result)
+
+    def test_brokenTaintedString(self):
+        # same as test_basic, instead that we pass in a "TaintedString"
+        # this in passed by ZPublisher and looks like a string most of the time
+        # but has been broken wrt. to the string.strip module in conjunction
+        # with python 2.3.x. Check that we do not run into this brokeness
+        result = self.v.validate(
+            TestField('f', max_length=0, truncate=0, required=0, unicode=0),
+            'f', {'f' : TaintedString('<foo>')})
+        self.assertEqual('<foo>', result)
+
 
 class LinesValidatorTestVase(ValidatorTestCase):
 
