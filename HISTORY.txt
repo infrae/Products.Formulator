@@ -23,6 +23,9 @@ Formulator changes
       - is_required() utility method on field to check whether a field
         is required.
 
+      - some internal features, such the ability to have a method
+        called as soon as a property has changed.
+
     Bugs Fixed
 
       - Fixed typos in security assertions.
