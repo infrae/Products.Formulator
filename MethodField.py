@@ -4,6 +4,7 @@ import Widget, Validator
 from Globals import Persistent
 import Acquisition
 from Field import PythonField
+from AccessControl import getSecurityManager
 
 class MethodWidget(Widget.TextWidget):
     default = fields.MethodField('default',
@@ -11,7 +12,7 @@ class MethodWidget(Widget.TextWidget):
                                  default="",
                                  required=0)
     
-    def render(self, field, value=None):
+    def render(self, field, key, value, REQUEST):
         if value == None:
             method_name = field.get_value('default')
         else:
@@ -20,7 +21,7 @@ class MethodWidget(Widget.TextWidget):
             else:
                 method_name = ""
                 
-        return Widget.TextWidget.render(self, field, method_name)
+        return Widget.TextWidget.render(self, field, key, method_name, REQUEST)
 
 MethodWidgetInstance = MethodWidget()
 
@@ -31,13 +32,19 @@ class Method(Persistent, Acquisition.Implicit):
         self.method_name = method_name
         
     def __call__(self, *arg, **kw):
-        # FIXME: see that we invoke Zope's security system first
-        return apply(getattr(self, self.method_name), arg, kw)
-        
+        # get method from acquisition path
+        method = getattr(self, self.method_name)
+        # check if we have 'View' permission for this method\
+        # (raises error if not)
+        getSecurityManager().checkPermission('View', method)
+        # okay, execute it with supplied arguments
+        return apply(method, arg, kw)
+
 class MethodValidator(Validator.StringBaseValidator):
 
-    def validate(self, field, REQUEST):
-        value = Validator.StringBaseValidator.validate(self, field, REQUEST)
+    def validate(self, field, key, REQUEST):
+        value = Validator.StringBaseValidator.validate(self, field, key,
+                                                       REQUEST)
 
         if value == "" and not field.get_value('required'):
             return value

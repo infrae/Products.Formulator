@@ -11,6 +11,19 @@ Installing Formulator
 
       http://www.zope.org/Members/mcdonc/Products/CoreSessionTracking
 
+  Upgrading
+
+    to 0.9.2 from earlier versions 
+
+      There should be no significant upgrade problems; your forms
+      should still work. RangedIntegerFields should show up as
+      IntegerFields, which subsume their functionality.
+
+    to 0.9.1 from earlier versions
+
+      There should be no significant upgrade problems; your forms
+      should still work.
+
   Quickstart
 
     Formulator follows the normal Zope filesystem product installation
@@ -44,7 +57,6 @@ Installing Formulator
     Products screen ('/Control_Panel/Products'). In a Zope folder, you
     should now see a 'Formulator Form' in your 'Add' list. You should
     be able to add a form to a folder now.
-
 
 
 

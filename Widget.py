@@ -1,12 +1,14 @@
 import string
 from DummyField import fields
+from DocumentTemplate.DT_Util import html_quote
 
 class Widget:
     """A field widget that knows how to display itself as HTML.
     """
     
     property_names = ['title', 'description',
-                      'default', 'css_class']
+                      'default', 'css_class', 'alternate_name',
+                      'hidden']
 
     title = fields.StringField('title',
                                title='Title',
@@ -25,7 +27,7 @@ class Widget:
                                        default="",
                                        width="20", height="3",
                                        required=0)
-
+    
     css_class = fields.StringField('css_class',
                                    title='CSS class',
                                    description=(
@@ -33,17 +35,43 @@ class Widget:
         "formulator fields using cascading style sheets. Not required."),
                                    default="",
                                    required=0)
+
+    alternate_name = fields.StringField('alternate_name',
+                                        title='Alternate name',
+                                        description=(
+        "An alternative name for this field. This name will show up in "
+        "the result dictionary when doing validation, and in the REQUEST "
+        "if validation goes to request. This can be used to support names "
+        "that cannot be used as Zope ids."),
+                                        default="",
+                                        required=0)
     
-    def render(self, field, value=None):
+    hidden = fields.CheckBoxField('hidden',
+                                  title="Hidden",
+                                  description=(
+        "This field will be on the form, but as a hidden field. The "
+        "contents of the hidden field will be the default value. "
+        "Hidden fields are not visible but will be validated."),
+                                  default=0)
+    
+    def render(self, field, key, value, REQUEST):
         """Renders this widget as HTML using property values in field.
         """
         return "[widget]"
-    
+        
+    def render_hidden(self, field, key, value, REQUEST):
+        """Renders this widget as a hidden field.
+        """
+        return render_element("input",
+                              type="hidden",
+                              name=key,
+                              value=value)
+                              
 class TextWidget(Widget):
     """Text widget
     """
     property_names = Widget.property_names +\
-                     ['display_width', 'display_maxwidth']
+                     ['display_width', 'display_maxwidth', 'extra']
 
     default = fields.StringField('default',
                                  title='Default',
@@ -65,63 +93,73 @@ class TextWidget(Widget):
                                            title='Maximum input',
                                            description=(
         "The maximum input in characters that the widget will allow. "
-        "Required. If set to 0, there is no maximum. Note that is "
-        "client side behavior only."),
-                                           default=0,
-                                           required=1)
+        "Required. If set to 0 or is left empty, there is no maximum. "
+        "Note that is client side behavior only."),
+                                           default="",
+                                           required=0)
+
+    extra = fields.StringField('extra',
+                               title='Extra',
+                               description=(
+        "A string containing extra HTML code for attributes. This "
+        "string will be literally included in the rendered field."
+        "This property can be useful if you want "
+        "to add an onClick attribute to use with JavaScript, for instance."),
+                               default="",
+                               required=0)
     
-    def render(self, field, value=None):
+    def render(self, field, key, value, REQUEST):
         """Render text input field.
         """
-        if value == None:
-            value = field.get_value('default')
-        display_maxwidth = field.get_value('display_maxwidth')
+        display_maxwidth = field.get_value('display_maxwidth') or 0
         if display_maxwidth > 0:
             return render_element("input",
                                   type="text",
-                                  name=field.get_field_key(),
+                                  name=key,
                                   css_class=field.get_value('css_class'),
                                   value=value,
                                   size=field.get_value('display_width'),
-                                  maxlength=display_maxwidth)
+                                  maxlength=display_maxwidth,
+                                  extra=field.get_value('extra'))
         else:
             return render_element("input",
                                   type="text",
-                                  name=field.get_field_key(),
+                                  name=key,
                                   css_class=field.get_value('css_class'),
                                   value=value,
-                                  size=field.get_value('display_width'))
+                                  size=field.get_value('display_width'),
+                                  extra=field.get_value('extra'))
 
 TextWidgetInstance = TextWidget()
 
 class PasswordWidget(TextWidget):
-    def render(self, field, value=None):
+    
+    def render(self, field, key, value, REQUEST):
         """Render password input field.
         """
-        if value == None:
-            value = field.get_value('default')
-        display_maxwidth = field.get_value('display_maxwidth')
+        display_maxwidth = field.get_value('display_maxwidth') or 0
         if display_maxwidth > 0:
             return render_element("input",
                                   type="password",
-                                  name=field.get_field_key(),
+                                  name=key,
                                   css_class=field.get_value('css_class'),
                                   value=value,
                                   size=field.get_value('display_width'),
-                                  maxlength=display_maxwidth)
+                                  maxlength=display_maxwidth,
+                                  extra=field.get_value('extra'))
         else:
             return render_element("input",
                                   type="password",
-                                  name=field.get_field_key(),
+                                  name=key,
                                   css_class=field.get_value('css_class'),
                                   value=value,
-                                  size=field.get_value('display_width'))
+                                  size=field.get_value('display_width'),
+                                  extra=field.get_value('extra'))
 
 PasswordWidgetInstance = PasswordWidget()
 
 class CheckBoxWidget(Widget):
-    property_names = Widget.property_names +\
-                     []
+    property_names = Widget.property_names + ['extra']
 
     default = fields.CheckBoxField('default',
                                    title='Default',
@@ -129,23 +167,33 @@ class CheckBoxWidget(Widget):
         "Default setting of the widget; either checked or unchecked. "
         "(true or false)"),
                                    default=0)
-    
-    def render(self, field, value=None):
+
+    extra = fields.StringField('extra',
+                               title='Extra',
+                               description=(
+        "A string containing extra HTML code for attributes. This "
+        "string will be literally included in the rendered field."
+        "This property can be useful if you want "
+        "to add an onClick attribute to use with JavaScript, for instance."),
+                               default="",
+                               required=0)
+        
+    def render(self, field, key, value, REQUEST):
         """Render checkbox.
         """
-        if value == None:
-            value = field.get_value('default')
         if value:
             return render_element("input",
                                   type="checkbox",
-                                  name=field.get_field_key(),
+                                  name=key,
                                   css_class=field.get_value('css_class'),
-                                  checked=None)
+                                  checked=None,
+                                  extra=field.get_value('extra'))
         else:
             return render_element("input",
                                   type="checkbox",
-                                  name=field.get_field_key(),
-                                  css_class=field.get_value('css_class'))
+                                  name=key,
+                                  css_class=field.get_value('css_class'),
+                                  extra=field.get_value('extra'))
 
 CheckBoxWidgetInstance = CheckBoxWidget()
 
@@ -153,7 +201,7 @@ class TextAreaWidget(Widget):
     """Textarea widget
     """
     property_names = Widget.property_names +\
-                     ['width', 'height']
+                     ['width', 'height', 'extra']
     
     default = fields.TextAreaField('default',
                                    title='Default',
@@ -177,18 +225,27 @@ class TextAreaWidget(Widget):
                                  default=5,
                                  required=1)
 
-    def render(self, field, value=None):
-        if value == None:
-            value = field.get_value('default')
+    extra = fields.StringField('extra',
+                               title='Extra',
+                               description=(
+        "A string containing extra HTML code for attributes. This "
+        "string will be literally included in the rendered field."
+        "This property can be useful if you want "
+        "to add an onClick attribute to use with JavaScript, for instance."),
+                               default="",
+                               required=0)
+
+    def render(self, field, key, value, REQUEST):
         width = field.get_value('width')
         height = field.get_value('height')
             
         return render_element("textarea",
-                              name=field.get_field_key(),
+                              name=key,
                               css_class=field.get_value('css_class'),
                               cols=width,
                               rows=height,
-                              contents=value)
+                              contents=html_quote(value),
+                              extra=field.get_value('extra'))
             
 TextAreaWidgetInstance = TextAreaWidget()
 
@@ -196,7 +253,7 @@ class ListWidget(Widget):
     """List widget.
     """
     property_names = Widget.property_names +\
-                     ['first_item', 'items', 'items_method', 'size']
+                     ['first_item', 'items', 'items_method', 'size', 'extra']
     
     default = fields.StringField('default',
                                  title='Default',
@@ -249,11 +306,18 @@ class ListWidget(Widget):
         "if set to something higher, a list will be shown. Required."),
                                default=5,
                                required=1)
-                          
-    def render(self, field, value=None):
-        if value == None:
-            value = field.get_value('default')
 
+    extra = fields.StringField('extra',
+                               title='Extra',
+                               description=(
+        "A string containing extra HTML code for attributes. This "
+        "string will be literally included in the rendered field."
+        "This property can be useful if you want "
+        "to add an onClick attribute to use with JavaScript, for instance."),
+                               default="",
+                               required=0)
+
+    def render(self, field, key, value, REQUEST):
         # we always need a string value
         value = str(value)
             
@@ -291,12 +355,119 @@ class ListWidget(Widget):
             options.append(option)
     
         return render_element('select',
-                              name=field.get_field_key(),
+                              name=key,
                               css_class=field.get_value('css_class'),
                               size=field.get_value('size'),
-                              contents=string.join(options, "\n"))
+                              contents=string.join(options, "\n"),
+                              extra=field.get_value('extra'))
                               
 ListWidgetInstance = ListWidget()
+
+class DateTimeWidget(Widget):
+    property_names = Widget.property_names +\
+                     ['date_separator', 'time_separator',
+                      'input_style', 'input_order',
+                      'date_only']
+
+    default = fields.DateTimeField('default',
+                                   title="Default",
+                                   description=(
+        "The default datetime."),
+                                   default=None,
+                                   display_style="text",
+                                   display_order="ymd",
+                                   required=0)
+    
+    date_separator = fields.StringField('date_separator',
+                                        title='Date separator',
+                                        description=(
+        "Separator to appear between year, month, day."),
+                                        default="/",
+                                        required=0,
+                                        display_width=2,
+                                        display_maxwith=2,
+                                        max_length=2)
+
+    time_separator = fields.StringField('time_separator',
+                                        title='Time separator',
+                                        description=(
+        "Separator to appear between hour and minutes."),
+                                        default=":",
+                                        required=0,
+                                        display_width=2,
+                                        display_maxwith=2,
+                                        max_length=2)
+
+    input_style = fields.ListField('input_style',
+                                   title="Input style",
+                                   description=(
+        "The type of input used; currently only  'text' for text "
+        "based input."),
+                                   default="text",
+                                   items=[("text", "text")],
+                                   size=1)
+
+    input_order = fields.ListField('input_order',
+                                   title="Input order",
+                                   description=(
+        "The order in which date input should take place. Either "
+        "year/month/day, day/month/year or month/day/year."),
+                                   default="ymd",
+                                   items=[("year/month/day", "ymd"),
+                                          ("day/month/year", "dmy"),
+                                          ("month/day/year", "mdy")],
+                                   required=1,
+                                   size=1)
+
+    date_only = fields.CheckBoxField('date_only',
+                                     title="Display date only",
+                                     description=(
+        "Display the date only, not the time."),
+                                     default=0)
+
+    # FIXME: do we want to handle 'extra'?
+    
+    def render(self, field, key, value, REQUEST):
+        if value is None:
+            year = None
+            month = None
+            day = None
+            hour = None
+            minute = None
+        else:
+            year = value.year()
+            month = value.month()
+            day = value.day()
+            hour = "%02d" % value.hour()
+            minute = "%02d" % value.minute()
+            
+        input_order = field.get_value('input_order')
+        if input_order == 'ymd':
+            order = [('text_year', year),
+                     ('text_month', month),
+                     ('text_day', day)]
+        elif input_order == 'dmy':
+            order = [('text_day', day),
+                     ('text_month', month),
+                     ('text_year', year)]
+        elif input_order == 'mdy':
+            order = [('text_month', month),
+                     ('text_day', day),
+                     ('text_year', year)]
+        result = []
+        for sub_field_name, sub_field_value in order:
+            result.append(field.render_sub_field(sub_field_name,
+                                                 sub_field_value, REQUEST))
+        date_result = string.join(result, field.get_value('date_separator'))
+        if not field.get_value('date_only'):
+            time_result = (field.render_sub_field('hour', hour, REQUEST) +
+                           field.get_value('time_separator') +
+                           field.render_sub_field('minute', minute, REQUEST))
+            return date_result + '&nbsp;&nbsp;&nbsp;' + time_result
+        else:
+            return date_result
+                       
+DateTimeWidgetInstance = DateTimeWidget()
 
 def render_tag(tag, **kw):
     """Render the tag. Well, not all of it, as we may want to / it.
@@ -308,15 +479,22 @@ def render_tag(tag, **kw):
         if kw['css_class'] != "":
             attr_list.append('class="%s"' % kw['css_class'])
         del kw['css_class']
-        
+
+    # special case handling for extra 'raw' code
+    if kw.has_key('extra'):
+        extra = kw['extra'] # could be empty string but we don't care
+        del kw['extra']
+    else:
+        extra = ""
+
     # handle other attributes
     for key, value in kw.items():
         if value == None:
             value = key
-        attr_list.append('%s="%s"' % (key, value))
+        attr_list.append('%s="%s"' % (key, html_quote(str(value))))
             
     attr_str = string.join(attr_list, " ")
-    return "<%s %s" % (tag, attr_str)
+    return "<%s %s %s" % (tag, attr_str, extra)
 
 def render_element(tag, **kw):
     if kw.has_key('contents'):
@@ -326,9 +504,6 @@ def render_element(tag, **kw):
     else:
         return apply(render_tag, (tag,), kw) + " />"
          
-
-
-
 
 
 

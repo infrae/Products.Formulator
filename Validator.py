@@ -1,5 +1,6 @@
-import string
+import string, re
 from DummyField import fields
+from DateTime import DateTime
 
 class ValidationError(Exception):
     __allow_access_to_unprotected_subobjects__ = 1
@@ -14,14 +15,30 @@ class ValidationError(Exception):
 class Validator:
     """Validates input and possibly transforms it to output.
     """
-    property_names = []
-    message_names = []
+    property_names = ['external_validator']
+
+    external_validator = fields.MethodField('external_validator',
+                                            title="External Validator",
+                                            description=(
+        "When a method name is supplied, this method will be "
+        "called each time this field is being validated. All other "
+        "validation code is called first, however. The value (result of "
+        "previous validation) and the REQUEST object will be passed as "
+        "arguments to this method. Your method should return true if the "
+        "validation succeeded. Anything else will cause "
+        "'external_validator_failed' to be raised."),
+                                            default="",
+                                            required=0)
+    
+    message_names = ['external_validator_failed']
+
+    external_validator_failed = "The input failed the external validator."
     
     def raise_error(self, error_key, field):
         raise ValidationError(error_key, field)
     
-    def validate(self, field, REQUEST):
-        pass
+    def validate(self, field, key, REQUEST):    
+        pass # override in subclass
     
 class StringBaseValidator(Validator):
     """Simple string validator.
@@ -39,12 +56,12 @@ class StringBaseValidator(Validator):
     
     required_not_found = 'Input is required but no input given.'
         
-    def validate(self, field, REQUEST):
-        value = string.strip(REQUEST.get(field.get_field_key(), ""))
+    def validate(self, field, key, REQUEST):
+        value = string.strip(REQUEST.get(key, ""))
         if field.get_value('required') and value == "":
             self.raise_error('required_not_found', field)
         return value
-
+    
 class StringValidator(StringBaseValidator):
     property_names = StringBaseValidator.property_names +\
                      ['max_length', 'truncate']
@@ -53,10 +70,11 @@ class StringValidator(StringBaseValidator):
                                      title='Maximum length',
                                      description=(
         "The maximum amount of characters that can be entered in this "
-        "field. If set to 0, there is no maximum. Note that this is "
-        "server side validation. Required."),
-                                     default=0,
-                                     required=1)
+        "field. If set to 0 or is left empty, there is no maximum. "
+        "Note that this is server side validation."),
+                                     default="",
+                                     required=0)
+    
     truncate = fields.CheckBoxField('truncate',
                                     title='Truncate',
                                     description=(
@@ -70,10 +88,10 @@ class StringValidator(StringBaseValidator):
 
     too_long = 'Too much input was given.'
 
-    def validate(self, field, REQUEST):
-        value = StringBaseValidator.validate(self, field, REQUEST)
+    def validate(self, field, key, REQUEST):
+        value = StringBaseValidator.validate(self, field, key, REQUEST)
 
-        max_length = field.get_value('max_length')
+        max_length = field.get_value('max_length') or 0
         truncate = field.get_value('truncate')
         
         if max_length > 0 and len(value) > max_length:
@@ -85,69 +103,95 @@ class StringValidator(StringBaseValidator):
 
 StringValidatorInstance = StringValidator()
 
+class EmailValidator(StringValidator):
+    message_names = StringValidator.message_names + ['not_email']
+
+    not_email = 'You did not enter an email address.'
+
+    # contributed, I don't pretend to understand this..
+    pattern = re.compile("^([0-9a-z_&.+-]+!)*[0-9a-z_&.+-]+@(([0-9a-z]([0-9a-z-]*[0-9a-z])?\.)+[a-z]{2,3}|([0-9]{1,3}\.){3}[0-9]{1,3})$")
+    
+    def validate(self, field, key, REQUEST):
+        value = StringValidator.validate(self, field, key, REQUEST)
+        if value == "" and not field.get_value('required'):
+            return value
+
+        if self.pattern.search(string.lower(value)) == None:
+            self.raise_error('not_email', field)
+        return value
+
+EmailValidatorInstance = EmailValidator()
+
 class BooleanValidator(Validator):
-    def validate(self, field, REQUEST):
-        return not not REQUEST.get(field.get_field_key(), 0)
+    def validate(self, field, key, REQUEST):
+        return not not REQUEST.get(key, 0)
 
 BooleanValidatorInstance = BooleanValidator()
 
 class IntegerValidator(StringBaseValidator):
-
-    message_names = StringBaseValidator.message_names +\
-                    ['not_integer']
-
-    not_integer = 'You did not enter an integer.'
-    
-    def validate(self, field, REQUEST):
-        value = StringBaseValidator.validate(self, field, REQUEST)
-        # need to add this check to allow empty fields
-        if value == "" and not field.get_value('required'):
-            return value
-        
-        try:
-            value = int(value)
-        except ValueError:
-            self.raise_error('not_integer', field)
-        return value
-
-IntegerValidatorInstance = IntegerValidator()
-
-class RangedIntegerValidator(IntegerValidator):
-    property_names = IntegerValidator.property_names +\
+    property_names = StringBaseValidator.property_names +\
                      ['start', 'end']
 
     start = fields.IntegerField('start',
                                 title='Start',
                                 description=(
         "The integer entered by the user must be larger than or equal to "
-        "this value. Required."),
-                                default=0,
-                                required=1)
+        "this value. If left empty, there is no minimum."),
+                                default="",
+                                required=0)
 
     end = fields.IntegerField('end',
                               title='End',
                               description=(
         "The integer entered by the user must be smaller than this "
-        "value. Required."),
-                              default=100,
-                              required=1)
+        "value. If left empty, there is no maximum."),
+                              default="",
+                              required=0)
 
-    message_names = IntegerValidator.message_names +\
-                    ['integer_out_of_range']
+    message_names = StringBaseValidator.message_names +\
+                    ['not_integer', 'integer_out_of_range']
 
+    not_integer = 'You did not enter an integer.'
     integer_out_of_range = 'The integer you entered was out of range.'
 
-    def validate(self, field, REQUEST):
-        value = IntegerValidator.validate(self, field, REQUEST)
+    def validate(self, field, key, REQUEST):
+        value = StringBaseValidator.validate(self, field, key, REQUEST)
         # we need to add this check again
         if value == "" and not field.get_value('required'):
             return value
-        if not field.get_value('start') <= value <= field.get_value('end'):
-            self.raise_error('integer_out_of_range', field)
 
+        try:
+            value = int(value)
+        except ValueError:
+            self.raise_error('not_integer', field)
+            
+        start = field.get_value('start')
+        end = field.get_value('end')
+        if start != "" and value < start:
+            self.raise_error('integer_out_of_range', field)
+        if end != "" and value >= end:
+            self.raise_error('integer_out_of_range', field)
         return value
 
-RangedIntegerValidatorInstance = RangedIntegerValidator()
+IntegerValidatorInstance = IntegerValidator()
+
+class FloatValidator(StringBaseValidator):
+    message_names = StringBaseValidator.message_names + ['not_float']
+
+    not_float = "You did not enter a floating point number."
+
+    def validate(self, field, key, REQUEST):
+        value = StringBaseValidator.validate(self, field, key, REQUEST)
+        if value == "" and not field.get_value('required'):
+            return value
+
+        try:
+            value = float(value)
+        except ValueError:
+            self.raise_error('not_float', field)
+        return value
+
+FloatValidatorInstance = FloatValidator()
 
 class LinesValidator(StringBaseValidator):
     property_names = StringBaseValidator.property_names +\
@@ -157,25 +201,25 @@ class LinesValidator(StringBaseValidator):
                                     title='Maximum lines',
                                     description=(
         "The maximum amount of lines a user can enter. If set to 0, "
-        "there is no maximum. Required."),
-                                    default=0,
-                                    required=1)
+        "or is left empty, there is no maximum."),
+                                    default="",
+                                    required=0)
 
     max_linelength = fields.IntegerField('max_linelength',
                                          title="Maximum length of line",
                                          description=(
-        "The maximum length of a line. If set to 0, there is no "
-        "maximum. Required."),
-                                         default=0,
-                                         required=1)
+        "The maximum length of a line. If set to 0 or is left empty, there "
+        "is no maximum."),
+                                         default="",
+                                         required=0)
 
     max_length = fields.IntegerField('max_length',
                                      title="Maximum length (in characters)",
                                      description=(
         "The maximum total length in characters that the user may enter. "
-        "If set to 0, there is no maximum. Required."),
-                                     default=0,
-                                     required=1)
+        "If set to 0 or is left empty, there is no maximum."),
+                                     default="",
+                                     required=0)
     
     message_names = StringBaseValidator.message_names +\
                     ['too_many_lines', 'line_too_long', 'too_long']
@@ -185,26 +229,26 @@ class LinesValidator(StringBaseValidator):
     line_too_long = 'A line was too long.'
     too_long = 'You entered too many characters.'
     
-    def validate(self, field, REQUEST):
-        value = StringBaseValidator.validate(self, field, REQUEST)
+    def validate(self, field, key, REQUEST):
+        value = StringBaseValidator.validate(self, field, key, REQUEST)
         # we need to add this check again
         if value == "" and not field.get_value('required'):
             return value
         # check whether the entire input is too long
-        max_length = field.get_value('max_length')
+        max_length = field.get_value('max_length') or 0
         if max_length and len(value) > max_length:
             self.raise_error('too_long', field)
         # split input into separate lines
         lines = string.split(value, "\n")
 
         # check whether we have too many lines
-        max_lines = field.get_value('max_lines')
+        max_lines = field.get_value('max_lines') or 0
         if max_lines and len(lines) > max_lines:
             self.raise_error('too_many_lines', field)
 
         # strip extraneous data from lines and check whether each line is
         # short enough
-        max_linelength = field.get_value('max_linelength')
+        max_linelength = field.get_value('max_linelength') or 0
         result = []
         for line in lines:
             line = string.strip(line)
@@ -217,8 +261,8 @@ class LinesValidator(StringBaseValidator):
 LinesValidatorInstance = LinesValidator()    
 
 class TextValidator(LinesValidator):
-    def validate(self, field, REQUEST):
-        value = LinesValidator.validate(self, field, REQUEST)
+    def validate(self, field, key, REQUEST):
+        value = LinesValidator.validate(self, field, key, REQUEST)
         # we need to add this check again
         if value == [] and not field.get_value('required'):
             return value
@@ -235,8 +279,8 @@ class SelectionValidator(StringBaseValidator):
 
     unknown_selection = 'You selected an item that was not in the list.'
     
-    def validate(self, field, REQUEST):
-        value = StringBaseValidator.validate(self, field, REQUEST)
+    def validate(self, field, key, REQUEST):
+        value = StringBaseValidator.validate(self, field, key, REQUEST)
 
         if value == "" and not field.get_value('required'):
             return value
@@ -259,9 +303,90 @@ class SelectionValidator(StringBaseValidator):
             
 SelectionValidatorInstance = SelectionValidator()
 
+class DateTimeValidator(Validator):
 
+    property_names = Validator.property_names + ['required',
+                                                 'start_datetime',
+                                                 'end_datetime']
 
+    required = fields.CheckBoxField('required',
+                                    title='Required',
+                                    description=(
+        "Checked if the field is required; the user has to enter something "
+        "in the field."),
+                                    default=1)
 
+    start_datetime = fields.DateTimeField('start_datetime',
+                                          title="Start datetime",
+                                          description=(
+        "The date and time entered must be later than or equal to "
+        "this date/time. If left empty, no check is performed."),
+                                          default=None,
+                                          required=0)
 
+    end_datetime = fields.DateTimeField('end_datetime',
+                                        title="End datetime",
+                                        description=(
+        "The date and time entered must be earlier than "
+        "this date/time. If left empty, no check is performed."),
+                                        default=None,
+                                        required=0)
+    
+    message_names = Validator.message_names + ['required_not_found',
+                                               'not_datetime',
+                                               'datetime_out_of_range']
+    
+    required_not_found = 'Input is required but no input given.'
+    not_datetime = 'You did not enter a valid date and time.'
+    datetime_out_of_range = 'The date and time you entered were out of range.'
+    
+    def validate(self, field, key, REQUEST):    
+        try:
+            year = field.validate_sub_field('text_year', REQUEST)
+            month = field.validate_sub_field('text_month', REQUEST)
+            day = field.validate_sub_field('text_day', REQUEST)
+            
+            if field.get_value('date_only'):
+                hour = 0
+                minute = 0
+            else:
+                hour = field.validate_sub_field('hour', REQUEST)
+                minute = field.validate_sub_field('minute', REQUEST)
+        except ValidationError:
+            self.raise_error('not_datetime', field)
 
+        # handling of completely empty sub fields
+        if ((year == '' and month == '' and day == '') and
+            (field.get_value('date_only') or (hour == '' and minute == ''))): 
+            if field.get_value('required'):
+                self.raise_error('required_not_found', field)
+            else:
+                # field is not required, return None for no entry
+                return None
+        # handling of partially empty sub fields; invalid datetime
+        if ((year == '' or month == '' or day == '') or
+            (not field.get_value('date_only') and
+             (hour == '' or minute == ''))):
+            self.raise_error('not_datetime', field)
 
+        try:
+            result = DateTime(year, month, day, hour, minute)
+        # ugh, a host of string based exceptions
+        except ('DateTimeError', 'Invalid Date Components', 'TimeError'):
+            self.raise_error('not_datetime', field)
+
+        # check if things are within range
+        start_datetime = field.get_value('start_datetime')
+        if (start_datetime is not None and
+            result < start_datetime):
+            self.raise_error('datetime_out_of_range', field)
+        end_datetime = field.get_value('end_datetime')
+        if (end_datetime is not None and
+            result >= end_datetime):
+            self.raise_error('datetime_out_of_range', field)
+
+        return result
+    
+DateTimeValidatorInstance = DateTimeValidator()
+        
+    

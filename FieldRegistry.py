@@ -32,7 +32,9 @@ class FieldRegistry:
         # put it in registry dictionary
         self._fields[field_class.meta_type] = field_class
         # set up dummy fields in field's form
-        initializeFieldForm(field_class)   
+        initializeFieldForm(field_class)
+        # set up dummy fields in field's subform (if any)
+        initializeSubFieldForm(field_class)
         # set up the icon if a filename is supplied
         if icon:
             setupIcon(field_class, icon, 'Formulator')
@@ -70,7 +72,8 @@ class FieldRegistry:
         # fully defined.
         for field_class in self._fields.values():
             field_class.form._realize_fields()
-        
+            field_class.sub_form._realize_fields()
+    
 # initialize registry as a singleton
 FieldRegistry = FieldRegistry()
         
@@ -85,6 +88,15 @@ def initializeFieldForm(field_class):
     for field in getPropertyFields(field_class.validator): 
         form.add_field(field, "validator")
     field_class.form = form         
+
+def initializeSubFieldForm(field_class):
+    """Initialize any component fields that this field posseses.
+    """
+    from Form import BasicForm
+    sub_form = BasicForm()
+    for field_name in field_class.sub_field_names:
+        sub_form.add_field(getattr(field_class, field_name))
+    field_class.sub_form = sub_form
     
 def getPropertyFields(obj):
     """Get property fields from a particular widget/validator.
