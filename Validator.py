@@ -382,8 +382,8 @@ class SelectionValidator(StringBaseValidator):
                 str_value = item_value.encode(field.get_form_encoding())
             else:
                 str_value = str(item_value)
-                
-            if str_value == value:
+
+            if str_value.strip() == value:
                 return item_value
             
         # if we didn't find the value, return error
