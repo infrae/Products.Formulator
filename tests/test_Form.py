@@ -2,6 +2,8 @@ import unittest, re
 import Zope
 from DateTime import DateTime
 
+from xml.dom.minidom import parseString
+
 # XXX this does not work for zope2.x if x < 3
 # can we fake this? should we do this?
 from Testing import makerequest
@@ -166,7 +168,41 @@ class FormTestCase(unittest.TestCase):
         self.assertEquals(0, len(css_matches))
 
 
-    def test_renderHidden(self):
+    def _helper_render_hidden_datetime(self,expected_values,rendered):
+        # heper to check if the generated HTML from render_hidden
+        # meets the expectations
+        dom = parseString('<dummy>%s</dummy>' % rendered)
+        elements = [ child for child in dom.documentElement.childNodes \
+                     if child.nodeType == child.ELEMENT_NODE ]
+        self.assertEquals(len(expected_values.keys()), len(elements))
+        values={}
+        for child in elements:
+            self.assertEquals('input',child.nodeName)
+            self.assertEquals('hidden',child.getAttribute('type'))
+            self.failIf(child.childNodes)
+            values[child.getAttribute('name')] = child.getAttribute('value')
+        self.assertEquals(expected_values, values)
+
+    def _helper_render_hidden_list(self,expected_name, expected_values,
+                                   rendered):
+        # heper to check if the generated HTML from render_hidden
+        # meets the expectations
+        dom = parseString('<dummy>%s</dummy>' % rendered)
+        elements = [ child for child in dom.documentElement.childNodes \
+                     if child.nodeType == child.ELEMENT_NODE ]
+        self.assertEquals(len(expected_values), len(elements))
+        values={}
+        for child in elements:
+            self.assertEquals('input',child.nodeName)
+            self.assertEquals('hidden',child.getAttribute('type'))
+            self.assertEquals(expected_name,child.getAttribute('name'))
+            self.assertEquals(expected_values.pop(0),
+                              child.getAttribute('value'))
+            self.failIf(child.childNodes)
+        
+        
+
+    def test_render_hidden(self):
         # test that rendering fields hidden does produce
         # meaningful results; i.e. such which may still lead to successfull
         # validation when submitting a form with hidden fields
@@ -184,64 +220,54 @@ class FormTestCase(unittest.TestCase):
         self.form.date_time.values['default']=DateTime(1970,1,1,)
         self.form.date_time.values['hidden']=1
         
-        # FIXME: compare result agains a fixed string
-        # this may break even if the tested feature is intact
-        # for example it breaks with python 2.3.2, as this causes
-        # a different sorting on the attributes :-/
-        # however I am definitely too lazy to parse and compare this properly
-        hidden_datetime_expected = [
-            '<input value="1970" name="subfield_date_time_year" type="hidden"  />',
-            '<input value="01" name="subfield_date_time_month" type="hidden"  />',
-            '<input value="01" name="subfield_date_time_day" type="hidden"  />',
-            '<input value="00" name="subfield_date_time_hour" type="hidden"  />',
-            '<input value="00" name="subfield_date_time_minute" type="hidden"  />',
-            '<input value="am" name="subfield_date_time_ampm" type="hidden"  />'
-            ]
-
-        self.assertEquals(''.join(hidden_datetime_expected[:5]),
-                          self.form.date_time.render())
+        expected_values = {
+            'subfield_date_time_year'  : '1970',
+            'subfield_date_time_month' : '01',
+            'subfield_date_time_day'   : '01',
+            'subfield_date_time_hour'  : '00',
+            'subfield_date_time_minute': '00',
+            }
+        self._helper_render_hidden_datetime(expected_values,
+                                            self.form.date_time.render())
 
         self.form.date_time.values['date_only']=1
-        self.assertEquals(''.join(hidden_datetime_expected[:3]),
-                          self.form.date_time.render())
+        del expected_values['subfield_date_time_hour']
+        del expected_values['subfield_date_time_minute']
+        self._helper_render_hidden_datetime(expected_values,
+                                            self.form.date_time.render())
         
         self.form.date_time.values['date_only']=0
         self.form.date_time.values['ampm_time_style']=1
-        hidden_datetime_expected[3] = \
-           '<input value="12" name="subfield_date_time_hour" type="hidden"  />'
-        self.assertEquals(''.join(hidden_datetime_expected),
-                          self.form.date_time.render())
-        
+        expected_values['subfield_date_time_hour']='12'
+        expected_values['subfield_date_time_minute']='00'
+        expected_values['subfield_date_time_ampm']='am'
+        self._helper_render_hidden_datetime(expected_values,
+                                            self.form.date_time.render())
 
         self.form.multi_list.values['items'] = (('a','a'),('b','b'), ('c','c'))
         self.form.multi_list.values['default'] = ['a','c']
         self.form.multi_list.values['hidden'] = 1
-
-        hidden_multilist_expected = [
-            '<input value="a" name="field_multi_list" type="hidden"  />',
-            '<input value="c" name="field_multi_list" type="hidden"  />',
-            ]
-        
-        self.assertEquals(''.join(hidden_multilist_expected),
-                          self.form.multi_list.render())
+        self._helper_render_hidden_list('field_multi_list',['a','c'],
+                                        self.form.multi_list.render())
 
         self.form.check_boxes.values['items'] = (('a','a'),('b','b'), ('c','c'))
         self.form.check_boxes.values['default'] = ['a','c']
         self.form.check_boxes.values['hidden'] = 1
+        self._helper_render_hidden_list('field_check_boxes',['a','c'],
+                                        self.form.check_boxes.render())
 
-        hidden_checkboxes_expected = \
-           [ s.replace('multi_list','check_boxes') \
-             for s in hidden_multilist_expected ]
-        self.assertEquals(''.join(hidden_checkboxes_expected),
-                          self.form.check_boxes.render())
-
+        
         self.form.lines.values['default'] = ['a','c']
         self.form.lines.values['hidden'] = 1
-
-        hidden_lines_expected = '''<input value="a
-c" name="field_lines" type="hidden"  />'''
-        self.assertEquals(hidden_lines_expected,
-                          self.form.lines.render())
+        expect_str = 'a\nc'
+        # FIXME: a straight comparision fails ...
+        # minidom seems to string linebreaks in attributes (?)
+        # instead ...
+        rendered = self.form.lines.render()
+        rendered = rendered.replace('\n','NEWLINE_HERE')
+        expect_str = expect_str.replace('\n','NEWLINE_HERE')
+        self._helper_render_hidden_list('field_lines',[expect_str],
+                                        rendered)
 
 
     def test_render_view_items(self):
