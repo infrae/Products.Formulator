@@ -238,12 +238,14 @@ class SerializeTestCase(unittest.TestCase):
         form.manage_addField('date_field', 'Test Date Field', 'DateTimeField')
         form.manage_addField('list_field', 'Test List Field', 'ListField')
         form.manage_addField('multi_field', 'Test Checkbox Field', 'MultiCheckBoxField')
+        form.manage_addField('link_field', 'Test Link Field', 'LinkField')
         form.manage_addField('empty_field', 'Test Empty Field', 'StringField')
         int_field   = getattr(form, 'int_field')
         float_field = getattr(form, 'float_field')
         date_field  = getattr(form, 'date_field')
         list_field  = getattr(form, 'list_field')
         multi_field = getattr(form, 'multi_field')
+        link_field = getattr(form, 'link_field')
         empty_field = getattr(form, 'empty_field')
 
 
@@ -291,6 +293,15 @@ class SerializeTestCase(unittest.TestCase):
 
             request.clear()
             request.update(default_values)
+            request.update( {'field_default':'http://www.absurd.org',
+                             'field_required':'1',
+                             'field_check_timeout':'5.0',
+                             'field_link_type':'external',
+                             })
+            link_field.manage_edit(REQUEST=request)
+
+            request.clear()
+            request.update(default_values)
             request.update( {'field_default':'None',
                              'field_required':'',
                              })
@@ -327,6 +338,7 @@ class SerializeTestCase(unittest.TestCase):
         request['subfield_date_field_minute'] = '59'
         request['field_list_field'] = 'bar'
         request['field_multi_field'] = ['bar', 'baz']
+        request['field_link_field'] = 'http://www.zope.org'
         try:
             result1 = form.validate_all(request)
         except FormValidationError, e:
@@ -344,6 +356,10 @@ class SerializeTestCase(unittest.TestCase):
         self.assertEquals(result1, result2)
         self.assertEquals(42, result2['int_field'])
         self.assertEquals(2.71828, result2['float_field'])
+
+	# check link field timeout value
+	self.assertEquals(link_field.get_value('check_timeout'),
+                          form2.link_field.get_value('check_timeout'))
 
         # XXX not tested: equal form validation failure on invalid input
         
