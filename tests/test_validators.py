@@ -458,6 +458,16 @@ class DateTimeValidatorTestCase(ValidatorTestCase):
                   'subfield_f_hour': '10',
                   'subfield_f_minute': '30'})
 
+        self.assertValidatorRaises(
+            Validator.ValidationError, 'not_datetime',
+            self.v.validate,
+            DateTimeField('f'),
+            'f', {'subfield_f_year': '2002',
+                  'subfield_f_month': '1',
+                  'subfield_f_day': '1',
+                  'subfield_f_hour': '10',
+                  'subfield_f_minute': '61'})
+
 def test_suite():
     suite = unittest.TestSuite()
 
