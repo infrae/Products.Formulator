@@ -6,9 +6,9 @@ Change the display order and grouping of the fields in this form.
 </p>
 
 <table border="1" cellspacing="1" cellpadding="3">
-<dtml-let all_groups="get_groups()" 
+<dtml-let all_groups="get_groups(include_empty=1)" 
           group_length="get_largest_group_length()"
-          first_group="all_groups[0]">
+          first_group="all_groups and all_groups[0] or None">
 <dtml-in "get_group_rows()">
 <tr>
 <dtml-let groups=sequence-item>
