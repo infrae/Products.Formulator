@@ -6,7 +6,7 @@ import OFS
 from Shared.DC.Scripts.Bindings import Bindings
 from Errors import ValidationError
 from Products.Formulator.Widget import MultiItemsWidget
-from helpers import convert_unicode
+from helpers import is_sequence, convert_unicode
 
 try:
     from Products.PlacelessTranslationService import translate
@@ -165,10 +165,14 @@ class Field:
         """ translates list keys"""
         values = []
         for i in range(len(list)):
-            k,v = list[i]
+            item = list[i]
+            if is_sequence(item):
+                k, v = item
+            else:
+                k = v = item
             msgstr = self.i18n_translate(i)
             if msgstr is not None:
-                values.append((msgstr, k))
+                values.append((msgstr,v))
             else:
                 values.append((k,v))
         
