@@ -1,5 +1,11 @@
 Formulator changes
 
+    Bugs Fixed
+
+     - Fixed issue with non-ascci charachtes in the title of a newly
+       created form or field of the unicode property has been set
+       (Patch from Bertrand Croq)
+
   1.8.0
 
     Features Added
@@ -22,7 +28,7 @@ Formulator changes
     Bugs Fixed
 
       - Added explicit security declatation for the "fieldAdd" DTML-file.
-        Fixed a problem with copy & paste fields in Zope 2.7.3.
+        This fixed a problem with copy & paste fields in Zope 2.7.3.
 
       - Fields having been removed via the XML tab in the ZMI still
         showed up in the "Contents" tab.
