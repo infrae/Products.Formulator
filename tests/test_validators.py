@@ -113,12 +113,197 @@ class EmailValidatorTestCase(ValidatorTestCase):
             self.v.validate,
             TestField('f', max_length=0, truncate=0, required=1),
             'f', {'f': ''})
+
+# skip PatternValidator for now
+
+class BooleanValidatorTestCase(ValidatorTestCase):
+    def setUp(self):
+        self.v = Validator.BooleanValidatorInstance
         
+    def tearDown(self):
+        pass
+
+    def test_basic(self):
+        result = self.v.validate(
+            TestField('f'),
+            'f', {'f': ''})
+        self.assertEquals(0, result)
+        result = self.v.validate(
+            TestField('f'),
+            'f', {'f': 1})
+        self.assertEquals(1, result)
+        result = self.v.validate(
+            TestField('f'),
+            'f', {'f': 0})
+        self.assertEquals(0, result)
+        result = self.v.validate(
+            TestField('f'),
+            'f', {})
+        self.assertEquals(0, result)
+
+class IntegerValidatorTestCase(ValidatorTestCase):
+    def setUp(self):
+        self.v = Validator.IntegerValidatorInstance
+
+    def test_basic(self):
+        result = self.v.validate(
+            TestField('f', max_length=0, truncate=0,
+                      required=0, start="", end=""),
+            'f', {'f': '15'})
+        self.assertEquals(15, result)  
+
+        result = self.v.validate(
+            TestField('f', max_length=0, truncate=0,
+                      required=0, start="", end=""),
+            'f', {'f': '0'})
+        self.assertEquals(0, result)
+
+        result = self.v.validate(
+            TestField('f', max_length=0, truncate=0,
+                      required=0, start="", end=""),
+            'f', {'f': '-1'})
+        self.assertEquals(-1, result)
+        
+    def test_no_entry(self):
+        # result should be empty string if nothing entered
+        result = self.v.validate(
+            TestField('f', max_length=0, truncate=0,
+                      required=0, start="", end=""),
+            'f', {'f': ''})
+        self.assertEquals("", result)
+
+    def test_ranges(self):
+        # first check whether everything that should be in range is
+        # in range
+        for i in range(0, 100):
+            result = self.v.validate(
+                TestField('f', max_length=0, truncate=0, required=1,
+                          start=0, end=100),
+                'f', {'f': str(i)})
+            self.assertEquals(i, result)
+        # now check out of range errors
+        self.assertValidatorRaises(
+            Validator.ValidationError, 'integer_out_of_range',
+            self.v.validate,
+            TestField('f', max_length=0, truncate=0, required=1,
+                      start=0, end=100),
+            'f', {'f': '100'})
+        self.assertValidatorRaises(
+            Validator.ValidationError, 'integer_out_of_range',
+            self.v.validate,
+            TestField('f', max_length=0, truncate=0, required=1,
+                      start=0, end=100),
+            'f', {'f': '200'})
+        self.assertValidatorRaises(
+            Validator.ValidationError, 'integer_out_of_range',
+            self.v.validate,
+            TestField('f', max_length=0, truncate=0, required=1,
+                      start=0, end=100),
+            'f', {'f': '-10'})
+        # check some weird ranges
+        self.assertValidatorRaises(
+            Validator.ValidationError, 'integer_out_of_range',
+            self.v.validate,
+            TestField('f', max_length=0, truncate=0, required=1,
+                      start=10, end=10),
+            'f', {'f': '10'})
+        self.assertValidatorRaises(
+            Validator.ValidationError, 'integer_out_of_range',
+            self.v.validate,
+            TestField('f', max_length=0, truncate=0, required=1,
+                      start=0, end=0),
+            'f', {'f': '0'})
+        self.assertValidatorRaises(
+            Validator.ValidationError, 'integer_out_of_range',
+            self.v.validate,
+            TestField('f', max_length=0, truncate=0, required=1,
+                      start=0, end=-10),
+            'f', {'f': '-1'})
+        
+    def test_error_not_integer(self):
+        self.assertValidatorRaises(
+            Validator.ValidationError, 'not_integer',
+            self.v.validate,
+            TestField('f', max_length=0, truncate=0, required=1,
+                      start="", end=""),
+            'f', {'f': 'foo'})
+        
+        self.assertValidatorRaises(
+            Validator.ValidationError, 'not_integer',
+            self.v.validate,
+            TestField('f', max_length=0, truncate=0, required=1,
+                      start="", end=""),
+            'f', {'f': '1.0'})
+
+        self.assertValidatorRaises(
+            Validator.ValidationError, 'not_integer',
+            self.v.validate,
+            TestField('f', max_length=0, truncate=0, required=1,
+                      start="", end=""),
+            'f', {'f': '1e'})
+
+    def test_error_required_not_found(self):   
+        # empty string
+        self.assertValidatorRaises(
+            Validator.ValidationError, 'required_not_found',
+            self.v.validate,
+            TestField('f', max_length=0, truncate=0, required=1,
+                      start="", end=""),
+            'f', {'f': ''})
+        # whitespace only
+        self.assertValidatorRaises(
+            Validator.ValidationError, 'required_not_found',
+            self.v.validate,
+            TestField('f', max_length=0, truncate=0, required=1,
+                      start="", end=""),
+            'f', {'f': '   '})
+        # not in dict
+        self.assertValidatorRaises(
+            Validator.ValidationError, 'required_not_found',
+            self.v.validate,
+            TestField('f', max_length=0, truncate=0, required=1,
+                      start="", end=""),
+            'f', {})
+
+class FloatValidatorTestCase(ValidatorTestCase):
+    def setUp(self):
+        self.v = Validator.FloatValidatorInstance
+
+    def test_basic(self):
+        result = self.v.validate(
+            TestField('f', max_length=0, truncate=0,
+                      required=0),
+            'f', {'f': '15.5'})
+        self.assertEqual(15.5, result)
+
+        result = self.v.validate(
+            TestField('f', max_length=0, truncate=0,
+                      required=0),
+            'f', {'f': '15.0'})
+        self.assertEqual(15.0, result)
+
+        result = self.v.validate(
+            TestField('f', max_length=0, truncate=0,
+                      required=0),
+            'f', {'f': '15'})
+        self.assertEqual(15.0, result)
+
+    def test_error_not_float(self):
+        self.assertValidatorRaises(
+           Validator.ValidationError, 'not_float',
+           self.v.validate,
+           TestField('f', max_length=0, truncate=0, required=1),
+           'f', {'f': '1f'})
+
 def test_suite():
     suite = unittest.TestSuite()
 
     suite.addTest(unittest.makeSuite(StringValidatorTestCase, 'test'))
     suite.addTest(unittest.makeSuite(EmailValidatorTestCase, 'test'))
+    suite.addTest(unittest.makeSuite(BooleanValidatorTestCase, 'test'))
+    suite.addTest(unittest.makeSuite(IntegerValidatorTestCase, 'test'))
+    suite.addTest(unittest.makeSuite(FloatValidatorTestCase, 'test'))
+    
     return suite
 
 def main():
