@@ -3,6 +3,8 @@ Formulator changes
   0.9.3
 
     Features Added
+      
+      - added RadioField for simple display of radio buttons.
 
       - added action, method and enctype property to form settings.
         These are displayed using the special form.header() and form.footer()
