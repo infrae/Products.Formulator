@@ -65,9 +65,16 @@ Formulator changes
         strings coming in as raw unvalidated data from the request into
         many lines with one single character on each line
         changed
-           tests/test_Form.py: test_lines_field_rendering
            Widget.py: LinesTextAreaWidget.render/render_hidden
+           tests/test_Form.py: test_lines_field_rendering (added)
 
+      - fixed bug where entering non ascii values in the ListField items
+        has not been handled properly in unicode mode
+         Patch from He Wei
+
+        changed:
+          Field.py: ZMIField._edit
+					tests/test_Form.py: test_edit_listitem (added)
 
   1.7.0
  
