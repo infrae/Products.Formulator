@@ -88,9 +88,10 @@ Formulator HOWTO
   On the examples in this HOWTO
 
     All the examples in this HOWTO are contained in the file
-    'formulator_howto_examples.zexp', which you can download and
-    import into your Zope. In the examples, all the forms are called
-    'form'.
+    'formulator_howto_examples.zexp', which you can download from the
+    Formulator product page
+    (http://www.zope.org/Members/faassen/formulator) and import into
+    your Zope. In the examples, all the forms are called 'form'.
 
   Rendering a form manually with DTML ('manual' folder)
 
