@@ -123,12 +123,13 @@ class DateTimeField(ZMIField):
         # icky but necessary...
         apply(ZMIField.__init__, (self, id), kw)
 
-        if self.get_value('input_style') == 'text':
+        input_style = self.get_value('input_style')
+        if input_style == 'text':
             self.sub_form = create_datetime_text_sub_form()
-        elif value == 'list':
+        elif input_style == 'list':
             self.sub_form = create_datetime_list_sub_form()
         else:
-            assert 0, "Unknown input_style"
+            assert 0, "Unknown input_style '%s'" % input_style
             
     def on_value_input_style_changed(self, value):
         if value == 'text':
