@@ -43,16 +43,34 @@ def XMLToForm(s, form):
                 value = getattr(values.first, name)
                 if value.attributes.get('type') == 'int':
                     field.values[name] = int(value.text)
+                elif value.attributes.get('type') == 'list':
+                    # XXX bare eval here (this may be a security leak ?)
+                    field.values[name] = eval(value.text.encode('latin1'))
                 else:
                     field.values[name] = value.text.encode('latin1')
+
+            # special hack for the DateTimeField
+            if field.meta_type=='DateTimeField':
+                field.on_value_input_style_changed(field.get_value('input_style'))
+
             # set tales
             tales = entry.first.tales
             for name in tales.getElementNames():
                 field.tales[name] = TALESMethod(
                     getattr(tales.first, name).text.encode('latin1'))
+
+            # set messages
+            if hasattr(entry.first, 'messages'):
+                messages = entry.first.messages
+                for entry in messages.elements.message:
+                    name = entry.attributes.get('name')
+                    text = entry.text.encode('latin1')
+                    field.message_values[name] = text
+
             # for persistence machinery
             field.values = field.values
             field.tales = field.tales
+            field.message_values = field.message_values
         
     # delete default group
     if not has_default:
