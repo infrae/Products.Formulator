@@ -549,7 +549,8 @@ class DateTimeValidator(Validator):
 
     property_names = Validator.property_names + ['required',
                                                  'start_datetime',
-                                                 'end_datetime']
+                                                 'end_datetime',
+                                                 'allow_empty_time']
 
     required = fields.CheckBoxField('required',
                                     title='Required',
@@ -575,6 +576,13 @@ class DateTimeValidator(Validator):
                                         default=None,
                                         input_style="text",
                                         required=0)
+
+    allow_empty_time = fields.CheckBoxField('allow_empty_time',
+                                            title="Allow empty time",
+                                            description=(
+        "Allow time to be left empty. Time will default to midnight "
+        "on that date."),
+                                            default=0)
     
     message_names = Validator.message_names + ['required_not_found',
                                                'not_datetime',
@@ -593,7 +601,15 @@ class DateTimeValidator(Validator):
             if field.get_value('date_only'):
                 hour = 0
                 minute = 0
-            else:                    
+            elif field.get_value('allow_empty_time'):
+                hour = field.validate_sub_field('hour', REQUEST)
+                minute = field.validate_sub_field('minute', REQUEST)
+                if hour == '' and minute == '':
+                    hour = 0
+                    minute = 0
+                elif hour == '' or minute == '':
+                    raise ValidationError('not_datetime', field)
+            else:
                 hour = field.validate_sub_field('hour', REQUEST)
                 minute = field.validate_sub_field('minute', REQUEST)
         except ValidationError:
@@ -616,6 +632,9 @@ class DateTimeValidator(Validator):
 
         if field.get_value('ampm_time_style'):
             ampm = field.validate_sub_field('ampm', REQUEST)
+            if field.get_value('allow_empty_time'):
+                if ampm == '':
+                    ampm = 'am'
             hour = int(hour)
             # handling not am or pm
             # handling hour > 12

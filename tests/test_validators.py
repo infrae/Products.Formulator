@@ -2,7 +2,7 @@ import unittest
 import ZODB
 import OFS.Application
 from Products.Formulator import Validator
-
+from Products.Formulator.StandardFields import DateTimeField
 
 class TestField:
     def __init__(self, id, **kw):
@@ -18,7 +18,6 @@ class TestField:
     def get_form_encoding(self):
         # XXX fake ... what if installed python does not support utf-8?
         return "utf-8"
-
 
 class ValidatorTestCase(unittest.TestCase):
     def assertValidatorRaises(self, exception, error_key, f, *args, **kw):
@@ -315,6 +314,113 @@ class FloatValidatorTestCase(ValidatorTestCase):
            TestField('f', max_length=0, truncate=0, required=1),
            'f', {'f': '1f'})
 
+class DateTimeValidatorTestCase(ValidatorTestCase):
+    def setUp(self):
+        self.v = Validator.DateTimeValidatorInstance
+        
+    def test_normal(self):
+        result = self.v.validate(
+            DateTimeField('f'),
+            'f', {'subfield_f_year': '2002',
+                  'subfield_f_month': '12',
+                  'subfield_f_day': '1',
+                  'subfield_f_hour': '10',
+                  'subfield_f_minute': '30'})
+        self.assertEquals(2002, result.year())
+        self.assertEquals(12, result.month())
+        self.assertEquals(1, result.day())
+        self.assertEquals(10, result.hour())
+        self.assertEquals(30, result.minute())
+
+    def test_ampm(self):
+        result = self.v.validate(
+            DateTimeField('f', ampm_time_style=1),
+            'f', {'subfield_f_year': '2002',
+                  'subfield_f_month': '12',
+                  'subfield_f_day': '1',
+                  'subfield_f_hour': '10',
+                  'subfield_f_minute': '30',
+                  'subfield_f_ampm': 'am'})
+        self.assertEquals(2002, result.year())
+        self.assertEquals(12, result.month())
+        self.assertEquals(1, result.day())
+        self.assertEquals(10, result.hour())
+        self.assertEquals(30, result.minute())
+
+        result = self.v.validate(
+            DateTimeField('f', ampm_time_style=1),
+            'f', {'subfield_f_year': '2002',
+                  'subfield_f_month': '12',
+                  'subfield_f_day': '1',
+                  'subfield_f_hour': '10',
+                  'subfield_f_minute': '30',
+                  'subfield_f_ampm': 'pm'})
+        self.assertEquals(2002, result.year())
+        self.assertEquals(12, result.month())
+        self.assertEquals(1, result.day())
+        self.assertEquals(22, result.hour())
+        self.assertEquals(30, result.minute())
+        
+        self.assertValidatorRaises(
+            Validator.ValidationError, 'not_datetime',
+            self.v.validate,
+            DateTimeField('f', ampm_time_style=1),
+            'f', {'subfield_f_year': '2002',
+                  'subfield_f_month': '12',
+                  'subfield_f_day': '1',
+                  'subfield_f_hour': '10',
+                  'subfield_f_minute': '30'})
+
+    def test_date_only(self):
+        result = self.v.validate(
+            DateTimeField('f', date_only=1),
+            'f', {'subfield_f_year': '2002',
+                  'subfield_f_month': '12',
+                  'subfield_f_day': '1'})
+        self.assertEquals(2002, result.year())
+        self.assertEquals(12, result.month())
+        self.assertEquals(1, result.day())
+        self.assertEquals(0, result.hour())
+        self.assertEquals(0, result.minute())
+
+        result = self.v.validate(
+            DateTimeField('f', date_only=1),
+            'f', {'subfield_f_year': '2002',
+                  'subfield_f_month': '12',
+                  'subfield_f_day': '1',
+                  'subfield_f_hour': '10',
+                  'subfield_f_minute': '30'})
+        self.assertEquals(2002, result.year())
+        self.assertEquals(12, result.month())
+        self.assertEquals(1, result.day())
+        self.assertEquals(0, result.hour())
+        self.assertEquals(0, result.minute())
+
+    def test_allow_empty_time(self):
+        result = self.v.validate(
+            DateTimeField('f', allow_empty_time=1),
+            'f', {'subfield_f_year': '2002',
+                  'subfield_f_month': '12',
+                  'subfield_f_day': '1'})
+        self.assertEquals(2002, result.year())
+        self.assertEquals(12, result.month())
+        self.assertEquals(1, result.day())
+        self.assertEquals(0, result.hour())
+        self.assertEquals(0, result.minute())
+
+        result = self.v.validate(
+            DateTimeField('f', allow_empty_time=1),
+            'f', {'subfield_f_year': '2002',
+                  'subfield_f_month': '12',
+                  'subfield_f_day': '1',
+                  'subfield_f_hour': '10',
+                  'subfield_f_minute': '30'})
+        self.assertEquals(2002, result.year())
+        self.assertEquals(12, result.month())
+        self.assertEquals(1, result.day())
+        self.assertEquals(10, result.hour())
+        self.assertEquals(30, result.minute())
+        
 def test_suite():
     suite = unittest.TestSuite()
 
@@ -323,6 +429,7 @@ def test_suite():
     suite.addTest(unittest.makeSuite(BooleanValidatorTestCase, 'test'))
     suite.addTest(unittest.makeSuite(IntegerValidatorTestCase, 'test'))
     suite.addTest(unittest.makeSuite(FloatValidatorTestCase, 'test'))
+    suite.addTest(unittest.makeSuite(DateTimeValidatorTestCase, 'test'))
     
     return suite
 
