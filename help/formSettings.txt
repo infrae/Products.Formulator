@@ -1,0 +1,17 @@
+Formulator Form - Settings
+
+  Description
+
+    You can set some basic settings of the form. Not much is here yet.
+
+  Groups in row (order tab)
+
+    Change the amount of groups that should appear in a single row
+    in the 'order' view. The default is '4'.
+
+  Upgrade
+
+    The 'Upgrade' button in this section is really not useful yet.
+    It's used internally to upgrade unreleased development versions of
+    Formulator to the current version. Perhaps this will become more
+    useful in the future.

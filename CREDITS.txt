@@ -1,0 +1,10 @@
+Formulator Credits
+
+  Martijn Faassen (faassen@vet.uu.nl) -- design and implementation
+
+  Kit Blake (kitblake@v2.nl) -- user interface design help and
+                                general testing
+
+  Also a thank you to those few valiant souls who suffered through the
+  bugs of ZFormulator, the previous implementation. Let's hope this
+  one's better!

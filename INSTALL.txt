@@ -1,0 +1,50 @@
+Installing Formulator
+
+  Requirements
+
+    Formulator requires Zope versions 2.3 or higher:
+
+      http://www.zope.org/Products/Zope
+
+    No other Zope products are required, though Core Session Tracking
+    can be used with Formulator if available:
+
+      http://www.zope.org/Members/mcdonc/Products/CoreSessionTracking
+
+  Quickstart
+
+    Formulator follows the normal Zope filesystem product installation
+    procedure; just unpack the tarball to your products directory and
+    restart Zope.
+
+    Now the same at a more leisurely pace.
+
+  Unpacking
+
+    Formulator comes as a 'Formulator-x.x.tgz' file, where 'x.x'
+    stands for the Formulator version number. On Unix, you can use::
+
+      tar xvzf Formulator-x.x.tgz 
+
+    to unpack the file. On Windows you can use your favorite archiving
+    software, such as WinZip.
+
+    This will create a Formulator directory. 
+
+  Installing the Product 
+
+    Move this directory to your Zope's Products directory. Normally
+    this is 'yourzope/lib/python/Products'. 
+
+    Now restart your Zope.
+
+  Verifying Installation
+
+    If all went well, Formulator should now be visible in Zope in the
+    Products screen ('/Control_Panel/Products'). In a Zope folder, you
+    should now see a 'Formulator Form' in your 'Add' list. You should
+    be able to add a form to a folder now.
+
+
+
+

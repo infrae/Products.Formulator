@@ -1,0 +1,55 @@
+import string
+from DummyField import fields
+import Widget, Validator
+from Field import PythonField
+
+class ListTextAreaWidget(Widget.TextAreaWidget):
+    default = fields.ListTextAreaField('default',
+                                       title='Default',
+                                       default=[],
+                                       required=0)
+
+    def render(self, field, value=None):
+        if value == None:
+            value = field.get_value('default')
+        lines = []
+        for element_text, element_value in value:
+            lines.append("%s | %s" % (element_text, element_value))
+        return Widget.TextAreaWidget.render(self, field, string.join(lines,
+                                                                     '\n'))
+
+ListTextAreaWidgetInstance = ListTextAreaWidget()
+
+class ListLinesValidator(Validator.LinesValidator):
+    """A validator that can deal with lines that have a | separator
+    in them to split between text and value of list items.
+    """
+    def validate(self, field, REQUEST):
+        value = Validator.LinesValidator.validate(self, field, REQUEST)
+        result = []
+        for line in value:
+            elements = string.split(line, "|")
+            if len(elements) >= 2:
+                text, value = elements[:2]
+            else:
+                text = line
+                value = line
+            text = string.strip(text)
+            value = string.strip(value)
+            result.append((text, value))
+        return result
+
+ListLinesValidatorInstance = ListLinesValidator()
+
+class ListTextAreaField(PythonField):
+    meta_type = "ListTextAreaField"
+
+    # field only has internal use
+    internal_field = 1
+
+    widget = ListTextAreaWidgetInstance
+    validator = ListLinesValidatorInstance
+    
+
+
+
