@@ -28,7 +28,9 @@ def formToXML(form):
         for field in form.get_fields_in_group(group):
             write('      <field><id>%s</id> <type>%s</type>\n' % (field.id, field.meta_type))
             write('        <values>\n')
-            for key, value in field.values.items():
+            items = field.values.items()
+            items.sort()
+            for key, value in items:
                 if value is None:
                     continue
                 if type(value) == type(1.1):
@@ -40,20 +42,24 @@ def formToXML(form):
                 else:
                     write('          <%s>%s</%s>\n' % (key, escape(str(value)), key))
             write('        </values>\n')
+
             write('        <tales>\n')
-            for key, value in field.tales.items():
+            items = field.tales.items()
+            items.sort()
+            for key, value in items:
                 if value:
                     write('          <%s>%s</%s>\n' % (key, escape(str(value._text)), key))
             write('        </tales>\n')
+
             write('        <messages>\n')
             for message_key in field.get_error_names():
                 write('          <message name="%s">%s</message>\n' %
                       (escape(message_key), escape(field.get_error_message(message_key))))
-            write('        </messages>\n')                
+            write('        </messages>\n')
             write('      </field>\n')
         write('      </fields>\n')
         write('    </group>\n')
     write('  </groups>\n')
     write('</form>')
-    
+
     return f.getvalue()
