@@ -257,7 +257,7 @@ class ZMIField(
 
     # display edit screen as main management screen
     security.declareProtected('View management screens', 'manage_main')
-    manage_main = DTMLFile('www/fieldEdit', globals())
+    manage_main = DTMLFile('dtml/fieldEdit', globals())
 
     security.declareProtected('Change Formulator Fields', 'manage_edit')
     def manage_edit(self, REQUEST):
@@ -317,7 +317,7 @@ class ZMIField(
     # methods screen
     security.declareProtected('View management screens',
                               'manage_overrideForm')
-    manage_overrideForm = DTMLFile('www/fieldOverride', globals())
+    manage_overrideForm = DTMLFile('dtml/fieldOverride', globals())
 
     security.declareProtected('Change Formulator Forms', 'manage_override')
     def manage_override(self, REQUEST):
@@ -350,7 +350,7 @@ class ZMIField(
     # tales screen
     security.declareProtected('View management screens',
                               'manage_talesForm')
-    manage_talesForm = DTMLFile('www/fieldTales', globals())
+    manage_talesForm = DTMLFile('dtml/fieldTales', globals())
 
     security.declareProtected('Change Formulator Forms', 'manage_tales')
     def manage_tales(self, REQUEST):
@@ -381,19 +381,19 @@ class ZMIField(
         
     # display test screen
     security.declareProtected('View management screens', 'fieldTest')
-    fieldTest = DTMLFile('www/fieldTest', globals())
+    fieldTest = DTMLFile('dtml/fieldTest', globals())
 
     # messages screen
     security.declareProtected('View management screens', 'manage_messagesForm')
-    manage_messagesForm = DTMLFile('www/fieldMessages', globals())
+    manage_messagesForm = DTMLFile('dtml/fieldMessages', globals())
 
     # field list header
     security.declareProtected('View management screens', 'fieldListHeader')
-    fieldListHeader = DTMLFile('www/fieldListHeader', globals())
+    fieldListHeader = DTMLFile('dtml/fieldListHeader', globals())
 
     # field description display
     security.declareProtected('View management screens', 'fieldDescription')
-    fieldDescription = DTMLFile('www/fieldDescription', globals())
+    fieldDescription = DTMLFile('dtml/fieldDescription', globals())
     
     security.declareProtected('Change Formulator Fields', 'manage_messages')
     def manage_messages(self, REQUEST):

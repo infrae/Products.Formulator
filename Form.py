@@ -587,15 +587,15 @@ class ZMIForm(ObjectManager, Item, Form):
         return ''
 
     security.declareProtected('View management screens', 'formTest')
-    formTest = DTMLFile('www/formTest', globals())
+    formTest = DTMLFile('dtml/formTest', globals())
 
     settings_form = create_settings_form()
 
     security.declareProtected('View management screens', 'formSettings')
-    formSettings = DTMLFile('www/formSettings', globals())
+    formSettings = DTMLFile('dtml/formSettings', globals())
 
     security.declareProtected('View management screens', 'formOrder')
-    formOrder = DTMLFile('www/formOrder', globals())
+    formOrder = DTMLFile('dtml/formOrder', globals())
 
     security.declareProtected('Change Formulator Forms', 'manage_settings')
     def manage_settings(self, REQUEST):
@@ -782,7 +782,7 @@ class ZMIForm(ObjectManager, Item, Form):
 PythonForm = ZMIForm # NOTE: backwards compatibility
 Globals.InitializeClass(ZMIForm)
         
-manage_addForm = DTMLFile("www/formAdd", globals())
+manage_addForm = DTMLFile("dtml/formAdd", globals())
 
 def manage_add(self, id, title="", REQUEST=None):
     """Add form to folder.
@@ -830,7 +830,7 @@ def initializeForm(field_registry):
         # set up add method
         setattr(form_class,
                 'manage_add%sForm' % meta_type,
-                DTMLFile('www/fieldAdd', globals(), fieldname=meta_type))
+                DTMLFile('dtml/fieldAdd', globals(), fieldname=meta_type))
         
     # set up meta_types that can be added to form
     form_class._meta_types = tuple(meta_types)

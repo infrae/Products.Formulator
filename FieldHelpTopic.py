@@ -17,7 +17,7 @@ class FieldHelpTopic(HelpTopic.HelpTopic):
         if categories is not None:
             self.categories = categories
             
-    index_html = DTMLFile('www/FieldHelpTopic', globals())
+    index_html = DTMLFile('dtml/FieldHelpTopic', globals())
     
     def SearchableText(self):
         """Full text of the Help Topic, for indexing purposes."""
