@@ -116,11 +116,7 @@ class Field:
         """
         return self._render_helper('field_%s' % self.id, value, REQUEST)
 
-    def render_from_value(self, value):
-        """Convenience method; render the field from value (or default).
-        """
-        return self._render_helper('field_%s' % self.id, value, None)
-    
+    security.declareProtected('View', 'render_from_request')
     def render_from_request(self, REQUEST):
         """Convenience method; render the field widget from REQUEST
         (unvalidated data), or default if no raw data is found.
@@ -135,12 +131,7 @@ class Field:
         return self.sub_form.get_field(id)._render_helper(
             "subfield_%s_%s" % (self.id, id), value, REQUEST)
 
-    def render_sub_field_from_value(self, id, value):
-        """Convenience method; render the sub field from value (or default).
-        """
-        return self.sub_form.get_field(id)._render_helper(
-            "subfield_%s_%s" % (self.id, id), value, None)
-
+    security.declareProtected('View', 'render_sub_field_from_request')
     def render_sub_field_from_request(self, id, REQUEST):
         """Convenience method; render the field widget from REQUEST
         (unvalidated data), or default if no raw data is found.
