@@ -32,11 +32,11 @@ class Field:
         # initialize overrides of fields in form
         self.initialize_overrides()
 
-        # initialize message values with defaults
+        # initialize message values empty
         message_values = {}
-        for message_name in self.validator.message_names:
-            message_values[message_name] = getattr(self.validator,
-                                                   message_name)
+        #for message_name in self.validator.message_names:
+        #    message_values[message_name] = getattr(self.validator,
+        #                                           message_name)
         self.message_values = message_values
 
     security.declareProtected('Change Formulator Fields', 'initialize_values')
@@ -188,19 +188,33 @@ class Field:
     security.declareProtected('View management screens', 'get_error_message')
     def get_error_message(self, name, want_message_id=True):
         try:
+            # look up message in field
             result = self.message_values[name]
         except KeyError:
+            # if we can't find it in field, look it up in form
+            # these will be the correct message ids, so return result
+            # directly
             if name in self.validator.message_names:
                 result = getattr(self.validator, name)
             else:
                 result = "Unknown error: %s" % name
-        # if we don't want a message id, strip it off first getting to
-        # bare message
-        if not want_message_id:
+            # if we don't want message id, strip it off
+            if not want_message_id:
+                try:
+                    # looks into message id internals..
+                    result = result.ustr
+                except AttributeError:
+                    pass
+            return result
+        if want_message_id:
+            # we do want a message id, so construct one from form domain
+            result = _(result, self.get_i18n_domain())
+        else:
             try:
+                # looks into message id internals..
                 result = result.ustr
             except AttributeError:
-                result = result
+                pass
         return result
     
     security.declarePrivate('_render_helper')
@@ -516,7 +530,9 @@ class ZMIField(
             message = REQUEST[message_key]
             if unicode_mode:
                 message = unicode(message, 'UTF-8')
-            messages[message_key] = message
+            # only save message if we're indeed changing from original
+            if getattr(self.validator, message_key) != message:
+                messages[message_key] = message
 
         self.message_values = messages
         if REQUEST:

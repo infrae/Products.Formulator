@@ -249,8 +249,8 @@ class SerializeTestCase(ZopeTestCase.ZopeTestCase):
         except FormValidationError, e:
             self.assertEquals(1, len(e.errors))
             text2 = e.errors[0].error_text
-
-        self.assertEquals(text1, text2)
+        # XXX compare original message ids..
+        self.assertEquals(text1.ustr, text2.ustr)
 
 
     def test_fieldValueTypes(self):

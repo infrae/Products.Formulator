@@ -8,7 +8,7 @@ Edit <dtml-var meta_type> error messages here.
 <form action="manage_messages" method="POST">
 <table border="0">
 <dtml-in "get_error_names()">
-  <dtml-let name=sequence-item value="get_error_message(name)">
+  <dtml-let name=sequence-item value="get_error_message(name, 0)">
   <tr>
   <td class="form-label"><dtml-var name></td>
   <td><textarea name="&dtml-name;" cols="50" rows="4"><dtml-var value></textarea></td>
