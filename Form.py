@@ -680,7 +680,7 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
 
     security.declareProtected('View management screens', 'formXML')
     formXML = DTMLFile('dtml/formXML', globals())
-
+    
     security.declareProtected('Change Formulator Forms', 'manage_editXML')
     def manage_editXML(self, form_data, REQUEST):
         """Change form using XML.

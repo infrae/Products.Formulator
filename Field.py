@@ -96,8 +96,13 @@ class Field:
         Optionally pass keyword arguments that get passed to TALES
         expression.
         """
+#### i18n extension by Joachim Schmitz
+	if id in ("title","description") and hasattr(self,"gettext"):
+	    value = self.gettext("%s-%s-%s" % (self.aq_parent.id,self.id,id))
+	    if value and value != "%s-%s-%s" % (self.aq_parent.id,self.id,id): 
+		return value
+#### end        
         tales_expr = self.tales.get(id, "")
-        
         if tales_expr:
             # For some reason, path expressions expect 'here' and 'request'
             # to exist, otherwise they seem to fail. python expressions
