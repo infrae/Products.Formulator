@@ -6,12 +6,30 @@ Installing Formulator
 
       http://www.zope.org/Products/Zope
 
-    No other Zope products are required, though Core Session Tracking
-    can be used with Formulator if available:
+    My development Zope is now Zope 2.4 however, and I plan to require
+    Zope 2.4 in the future.
+
+    No other Zope products are required, though Zope Page Templates
+    are recommended, to enable the TALES tab:
+
+      http://www.zope.org/Members/4am/ZPT
+
+    Core Session Tracking can also be used with Formulator if
+    available:
 
       http://www.zope.org/Members/mcdonc/Products/CoreSessionTracking
 
+    Once Zope 2.5 is released, both these products should become part
+    of the Zope distribution.
+
   Upgrading
+
+    to 1.0.9 from earlier versions
+
+      There should be no problems. If you're upgrading from 0.9.2 or 
+      below however, please see the upgrading note for 0.9.3. Do note
+      that the Override tab is scheduled to be phased out eventually in 
+      favor of the TALES tab. This will take a while yet, though.
 
     to 1.0.1 from earlier versions
 
