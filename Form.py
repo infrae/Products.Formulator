@@ -643,7 +643,7 @@ def create_settings_form():
                                     default="")
     i18n = fields.StringField('i18n',
                              title='i18n id',
-                             requierd=0,
+                             required=0,
                              default="")
                         
 
