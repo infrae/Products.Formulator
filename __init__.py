@@ -5,6 +5,18 @@ from FieldRegistry import FieldRegistry
 import Errors
 from Products.PythonScripts.Utility import allow_module
 
+try:
+    import Products.FileSystemSite
+except ImportError:
+    try:
+        import Products.CMFCore
+    except ImportError:
+        pass
+    else:
+        import FSForm
+else:
+    import FSForm
+
 # Allow Errors to be imported TTW
 allow_module('Products.Formulator.Errors')
 

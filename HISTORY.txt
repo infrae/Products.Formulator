@@ -1,5 +1,20 @@
 Formulator changes
 
+  Under development
+  
+    Features Added
+
+      - FileSystemSite/DirectoryView improvements:
+
+         * XML filesystem representation of Formulator forms can now
+           also be used with CMF (if FileSystemSite is not installed).
+
+         * Formulator forms should have better updating behavior from
+           the filesystem in development mode.
+
+         * FSForm gets automatically registered with the directory
+           view system if CMF or FileSystemSite is installed.
+
   1.5.0
 
     Features Added
