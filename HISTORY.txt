@@ -1,6 +1,6 @@
 Formulator changes
 
-  Under Development
+  1.6.1
   
     Bugs Fixed
  
