@@ -31,7 +31,11 @@ Change the display order and grouping of the fields in this form.
     <dtml-let field=sequence-item field_id="field.id">
       <tr><td height="25">
           <div class="list-item">
-          <input type="checkbox" name="&dtml-field_id;">&nbsp;<a href="&dtml-field_id;/manage_main"><img src="&dtml-BASEPATH1;/&dtml-icon;" alt="&dtml-meta_type;" title="&dtml-meta_type;" border="0"></a>&nbsp;<a href="&dtml-field_id;/manage_main"><dtml-var field_id></a>
+           <dtml-if expr="REQUEST.has_key(field_id)"><input type="checkbox" name="&dtml-field_id;" checked="checked">
+           <dtml-else><input type="checkbox" name="&dtml-field_id;">
+           </dtml-if>
+            &nbsp;<a href="&dtml-field_id;/manage_main"><img src="&dtml-BASEPATH1;/&dtml-icon;" alt="&dtml-meta_type;" title="&dtml-meta_type;" border="0"></a>&nbsp;<a href="&dtml-field_id;/manage_main"><dtml-var field_id></a>
+
 	  </div>
 	  </td></tr>
     </dtml-let>
