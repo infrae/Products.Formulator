@@ -56,7 +56,7 @@ Many thanks go to:
   Pierre-Julien Grizel (grizel at ingeniweb.com) -- ProductForm.
 
   Sébastien Robin (seb at nexedi.com) -- more consistent ordering in XML
-                                      serialization.
+                                      serialization, bugfixes
 
   Guido Wesdorp (guido at infrae.com) -- Added extra_item attribute on
                                       compound fields, bugfixes.
@@ -64,7 +64,8 @@ Many thanks go to:
   Yura Petrov (ypetrov at naumen.ru) -- Various FSForm related
                                      improvements.
 
-  Vladimir Voznesensky (vovic at smtp.ru) -- Enabling/disabling of fields.
+  Vladimir Voznesensky (vovic at smtp.ru) -- Enabling/disabling of fields,
+                                          bugfix in 'render_view'
             
   Special thanks also goes to Rik Hoekstra.
 
