@@ -45,7 +45,9 @@ def XMLToForm(s, form):
             values = entry.first.values
             for name in values.getElementNames():
                 value = getattr(values.first, name)
-                if value.attributes.get('type') == 'int':
+                if value.attributes.get('type') == 'float':
+                    field.values[name] = float(value.text)
+                elif value.attributes.get('type') == 'int':
                     field.values[name] = int(value.text)
                 elif value.attributes.get('type') == 'list':
                     # XXX bare eval here (this may be a security leak ?)

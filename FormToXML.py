@@ -31,6 +31,8 @@ def formToXML(form):
             for key, value in field.values.items():
                 if value is None:
                     continue
+                if type(value) == type(1.1):
+                    write('          <%s type="float">%s</%s>\n' % (key, escape(str(value)), key))
                 if type(value) == type(1):
                     write('          <%s type="int">%s</%s>\n' % (key, escape(str(value)), key))
                 elif type(value) == type([]):
