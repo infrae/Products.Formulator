@@ -29,7 +29,7 @@ Formulator Forms allow you to create solid web forms more easily.
     </div>
     </td>
     <td align="left" valign="top">
-    <input type="text name="title" size="40" />
+    <input type="text" name="title" size="40" />
     </td>
   </tr>
 

@@ -1,4 +1,24 @@
 Formulator changes
+ 
+  1.0.9
+
+    Features Added
+
+       - New TALES tab for fields as a more powerful Override tab; 
+         PageTemplates needs to be installed to make it work.
+ 
+       - added 'name' attribute for forms. When the form header is
+         rendered, name will be an attribute. This can be used to
+         control forms with Javascript.
+
+    Bugs Fixed
+
+       - More compliance with Zope product guidelines; moved dtml
+	 files from www dir to dtml dir.
+
+       - Fixed a bug in that form titles would not work. Forms now have
+         titles, and you can change them in the settings tab. (Formulator
+         does not use the title property internally though)
 
   1.0.1
 

@@ -58,7 +58,7 @@ def initialize(context):
     
     # register the form itself
     context.registerClass(
-        Form.PythonForm,
+        Form.ZMIForm,
         constructors = (Form.manage_addForm,
                         Form.manage_add),
         icon = 'www/Form.gif')

@@ -37,7 +37,7 @@ class Form:
     security = ClassSecurityInfo()
 
     # CONSTRUCTORS    
-    def __init__(self, action, method, enctype):
+    def __init__(self, action, method, enctype, name):
         """Initialize form.
         """
         # make groups dict with entry for default group
@@ -45,6 +45,7 @@ class Form:
         # the display order of the groups
         self.group_list = ["Default"]
         # form submit info
+        self.name = name     # for use by javascript
         self.action = action
         self.method = method
         self.enctype = enctype
@@ -354,15 +355,33 @@ class Form:
     def header(self):
         """Starting form tag.
         """
+        # FIXME: backwards compatibility; name attr may not be present
+        if not hasattr(self, "name"):
+            self.name = ""
+        name = self.name
+        
         if self.enctype is not "":
-            return render_tag("form",
-                              action=self.action,
-                              method=self.method,
-                              enctype=self.enctype) + ">"
+            if name:
+                return render_tag("form",
+                                  name=name,
+                                  action=self.action,
+                                  method=self.method,
+                                  enctype=self.enctype) + ">"
+            else:
+                return render_tag("form",
+                                  action=self.action,
+                                  method=self.method,
+                                  enctype=self.enctype) + ">"
         else:
-            return render_tag("form",
-                              action=self.action,
-                              method=self.method) + ">"
+            if name:
+                return render_tag("form",
+                                  name=name,
+                                  action=self.action,
+                                  method=self.method) + ">"
+            else:
+                return render_tag("form",
+                                  action=self.action,
+                                  method=self.method) + ">"
 
     security.declareProtected('View', 'footer')
     def footer(self):
@@ -378,8 +397,10 @@ class BasicForm(Persistent, Acquisition.Implicit, Form):
     """
     security = ClassSecurityInfo()
        
-    def __init__(self, action="", method="POST", enctype=""):
-        BasicForm.inheritedAttribute('__init__')(self, action, method, enctype)
+    def __init__(self, action="", method="POST", enctype="", name=""):
+        BasicForm.inheritedAttribute('__init__')(self,
+                                                 action, method, enctype,
+                                                 name)
         self.fields = {}
 
     security.declareProtected('Change Formulator Forms', 'add_field')
@@ -432,14 +453,22 @@ class BasicForm(Persistent, Acquisition.Implicit, Form):
 Globals.InitializeClass(BasicForm)
 
 def create_settings_form():
-    """Create settings form for PythonForm.
+    """Create settings form for ZMIForm.
     """
     form = BasicForm('manage_settings')
-    
+
+    title = fields.StringField('title',
+                               title="Title",
+                               required=0,
+                               default="")
     row_length = fields.IntegerField('row_length',
                                      title='Number of groups in row (in order tab)',
                                      required=1,
                                      default=4)
+    name = fields.StringField('name',
+                              title="Form name",
+                              required=0,
+                              default="")
     action = fields.StringField('action',
                                 title='Form action',
                                 required=0,
@@ -462,7 +491,7 @@ def create_settings_form():
                                size=1,
                                default=None) 
 
-    form.add_fields([row_length, action, method, enctype])
+    form.add_fields([title, row_length, name, action, method, enctype])
     return form
 
 class ZMIForm(ObjectManager, Item, Form):
@@ -496,7 +525,7 @@ class ZMIForm(ObjectManager, Item, Form):
         id    -- id of form
         title -- the title of the form
         """
-        PythonForm.inheritedAttribute('__init__')(self, "", "POST", None)
+        ZMIForm.inheritedAttribute('__init__')(self, "", "POST", None, id)
         self.id = id
         self.title = title
         self.row_length = 4
@@ -791,7 +820,7 @@ def manage_add(self, id, title="", REQUEST=None):
     Result -- empty string
     """
     # add actual object
-    id = self._setObject(id, PythonForm(id, title))
+    id = self._setObject(id, ZMIForm(id, title))
     # respond to the add_and_edit button if necessary
     add_and_edit(self, id, REQUEST)
     return ''
@@ -812,9 +841,9 @@ def add_and_edit(self, id, REQUEST):
     REQUEST.RESPONSE.redirect(u+'/manage_main')
 
 def initializeForm(field_registry):
-    """Sets up PythonForm with fields from field_registry.
+    """Sets up ZMIForm with fields from field_registry.
     """
-    form_class = PythonForm
+    form_class = ZMIForm
     
     meta_types = []
     for meta_type, field in field_registry.get_field_classes().items():
