@@ -13,6 +13,11 @@ Installing Formulator
 
   Upgrading
 
+    to 1.0 from earlier versions
+
+      There should be no problems. If you're upgrading from 0.9.2 or
+      below, please see the upgrading note for 0.9.3.
+
     to 0.9.5 from earlier versions
  
       There should be no problems in upgrading from 0.9.4 or 0.9.3.
