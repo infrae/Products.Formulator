@@ -183,10 +183,21 @@ class Field:
         if value is not None:
             return value
         try:
-            return REQUEST.form[key]
+            value = REQUEST.form[key]
         except (KeyError, AttributeError):
+            # fall back on default
             return self.get_value('default')
 
+        # if we enter a string value while the field expects unicode,
+        # convert to unicode first
+        # this solves a problem when re-rendering a sticky form with
+        # values from request
+        if (self.has_value('unicode') and self.get_value('unicode') and
+            type(value) == type('')):
+            return unicode(value, self.get_form_encoding())
+        else:
+            return value
+    
     security.declareProtected('View', 'render')
     def render(self, value=None, REQUEST=None):
         """Render the field widget.
