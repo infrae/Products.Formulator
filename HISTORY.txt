@@ -1,5 +1,13 @@
 Formulator changes
 
+	Current
+
+    Bugs fixed
+
+      - fix typo in the settings tab of the form which made the "i18n id"
+        required though this has not been intended
+         changed: Form.py: create_settings_form
+
   1.7.0
  
     Features Added
