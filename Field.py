@@ -126,8 +126,11 @@ class Field:
                 value = self.get_orig_value(id)
         
         # check if an i18n id exist
-        if id in ['title', 'description'] and have_pts:
-            msgstr = self.i18n_translate(id)
+        if id in ['title', 'description', 'items'] and have_pts:
+            if id == 'items':
+                return self.i18n_translate_items(value)
+            else:
+                msgstr = self.i18n_translate(id)
             if msgstr is not None:
                 return msgstr
                 
@@ -157,6 +160,18 @@ class Field:
         
         return None
 
+    def i18n_translate_items(self, list):
+        """ translates list keys"""
+        values = []
+        for i in range(len(list)):
+            k,v = list[i]
+            msgstr = self.i18n_translate(i)
+            if msgstr is not None:
+                values.append((msgstr, k))
+            else:
+                values.append((k,v))
+        
+        return values
             
     security.declareProtected('View management screens', 'get_override')
     def get_override(self, id):
