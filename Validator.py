@@ -389,7 +389,7 @@ class SelectionValidator(StringBaseValidator):
         
         # get the text and the value from the list of items
         for item in field.get_value('items'):
-            if type(item) in [tuple, list]:
+            if type(item) in [type(()), type([])]:
                 item_text, item_value = item
             else:
                 item_text = item
@@ -458,7 +458,7 @@ class MultiSelectionValidator(Validator):
         # create a dictionary of possible values
         value_dict = {}
         for item in field.get_value('items'):
-            if type(item) in [tuple, list]:
+            if type(item) in [type(()), type([])]:
                 item_text, item_value = item
             else:
                 item_text = item
