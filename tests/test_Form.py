@@ -32,7 +32,7 @@ class FormTestCase(ZopeTestCase.ZopeTestCase):
         self.root.manage_addProduct['Formulator'] \
                  .manage_add('form', 'Test Form')
         self.form = self.root.form
-
+        
     def test_has_field(self):
         """ test if has_field works, if one asks for a non-field attribute.
             this has raised AttributeError "aq_explicit" in previous versions
@@ -44,6 +44,13 @@ class FormTestCase(ZopeTestCase.ZopeTestCase):
 
     def test_multi_list_items(self):
         self._test_list_items('MultiListField')
+
+    # the following two tests fail as their widgets do not support ints, etc
+    #def test_list_items(self):
+    #    self._test_list_items('RadioField')
+
+    #def test_multi_list_items(self):
+    #    self._test_list_items('MultiCheckBoxField')
         
     def _test_list_items(self, list_field_type):
         """ test if a list of values returned by TALES (override) expressions
@@ -450,6 +457,15 @@ class FormTestCase(ZopeTestCase.ZopeTestCase):
         self.assertEquals([u'item\xfc', u'item2'],
                           lines_field.get_value('default') )
 
+    def test_tales_none(self):
+        # test that a TALES default of None is rendered
+        # as the empty string in the field's value attribute
+        # and not as "value"
+        self.form.manage_addField('text','Text Field','StringField')
+        text = self.form.text
+        text.tales['default'] = TALESMethod('nothing')
+        self.assertEquals(1, text.render().count('value=""') )
+        
 
 def test_suite():
     suite = unittest.TestSuite()
