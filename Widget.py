@@ -634,7 +634,7 @@ class DateTimeWidget(Widget):
             hour = None
             minute = None
         else:
-            year = value.year()
+            year = "%04d" % value.year()
             month = "%02d" % value.month()
             day = "%02d" % value.day()
             hour = "%02d" % value.hour()

@@ -149,7 +149,7 @@ class DateTimeField(ZMIField):
             last_year = end_datetime.year() + 1
         else:
             last_year = first_year + 11
-        return create_items(first_year, last_year)
+        return create_items(first_year, last_year, digits=4)
             
 def create_datetime_text_sub_form():
     sub_form = BasicForm()
@@ -203,7 +203,7 @@ def create_datetime_list_sub_form():
                      title="Year",
                      required=0,
                      default="",
-                     items=create_items(2000, 2010),
+                     items=create_items(2000, 2010, digits=4),
                      size=1)
     
     month = ListField('month',
