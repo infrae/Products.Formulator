@@ -420,17 +420,42 @@ class FormTestCase(unittest.TestCase):
         """
         self.form.unicode_mode = 1
         self.form.manage_addField('list_field','Test Listfield','ListField')
+        self.form.manage_addField('lines_field','Test Linesfield','LinesField')
         list_field = self.form.list_field
+        lines_field = self.form.lines_field
         # just to make sure
         self.assert_(list_field.get_unicode_mode())
 
-        values = {'items': [('item\xc3\xbc','item_ue'), ('item2','item2')],
-                  'default' : 'item\xc3\xbc' }
-        list_field._edit(values)
-        self.assertEquals(unicode(values['default'],'utf-8'),
+        # the list field has the most complicated setting:
+        # a list of 2-tuples for the 'items'
+        request = FakeRequest()
+        values = {'field_title' : 'Title\xc3\xbc' ,
+                  'field_default' : 'item\xc3\xbc',
+                  'field_items': 'item\xc3\xbc | item_ue\nitem2 | item2',
+                  'field_size': '5',
+                  }
+        request.update(values)
+        list_field.manage_edit(request)
+        self.assertEquals(u'item\xfc',
                           list_field.get_value('default') )
-        self.assertEquals([ (unicode(x,'utf-8'), unicode(y,'utf-8')) for x,y in values['items'] ],
+        expected_items = [ (u'item\xfc',u'item_ue'), ('item2','item2') ]
+        self.assertEquals(expected_items,
                           list_field.get_value('items') )
+
+        # the lines field has a plain list of string as 'default'
+        request = FakeRequest()
+        values = {'field_title' : 'Title\xc3\xbc' ,
+                  'field_default' : 'item\xc3\xbc\nitem2',
+                  'field_width': '40',
+                  'field_height': '5',
+                  'field_view_separator': 'sep \xc3\xbc',
+                  }
+        request.update(values)
+        lines_field.manage_edit(request)
+        self.assertEquals(u'Title\xfc',
+                          lines_field.get_value('title') )
+        self.assertEquals([u'item\xfc', u'item2'],
+                          lines_field.get_value('default') )
 
 
 def test_suite():
