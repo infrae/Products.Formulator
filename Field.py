@@ -409,6 +409,16 @@ class ZMIField(
                 if type(value) == type(''):
                     # in unicode mode, Formulator UI always uses UTF-8
                     value = unicode(value, 'UTF-8')
+                elif type(value) == type([]):
+                    new_values = []
+                    for valueitem in value:
+                        if type(valueitem) == type(''):
+                            valueitem = unicode(valueitem, 'UTF-8')
+                        elif type(valueitem) == type(()):
+                            valueitem = (unicode(valueitem[0], 'UTF-8'),
+                                         unicode(valueitem[1], 'UTF-8'))
+                        new_values.append(valueitem)
+                    value = new_values
                 new_result[key] = value
             result = new_result
 
