@@ -50,6 +50,12 @@ class FormulatorFormFile(Item_w__name__, ZMIForm):
         self._v_last_read = mtime
         self.set_xml(text)
 
+    security.declareProtected('View management screens', 'refresh')
+    def refresh_form(self):
+        """Trigger refresh check explicitly.
+        """
+        self._refresh_check()
+        
     security.declareProtected('View', 'has_field')
     def has_field(self, id, include_disabled):
         """Check whether the form has a field of a certain id.
