@@ -5,6 +5,7 @@ from AccessControl import ClassSecurityInfo
 import OFS
 from Shared.DC.Scripts.Bindings import Bindings
 from Errors import ValidationError
+from Products.Formulator.Widget import MultiItemsWidget
 
 class Field:
     """Base class of all fields.
