@@ -402,9 +402,9 @@ class SingleItemsWidget(ItemsWidget):
 
         # check if we want to select first item
         if not value and field.get_value('first_item') and len(items) > 0:
-            try:
+            if is_sequence(items[0]):
                 text, value = items[0]
-            except ValueError:
+            else:
                 value = items[0]
 
         css_class = field.get_value('css_class')
@@ -415,9 +415,9 @@ class SingleItemsWidget(ItemsWidget):
         selected_found = 0
         rendered_items = []
         for item in items:
-            try:
+            if is_sequence(item):
                 item_text, item_value = item
-            except ValueError:
+            else:
                 item_text = item
                 item_value = item
 
@@ -446,9 +446,10 @@ class SingleItemsWidget(ItemsWidget):
             return ''
         items = field.get_value('items')
         for item in items:
-            try:
+            
+            if is_sequence(item):
                 item_text, item_value = item
-            except ValueError:
+            else:
                 item_text = item
                 item_value = item
             if value==item_value:
@@ -489,9 +490,9 @@ class MultiItemsWidget(ItemsWidget):
         extra_item = field.get_value('extra_item')
         rendered_items = []
         for item in items:
-            try:
+            if is_sequence(item):
                 item_text, item_value = item
-            except ValueError:
+            else:
                 item_text = item
                 item_value = item
 
@@ -519,9 +520,9 @@ class MultiItemsWidget(ItemsWidget):
         items = field.get_value('items')
         d = {}
         for item in items:
-            try:
+            if is_sequence(item):
                 item_text, item_value = item
-            except ValueError:
+            else:
                 item_text = item
                 item_value = item
             d[item_value] = item_text
