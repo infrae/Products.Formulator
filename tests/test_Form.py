@@ -365,11 +365,18 @@ class FormTestCase(unittest.TestCase):
 
         checkbox_field.values['default'] = 1
 
+        rendered = checkbox_field.render()
+        self.assert_(-1 != rendered.find('checked="checked"'))
+
         request = FakeRequest()
-        request.form['formulator_submission']='1'
 
         rendered = checkbox_field.render_from_request(request)
-        self.assertEquals(-1, rendered.find('checked'))
+        self.assert_(-1 != rendered.find('checked="checked"'))
+
+        request.form['formulator_submission']='1'
+        rendered = checkbox_field.render_from_request(request)
+        self.assertEquals(-1, rendered.find('checked="checked"'))
+
 
 def test_suite():
     suite = unittest.TestSuite()
