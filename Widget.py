@@ -713,7 +713,7 @@ class DateTimeWidget(Widget):
     property_names = Widget.property_names +\
                      ['default_now', 'date_separator', 'time_separator',
                       'input_style', 'input_order',
-                      'date_only', 'ampm_time_style']
+                      'date_only', 'hide_day', 'ampm_time_style']
 
     default = fields.DateTimeField('default',
                                    title="Default",
@@ -779,6 +779,12 @@ class DateTimeWidget(Widget):
         "Display the date only, not the time."),
                                      default=0)
 
+    hide_day = fields.CheckBoxField('hide_day',
+                                           title="Hide day field",
+                                           description=(
+        "Hide the day field."),
+                                           default=0)
+
     ampm_time_style = fields.CheckBoxField('ampm_time_style',
                                            title="AM/PM time style",
                                            description=(
@@ -789,6 +795,7 @@ class DateTimeWidget(Widget):
 
     def render(self, field, key, value, REQUEST):
         use_ampm = field.get_value('ampm_time_style')
+        hide_day = field.get_value('hide_day')
         # FIXME: backwards compatibility hack:
         if not hasattr(field, 'sub_form'):
             from StandardFields import create_datetime_text_sub_form
@@ -834,10 +841,22 @@ class DateTimeWidget(Widget):
                      ('day', day),
                      ('year', year)]
         result = []
+        hidden_day_part = ""
         for sub_field_name, sub_field_value in order:
-            result.append(field.render_sub_field(sub_field_name,
-                                                 sub_field_value, REQUEST))
+            if hide_day and (sub_field_name == 'day'):
+                dayvalue = sub_field_value
+                if dayvalue is None:
+                    dayvalue = "01" 
+                sub_key = field.generate_subfield_key(sub_field_name)
+                sub_field = field.sub_form.get_field(sub_field_name)
+                hidden_day_part = sub_field.widget.\
+                                  render_hidden(sub_field, sub_key,    
+                                                dayvalue, REQUEST)
+            else:
+                result.append(field.render_sub_field(sub_field_name,
+                                                     sub_field_value, REQUEST))
         date_result = string.join(result, field.get_value('date_separator'))
+        if hidden_day_part: date_result += hidden_day_part
         if not field.get_value('date_only'):
             time_result = (field.render_sub_field('hour', hour, REQUEST) +
                            field.get_value('time_separator') +

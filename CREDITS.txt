@@ -87,6 +87,8 @@ Many thanks go to:
   Bertrand Croq (bertrand.croq at freeskop.com) -- Fixes for a Unicode issue
                                                 related to titles of new fields
 
+  Ian Duggan (ian at swishmark.com) -- "Hide day" in DateTimeField feature
+
   Special thanks also goes to Rik Hoekstra.
 
   Also a thank you to those few valiant souls who suffered through the

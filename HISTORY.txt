@@ -15,6 +15,11 @@ Formulator changes
         values. These methods are not used within formulator itself, and
         introduce no new dependencies.
 
+      - A new flag in the DateTimeField allows to hide the day, allwing
+        to only specifiy a month and year. The day then defaults to the
+        first day of the month.
+        (Patch from Ian Duggan)
+
     Bugs Fixed
 
       - Fixed issue for render_view of list fields with no default
