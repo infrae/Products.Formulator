@@ -64,6 +64,12 @@ class TextAreaField(ZMIField):
 
     widget = Widget.TextAreaWidgetInstance
     validator = Validator.TextValidatorInstance
+
+class RawTextAreaField(ZMIField):
+    meta_type = "RawTextAreaField"
+
+    widget = Widget.TextAreaWidgetInstance
+    validator = Validator.StringValidatorInstance
     
 class ListField(ZMIField):
     meta_type = "ListField"

@@ -2,6 +2,13 @@ Formulator changes
 
   1.0
 
+    Features Added
+
+       - New field: RawTextAreaField. A textarea field that doesn't 
+         do a lot of processing on the text input.
+
+       - Checked in BSD license text.
+
     Bugs Fixed
 
        - Fixed minor bug in year handling of DateTimeField.

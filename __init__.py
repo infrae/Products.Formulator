@@ -15,6 +15,8 @@ def initialize(context):
                                 'www/IntegerField.gif')
     FieldRegistry.registerField(StandardFields.TextAreaField,
                                 'www/TextAreaField.gif')
+    FieldRegistry.registerField(StandardFields.RawTextAreaField,
+                                'www/TextAreaField.gif')
     FieldRegistry.registerField(StandardFields.LinesField,
                                 'www/LinesField.gif')
     FieldRegistry.registerField(StandardFields.ListField,
