@@ -7,13 +7,7 @@ from Shared.DC.Scripts.Bindings import Bindings
 from Errors import ValidationError
 from Products.Formulator.Widget import MultiItemsWidget
 from helpers import is_sequence, convert_unicode
-
-try:
-    from Products.PlacelessTranslationService import translate
-    have_pts = 1
-except ImportError:
-    have_pts = 0
-
+    
 class Field:
     """Base class of all fields.
     A field is an object consisting of a widget and a validator.
@@ -125,59 +119,13 @@ class Field:
             else:
                 # get normal value
                 value = self.get_orig_value(id)
-        
-        # check if an i18n id exist
-        if id in ['title', 'description', 'items'] and have_pts:
-            if id == 'items':
-                return self.i18n_translate_items(value)
-            else:
-                msgstr = self.i18n_translate(id)
-            if msgstr is not None:
-                return msgstr
-                
 
         # if normal value is a callable itself, wrap it
         if callable(value):
             return value.__of__(self)
         else:
             return value
-
-    def get_i18n_info(self):
-        """Get i18n info. Try to get it from the form."""
-        try:
-            return self.aq_parent.get_i18n_info()
-        except AttributeError:
-            return '', ''
-    
-    def i18n_translate(self, appendstr):
-        """creates msgid and translates it
-        """
-        i18n_domain, i18n = self.get_i18n_info()
-        if i18n_domain and i18n:
-            msgid = "%s_%s_%s" % (i18n, self.id, appendstr)
-            msgstr = translate(i18n_domain, msgid, context=self.REQUEST,
-                as_unicode=self.get_unicode_mode())
-            return msgstr
-        
-        return None
-
-    def i18n_translate_items(self, list):
-        """ translates list keys"""
-        values = []
-        for i in range(len(list)):
-            item = list[i]
-            if is_sequence(item):
-                k, v = item
-            else:
-                k = v = item
-            msgstr = self.i18n_translate(i)
-            if msgstr is not None:
-                values.append((msgstr,v))
-            else:
-                values.append((k,v))
-        
-        return values
-            
+                
     security.declareProtected('View management screens', 'get_override')
     def get_override(self, id):
         """Get override method for id (not wrapped)."""
@@ -222,20 +170,23 @@ class Field:
         return '%s.subfield_%s_%s:record' % (self.field_record, self.id, id)
 
     security.declareProtected('View management screens', 'get_error_message')
-    def get_error_message(self, name):
+    def get_error_message(self, name, want_message_id=True):
         try:
-            message = self.message_values[name]
-            if have_pts:
-                msgstr = self.i18n_translate(name)
-                if msgstr is not None:
-                   message = msgstr
-            return message
+            result = self.message_values[name]
         except KeyError:
             if name in self.validator.message_names:
-                return getattr(self.validator, name)
+                result = getattr(self.validator, name)
             else:
-                return "Unknown error: %s" % name
-
+                result = "Unknown error: %s" % name
+        # if we don't want a message id, strip it off first getting to
+        # bare message
+        if not want_message_id:
+            try:
+                result = result.ustr
+            except AttributeError:
+                result = result
+        return result
+    
     security.declarePrivate('_render_helper')
     def _render_helper(self, key, value, REQUEST):
         value = self._get_default(key, value, REQUEST)

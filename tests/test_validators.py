@@ -1,6 +1,12 @@
+import os, sys
+if __name__ == '__main__':
+    execfile(os.path.join(sys.path[0], 'framework.py'))
+
+from Testing import ZopeTestCase
+
+ZopeTestCase.installProduct('Formulator')
+
 import unittest
-import ZODB
-import OFS.Application
 from ZPublisher.TaintedString import TaintedString
 from Products.Formulator import Validator
 from Products.Formulator.StandardFields import DateTimeField
@@ -21,7 +27,7 @@ class TestField:
         # XXX fake ... what if installed python does not support utf-8?
         return "utf-8"
 
-class ValidatorTestCase(unittest.TestCase):
+class ValidatorTestCase(ZopeTestCase.ZopeTestCase):
     def assertValidatorRaises(self, exception, error_key, f, *args, **kw):
         try:
             apply(f, args, kw)
@@ -543,9 +549,5 @@ def test_suite():
 
     return suite
 
-def main():
-    unittest.TextTestRunner().run(test_suite())
-
 if __name__ == '__main__':
-    main()
-
+    framework()

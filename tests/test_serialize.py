@@ -1,5 +1,12 @@
+import os, sys
+if __name__ == '__main__':
+    execfile(os.path.join(sys.path[0], 'framework.py'))
+
+from Testing import ZopeTestCase
+
+ZopeTestCase.installProduct('Formulator')
+
 import unittest
-import Zope
 from Testing import makerequest
 from DateTime import DateTime
 
@@ -41,7 +48,10 @@ class FakeRequest:
     def __nonzero__(self):
         return 0
 
-class SerializeTestCase(unittest.TestCase):
+class SerializeTestCase(ZopeTestCase.ZopeTestCase):
+    def afterSetUp(self):
+        self.root = self.folder
+        
     def test_simpleSerialize(self):
         form = ZMIForm('test', 'My test')
         xml = '''\
@@ -174,7 +184,6 @@ class SerializeTestCase(unittest.TestCase):
         self.assertEquals(form1.stored_encoding, form2.stored_encoding)
         self.assertEquals(form1.unicode_mode, form2.unicode_mode)
         self.assertEquals(form1.i18n_domain, form2.i18n_domain)
-        self.assertEquals(form1.i18n, form2.i18n)
 
         self.assertEquals(form1.get_groups(), form2.get_groups())
 
@@ -397,13 +406,6 @@ class SerializeTestCase(unittest.TestCase):
 
 
     def test_validatorMethod(self):
-        # test if validator methods are serialized properly
-        # we need a context here to do this
-        get_transaction().begin()
-        self.connection = Zope.app()._p_jar
-        self.root = makerequest.makerequest(
-            self.connection.root()['Application'])
-
         self.root.manage_addProduct['Formulator'] \
                  .manage_add('form', 'Test Form')
         form = self.root.form
@@ -452,16 +454,10 @@ class SerializeTestCase(unittest.TestCase):
 
         self.assertEqualForms(form, form2)
 
-
 def test_suite():
     suite = unittest.TestSuite()
-
     suite.addTest(unittest.makeSuite(SerializeTestCase, 'test'))
     return suite
 
-def main():
-    unittest.TextTestRunner().run(test_suite())
-
 if __name__ == '__main__':
-    main()
-
+    framework()

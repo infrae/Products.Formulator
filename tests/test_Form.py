@@ -1,19 +1,14 @@
+import os, sys
+if __name__ == '__main__':
+    execfile(os.path.join(sys.path[0], 'framework.py'))
+
+from Testing import ZopeTestCase
+
+ZopeTestCase.installProduct('Formulator')
+
 import unittest, re
 from xml.dom.minidom import parseString
-
-import Zope
 from DateTime import DateTime
-
-# XXX this does not work for zope2.x if x < 3
-# can we fake this? should we do this?
-from Testing import makerequest
-
-try:
-    from Products.PlacelessTranslationService import translate
-    have_pts = 1
-except ImportError:
-    have_pts = 0
-
 
 from Products.Formulator.Form import ZMIForm
 from Products.Formulator.Errors import ValidationError, FormValidationError
@@ -30,26 +25,13 @@ from test_serialize import FakeRequest
     maybe could be moved to a "test_widgets" test case partially
 """
 
-class FormTestCase(unittest.TestCase):
+class FormTestCase(ZopeTestCase.ZopeTestCase):
 
-    def setUp(self):
-        get_transaction().begin()
-        # XXX compatibility with 2.7: the following does not work any longer
-        # self.connection = Zope.DB.open()
-        # instead do it ugly:
-        self.connection = Zope.app()._p_jar
-        self.root = makerequest.makerequest(
-            self.connection.root()['Application'])
-
+    def afterSetUp(self):
+        self.root = self.folder
         self.root.manage_addProduct['Formulator'] \
                  .manage_add('form', 'Test Form')
         self.form = self.root.form
-
-
-    def tearDown(self):
-        get_transaction().abort()
-        self.connection.close()
-
 
     def test_has_field(self):
         """ test if has_field works, if one asks for a non-field attribute.
@@ -134,15 +116,8 @@ class FormTestCase(unittest.TestCase):
         items1 = list_field.render( ('foo',) )
 
         list_field.tales['items'] = TALESMethod("python:('foo', 'bar')")
-        # NOTE: if PTS is installed, the i18n_translate_items
-        # also works as "input sanitizer" here converting the insane
-        # value returned from the tales expression to something Formulator's
-        # ListFields want to see
-        if have_pts:
-            self.assertEquals([('foo', 'foo'), ('bar', 'bar')], \
-                              list_field.get_value('items'))
-        else:
-            self.assertEquals(('foo', 'bar'), list_field.get_value('items'))
+        
+        self.assertEquals(('foo', 'bar'), list_field.get_value('items'))
         
         items2 = list_field.render( ('foo',) )
 
@@ -478,12 +453,8 @@ class FormTestCase(unittest.TestCase):
 
 def test_suite():
     suite = unittest.TestSuite()
-
-    suite.addTest(unittest.makeSuite(FormTestCase, 'test'))
+    suite.addTest(unittest.makeSuite(FormTestCase))
     return suite
 
-def main():
-    unittest.TextTestRunner().run(test_suite())
-
 if __name__ == '__main__':
-    main()
+    framework()

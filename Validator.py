@@ -7,6 +7,7 @@ from urllib import urlopen
 from urlparse import urljoin
 from Errors import ValidationError
 from helpers import is_sequence
+from Products.Formulator.i18n import translate as _
 
 try:
     from DateTime.DateTime import DateError, TimeError
@@ -89,7 +90,7 @@ class StringBaseValidator(Validator):
 
     message_names = Validator.message_names + ['required_not_found']
 
-    required_not_found = 'Input is required but no input given.'
+    required_not_found = _('Input is required but no input given.')
 
     def validate(self, field, key, REQUEST):
         value = REQUEST.get(key, "")
@@ -130,7 +131,7 @@ class StringValidator(StringBaseValidator):
     message_names = StringBaseValidator.message_names +\
                     ['too_long']
 
-    too_long = 'Too much input was given.'
+    too_long = _('Too much input was given.')
 
     def validate(self, field, key, REQUEST):
         value = StringBaseValidator.validate(self, field, key, REQUEST)
@@ -153,7 +154,7 @@ StringValidatorInstance = StringValidator()
 class EmailValidator(StringValidator):
     message_names = StringValidator.message_names + ['not_email']
 
-    not_email = 'You did not enter an email address.'
+    not_email = _('You did not enter an email address.')
 
     # This regex allows for a simple username or a username in a
     # multi-dropbox (%). The host part has to be a normal fully
@@ -198,7 +199,7 @@ class PatternValidator(StringValidator):
     message_names = StringValidator.message_names +\
                     ['pattern_not_matched']
 
-    pattern_not_matched = "The entered value did not match the pattern."
+    pattern_not_matched = _("The entered value did not match the pattern.")
 
     def validate(self, field, key, REQUEST):
         value = StringValidator.validate(self, field, key, REQUEST)
@@ -241,8 +242,8 @@ class IntegerValidator(StringBaseValidator):
     message_names = StringBaseValidator.message_names +\
                     ['not_integer', 'integer_out_of_range']
 
-    not_integer = 'You did not enter an integer.'
-    integer_out_of_range = 'The integer you entered was out of range.'
+    not_integer = _('You did not enter an integer.')
+    integer_out_of_range = _('The integer you entered was out of range.')
 
     def validate(self, field, key, REQUEST):
         value = StringBaseValidator.validate(self, field, key, REQUEST)
@@ -268,7 +269,7 @@ IntegerValidatorInstance = IntegerValidator()
 class FloatValidator(StringBaseValidator):
     message_names = StringBaseValidator.message_names + ['not_float']
 
-    not_float = "You did not enter a floating point number."
+    not_float = _("You did not enter a floating point number.")
 
     def validate(self, field, key, REQUEST):
         value = StringBaseValidator.validate(self, field, key, REQUEST)
@@ -321,9 +322,9 @@ class LinesValidator(StringBaseValidator):
     message_names = StringBaseValidator.message_names +\
                     ['too_many_lines', 'line_too_long', 'too_long']
 
-    too_many_lines = 'You entered too many lines.'
-    line_too_long = 'A line was too long.'
-    too_long = 'You entered too many characters.'
+    too_many_lines = _('You entered too many lines.')
+    line_too_long = _('A line was too long.')
+    too_long = _('You entered too many characters.')
 
     def validate(self, field, key, REQUEST):
         value = StringBaseValidator.validate(self, field, key, REQUEST)
@@ -388,7 +389,7 @@ class SelectionValidator(StringBaseValidator):
     message_names = StringBaseValidator.message_names +\
                     ['unknown_selection']
 
-    unknown_selection = 'You selected an item that was not in the list.'
+    unknown_selection = _('You selected an item that was not in the list.')
 
     def validate(self, field, key, REQUEST):
         value = StringBaseValidator.validate(self, field, key, REQUEST)
@@ -443,8 +444,8 @@ class MultiSelectionValidator(Validator):
     message_names = Validator.message_names + ['required_not_found',
                                                'unknown_selection']
 
-    required_not_found = 'Input is required but no input given.'
-    unknown_selection = 'You selected an item that was not in the list.'
+    required_not_found = _('Input is required but no input given.')
+    unknown_selection = _('You selected an item that was not in the list.')
 
     def validate(self, field, key, REQUEST):
         values = REQUEST.get(key, [])
@@ -548,7 +549,7 @@ class LinkValidator(StringValidator):
 
     message_names = StringValidator.message_names + ['not_link']
 
-    not_link = 'The specified link is broken.'
+    not_link = _('The specified link is broken.')
 
     def validate(self, field, key, REQUEST):
         value = StringValidator.validate(self, field, key, REQUEST)
@@ -631,9 +632,9 @@ class DateTimeValidator(Validator):
                                                'not_datetime',
                                                'datetime_out_of_range']
 
-    required_not_found = 'Input is required but no input given.'
-    not_datetime = 'You did not enter a valid date and time.'
-    datetime_out_of_range = 'The date and time you entered were out of range.'
+    required_not_found = _('Input is required but no input given.')
+    not_datetime = _('You did not enter a valid date and time.')
+    datetime_out_of_range = _('The date and time you entered were out of range.')
 
     def validate(self, field, key, REQUEST):
         try:

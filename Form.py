@@ -37,8 +37,6 @@ class Form:
     stored_encoding = 'ISO-8859-1'
     unicode_mode = 0
     i18n_domain = ''
-    i18n = ''
-    
 
     # CONSTRUCTORS
     def __init__(self, action, method, enctype, name,
@@ -206,13 +204,7 @@ class Form:
         self.group_list = group_list
         return 1
 
-    # ACCESSORS
-    security.declareProtected('View', 'get_i18n_info')
-    def get_i18n_info(self):
-        """Get i18n information of the form
-        """
-        return self.i18n_domain, self.i18n
-     
+    # ACCESSORS     
     security.declareProtected('View', 'get_fields')
     def get_fields(self, include_disabled=0):
         """Get all fields for all groups (in the display order).
@@ -641,15 +633,10 @@ def create_settings_form():
                                     title = 'i18n domain',
                                     required=0,
                                     default="")
-    i18n = fields.StringField('i18n',
-                             title='i18n id',
-                             required=0,
-                             default="")
                         
-
     form.add_fields([title, row_length, name, action, method,
-                     enctype, encoding, stored_encoding, unicode_mode, i18n_domain,
-                     i18n])
+                     enctype, encoding, stored_encoding, unicode_mode,
+                     i18n_domain])
     return form
 
 class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
