@@ -22,6 +22,8 @@ class Field:
         self.id = id
         # initialize values of fields in form
         self.initialize_values(kw)
+        # initialize tales expression for fields in form
+        self.initialize_tales()
         # initialize overrides of fields in form
         self.initialize_overrides()
         
