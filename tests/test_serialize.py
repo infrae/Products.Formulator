@@ -149,6 +149,31 @@ class SerializeTestCase(unittest.TestCase):
         f.close()
 
 
+    def assertEqualForms(self, form1, form2):
+        """ test that the two forms are equal (except for their ids) """
+        
+        for field in form1.get_fields():
+            self.assert_(form2.has_field(field.getId()))
+            field2 = getattr(form2, field.getId())
+            # XXX test if values are the same
+            self.assertEquals(field.values, field2.values)
+            # test if default renderings are the same
+            self.assertEquals(field.render(), field2.render())
+            
+        # TODO: check that form2 does not have fields form1 does not have ...
+
+        self.assertEquals(form1.title, form2.title)
+        self.assertEquals(form1.name, form2.name)
+        self.assertEquals(form1.action, form2.action)
+        self.assertEquals(form1.enctype, form2.enctype)
+        self.assertEquals(form1.method, form2.method)
+
+        self.assertEquals(form1.get_groups(), form2.get_groups())
+
+        # if we have forgotten something, this will usually remind us ;-)
+        self.assertEquals(form1.render(), form2.render())
+        
+
     def test_escaping(self):
         """ test if the necessary elements are escaped in the XML.
         (Actually this test is very incomplete)
@@ -171,22 +196,7 @@ class SerializeTestCase(unittest.TestCase):
         xml = formToXML(form)
         XMLToForm(xml, form2)
 
-        for field in form.get_fields():
-            self.assert_(form2.has_field(field.getId()))
-            field2 = getattr(form2, field.getId())
-            # XXX test if values are the same
-            self.assertEquals(field.values, field2.values)
-            # test if default renderings are the same
-            self.assertEquals(field.render(), field2.render())
-
-        self.assertEquals(form.title, form2.title)
-        self.assertEquals(form.name, form2.name)
-        self.assertEquals(form.action, form2.action)
-        self.assertEquals(form.enctype, form2.enctype)
-        self.assertEquals(form.method, form2.method)
-
-        # if we have forgotten something, this will usually remind us ;-)
-        self.assertEquals(form.render(), form2.render())
+        self.assertEqualForms(form, form2)
 
 
     def test_messages(self):
@@ -236,6 +246,7 @@ class SerializeTestCase(unittest.TestCase):
         between the original form and the one after one form -> xml -> form
         roundtrip.
         """
+        # tests for "method" and "datetime" values follow later on ...
 
         form = ZMIForm('test', 'ValueTest')
         form.manage_addField('int_field', 'Test Integer Field', 'IntegerField')
@@ -255,6 +266,7 @@ class SerializeTestCase(unittest.TestCase):
 
         # XXX editing fields by messing with a fake request
         # -- any better way to do this?
+        # (could assign to "values" directly ...
 
         default_values = {'field_title': 'Test Title',
                           'field_display_width': '92',
@@ -325,16 +337,9 @@ class SerializeTestCase(unittest.TestCase):
         xml = formToXML(form)
         XMLToForm(xml, form2)
 
-        for field in form.get_fields():
-            self.assert_(form2.has_field(field.getId()))
-            field2 = getattr(form2, field.getId())
-            # XXX test if values are the same
-            self.assertEquals(field.values, field2.values)
-            # test if default renderings are the same
-            self.assertEquals(field.render(), field2.render())
 
-        # brute force compare ...
-        self.assertEquals(form.render(), form2.render())
+        self.assertEqualForms(form, form2)
+
         request.clear()
         request['field_int_field'] = '42'
         request['field_float_field'] = '2.71828'
@@ -381,12 +386,7 @@ class SerializeTestCase(unittest.TestCase):
         xml = formToXML(form)
         XMLToForm(xml, form2)
         # print xml
-
-        # XXX actually the empty group is not rendered anyway, but
-        # if we get here, we are behind the bug anyway ...
-        self.assertEquals(form.render(), form2.render())
-
-        self.assertEquals(form.get_groups(), form2.get_groups())
+        self.assertEqualForms(form, form2)
 
 
     def test_validatorMethod(self):
@@ -430,6 +430,7 @@ class SerializeTestCase(unittest.TestCase):
         XMLToForm(xml, form2)
         self.assertEquals('ok',
                           form2.string_field.get_value('external_validator')())
+
 
 def test_suite():
     suite = unittest.TestSuite()
