@@ -461,10 +461,7 @@ class Form:
                 res = render_tag("form",
                                  action=self.action,
                                  method=self.method) + ">"
-        res += '\n'
-        res += '<input type="hidden" name="formulator_submission" value="1" />'
-        res += '\n'
-        return res
+        return '%s\n<input type="hidden" name="formulator_submission" value="1" />' % res
 
     security.declareProtected('View', 'footer')
     def footer(self):
