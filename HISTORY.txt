@@ -8,6 +8,8 @@ Formulator changes
         representations of forms from filesystem code like
         PageTemplateFile.
 
+      - i18n-id and i18n-domain support for forms, except field items
+
     Bugs Fixed
 
       - changed way selection fields check whether their items
