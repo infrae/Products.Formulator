@@ -285,16 +285,8 @@ class SelectionValidator(StringBaseValidator):
         if value == "" and not field.get_value('required'):
             return value
 
-        if field.has_value('items_method'):
-            items_method = field.get_value('items_method')
-        else:
-            items_method = None
-            
-        if items_method:
-            items = items_method()
-        else:
-            items = field.get_value('items')
-
+        items = field.get_value('items')
+        
         # we want the string representation of all possible values,
         # just in case we're getting something else, because the user
         # form input will always be a string representation
