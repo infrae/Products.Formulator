@@ -1,4 +1,5 @@
 import string, re
+import PatternChecker
 from DummyField import fields
 from DateTime import DateTime
 from threading import Thread
@@ -124,6 +125,44 @@ class EmailValidator(StringValidator):
         return value
 
 EmailValidatorInstance = EmailValidator()
+
+class PatternValidator(StringValidator):
+    # does the real work
+    checker = PatternChecker.PatternChecker()
+    
+    property_names = StringValidator.property_names +\
+                     ['pattern']
+
+    pattern = fields.StringField('pattern',
+                                 title="Pattern",
+                                 required=1,
+                                 default="",
+                                 description=(
+        "The pattern the value should conform to. Patterns are "
+        "composed of digits ('d'), alphabetic characters ('e') and "
+        "alphanumeric characters ('f'). Any other character in the pattern "
+        "should appear literally in the value in that place. Internal "
+        "whitespace is checked as well but may be included in any amount. "
+        "Example: 'dddd ee' is a Dutch zipcode (postcode). "
+        "NOTE: currently experimental and details may change!")
+                                 )
+
+    message_names = StringValidator.message_names +\
+                    ['pattern_not_matched']
+
+    pattern_not_matched = "The entered value did not match the pattern."
+
+    def validate(self, field, key, REQUEST):
+        value = StringValidator.validate(self, field, key, REQUEST)
+        if value == "" and not field.get_value('required'):
+            return value
+        value = self.checker.validate_value([field.get_value('pattern')],
+                                            value)
+        if value is None:
+            self.raise_error('pattern_not_matched', field)
+        return value
+
+PatternValidatorInstance = PatternValidator()
 
 class BooleanValidator(Validator):
     def validate(self, field, key, REQUEST):

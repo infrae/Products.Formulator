@@ -23,6 +23,12 @@ class EmailField(ZMIField):
 
     widget = Widget.TextWidgetInstance
     validator = Validator.EmailValidatorInstance
+
+class PatternField(ZMIField):
+    meta_type = "PatternField"
+
+    widget = Widget.TextWidgetInstance
+    validator = Validator.PatternValidatorInstance
     
 class CheckBoxField(ZMIField):
     meta_type = "CheckBoxField"

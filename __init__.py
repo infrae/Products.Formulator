@@ -29,6 +29,8 @@ def initialize(context):
                                 'www/PasswordField.gif')
     FieldRegistry.registerField(StandardFields.EmailField,
                                 'www/EmailField.gif')
+    FieldRegistry.registerField(StandardFields.PatternField,
+                                'www/PatternField.gif')
     FieldRegistry.registerField(StandardFields.FloatField,
                                 'www/FloatField.gif')
     FieldRegistry.registerField(StandardFields.DateTimeField,

@@ -23,6 +23,8 @@ Formulator changes
       - Added MultiListField and MultiCheckBoxField, both use new
         MultiItemsWidget and MultiSelectionValidator.
 
+      - Added EXPERIMENTAL PatternField.
+
     Bugs Fixed
 
   0.9.4
