@@ -69,6 +69,9 @@ Many thanks go to:
 
   Jeff Kowalczyk -- Whitespace normalization of sources.
 
+  Paul Winkler, Dieter Maurer -- help with fix so that help system
+                              doesn't cause ZODB writes on every startup.
+
   Special thanks also goes to Rik Hoekstra.
 
   Also a thank you to those few valiant souls who suffered through the
