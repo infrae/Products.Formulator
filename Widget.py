@@ -291,9 +291,6 @@ class ListWidget(Widget):
                                required=1)
 
     def render(self, field, key, value, REQUEST):
-        # we always need a string value
-        value = str(value)
-            
         # call items method if one is supplied, otherwise get default list
         items_method = field.get_value('items_method')
         if items_method:
@@ -305,6 +302,9 @@ class ListWidget(Widget):
         if not value and field.get_value('first_item') and len(items) > 0:
             value = items[0][1]
 
+        # we always need a string value
+        value = str(value)
+        
         # FIXME: what if we run into multiple items with same value?
         options = []
         for item in items:
@@ -335,6 +335,97 @@ class ListWidget(Widget):
                               extra=field.get_value('extra'))
                               
 ListWidgetInstance = ListWidget()
+
+class RadioWidget(Widget):
+    """List widget.
+    """
+    property_names = Widget.property_names +\
+                     ['first_item', 'items', 'orientation']
+    
+    default = fields.StringField('default',
+                                 title='Default',
+                                 description=(
+        "The default value of the widget; this should be one of the "
+        "elements in the list."),
+                                 default="",
+                                 required=0)
+
+    first_item = fields.CheckBoxField('first_item',
+                                      title="Select First Item",
+                                      description=(
+        "If checked, the first item will always be selected if "
+        "no initial default value is supplied."),
+                                      default=0)
+    
+    items = fields.ListTextAreaField('items',
+                                     title='Items',
+                                     description=(
+        "List items in the field. Each row should contain a list "
+        "item. Use the | (pipe) character to separate what is shown "
+        "to the user from the true value. If no | is supplied, the "
+        "shown value for the list item is identical to the true value."), 
+                                     default=[],
+                                     width=20,
+                                     height=5,
+                                     required=0)
+
+    orientation = fields.ListField('orientation',
+                                   title='Orientation',
+                                   description=(
+        "Orientation of the radio buttons. The radio buttons will "
+        "be drawn either vertically or horizontally."),
+                                   default="vertical",
+                                   required=1,
+                                   size=1,
+                                   items=[('Vertical', 'vertical'),
+                                          ('Horizontal', 'horizontal')])
+                                   
+    def render(self, field, key, value, REQUEST):
+        items = field.get_value('items')     
+
+        # check if we want to select first item
+        if not value and field.get_value('first_item') and len(items) > 0:
+            value = items[0][1]
+
+        # we always need a string value
+        value = str(value)
+
+        css_class = field.get_value('css_class')
+        # FIXME: what if we run into multiple items with same value?
+        radios = []
+        for item in items:
+            try:
+                radio_text, radio_value = item
+            except TypeError:
+                radio_text = item
+                radio_value = item
+                
+            if radio_value != value:
+                # no selected attribute
+                
+                radio = render_element('input',
+                                       type="radio",
+                                       css_class=css_class,
+                                       name=key,
+                                       value=radio_value)
+            else:
+                # render with 'checked' attribute
+                radio = render_element('input',
+                                       type="radio",
+                                       css_class=css_class,
+                                       name=key,
+                                       value=radio_value,
+                                       checked=None)
+            text = "%s&nbsp;%s" % (radio, radio_text)
+            radios.append(text)
+
+        orientation = field.get_value('orientation')
+        if orientation == 'horizontal':
+            return string.join(radios, "&nbsp;")
+        else:
+            return string.join(radios, "<br>")
+    
+RadioWidgetInstance = RadioWidget()
 
 class DateTimeWidget(Widget):
     property_names = Widget.property_names +\

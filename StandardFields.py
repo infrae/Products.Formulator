@@ -62,6 +62,12 @@ class ListField(PythonField):
     widget = Widget.ListWidgetInstance
     validator = Validator.SelectionValidatorInstance
 
+class RadioField(PythonField):
+    meta_type = "RadioField"
+
+    widget = Widget.RadioWidgetInstance
+    validator = Validator.SelectionValidatorInstance
+    
 class DateTimeField(PythonField):
     meta_type = "DateTimeField"
 

@@ -17,6 +17,8 @@ def initialize(context):
                                 'www/TextAreaField.gif')
     FieldRegistry.registerField(StandardFields.ListField,
                                 'www/ListField.gif')
+    FieldRegistry.registerField(StandardFields.RadioField,
+                                'www/ListField.gif')
     FieldRegistry.registerField(StandardFields.PasswordField,
                                 'www/PasswordField.gif')
     FieldRegistry.registerField(StandardFields.EmailField,
@@ -30,7 +32,7 @@ def initialize(context):
     FieldRegistry.registerField(HelperFields.ListTextAreaField)
     FieldRegistry.registerField(HelperFields.MethodField)
 
-    # obsolete field (same as helper; useable for not addable)
+    # obsolete field (same as helper; useable but not addable)
     FieldRegistry.registerField(StandardFields.RangedIntegerField,
                                 'www/RangedIntegerField.gif')
     

@@ -285,7 +285,11 @@ class SelectionValidator(StringBaseValidator):
         if value == "" and not field.get_value('required'):
             return value
 
-        items_method = field.get_value('items_method')
+        if field.has_value('items_method'):
+            items_method = field.get_value('items_method')
+        else:
+            items_method = None
+            
         if items_method:
             items = items_method()
         else:
