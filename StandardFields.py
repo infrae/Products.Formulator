@@ -1,42 +1,42 @@
 from Form import BasicForm
-from Field import PythonField
+from Field import ZMIField
 from DummyField import fields
 from MethodField import BoundMethod
 from DateTime import DateTime
 import Validator, Widget
 import OFS
 
-class StringField(PythonField):
+class StringField(ZMIField):
     meta_type = "StringField"
     
     widget = Widget.TextWidgetInstance
     validator = Validator.StringValidatorInstance
 
-class PasswordField(PythonField):
+class PasswordField(ZMIField):
     meta_type = "PasswordField"
 
     widget = Widget.PasswordWidgetInstance
     validator = Validator.StringValidatorInstance
 
-class EmailField(PythonField):
+class EmailField(ZMIField):
     meta_type = "EmailField"
 
     widget = Widget.TextWidgetInstance
     validator = Validator.EmailValidatorInstance
     
-class CheckBoxField(PythonField):
+class CheckBoxField(ZMIField):
     meta_type = "CheckBoxField"
 
     widget = Widget.CheckBoxWidgetInstance
     validator = Validator.BooleanValidatorInstance
         
-class IntegerField(PythonField):
+class IntegerField(ZMIField):
     meta_type = "IntegerField"
 
     widget = Widget.TextWidgetInstance
     validator = Validator.IntegerValidatorInstance
 
-class RangedIntegerField(PythonField):
+class RangedIntegerField(ZMIField):
     meta_type = "RangedIntegerField"
 
     # this field is not addable anymore and deprecated. For
@@ -47,31 +47,31 @@ class RangedIntegerField(PythonField):
     widget = Widget.TextWidgetInstance
     validator = Validator.IntegerValidatorInstance
 
-class FloatField(PythonField):
+class FloatField(ZMIField):
     meta_type = "FloatField"
 
     widget = Widget.TextWidgetInstance
     validator = Validator.FloatValidatorInstance
     
-class TextAreaField(PythonField):
+class TextAreaField(ZMIField):
     meta_type = "TextAreaField"
 
     widget = Widget.TextAreaWidgetInstance
     validator = Validator.TextValidatorInstance
     
-class ListField(PythonField):
+class ListField(ZMIField):
     meta_type = "ListField"
 
     widget = Widget.ListWidgetInstance
     validator = Validator.SelectionValidatorInstance
 
-class RadioField(PythonField):
+class RadioField(ZMIField):
     meta_type = "RadioField"
 
     widget = Widget.RadioWidgetInstance
     validator = Validator.SelectionValidatorInstance
     
-class DateTimeField(PythonField):
+class DateTimeField(ZMIField):
     meta_type = "DateTimeField"
 
     widget = Widget.DateTimeWidgetInstance
@@ -79,7 +79,7 @@ class DateTimeField(PythonField):
 
     def __init__(self, id, **kw):
         # icky but necessary...
-        apply(PythonField.__init__, (self, id), kw)
+        apply(ZMIField.__init__, (self, id), kw)
 
         if self.get_value('input_style') == 'text':
             self.sub_form = create_datetime_text_sub_form()

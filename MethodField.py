@@ -3,7 +3,7 @@ from DummyField import fields
 import Widget, Validator
 from Globals import Persistent
 import Acquisition
-from Field import PythonField
+from Field import ZMIField
 from AccessControl import getSecurityManager
 
 class MethodWidget(Widget.TextWidget):
@@ -64,7 +64,7 @@ class MethodValidator(Validator.StringBaseValidator):
     
 MethodValidatorInstance = MethodValidator()
 
-class MethodField(PythonField):
+class MethodField(ZMIField):
     meta_type = 'MethodField'
 
     internal_field = 1

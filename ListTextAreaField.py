@@ -1,7 +1,7 @@
 import string
 from DummyField import fields
 import Widget, Validator
-from Field import PythonField
+from Field import ZMIField
 
 class ListTextAreaWidget(Widget.TextAreaWidget):
     default = fields.ListTextAreaField('default',
@@ -42,7 +42,7 @@ class ListLinesValidator(Validator.LinesValidator):
 
 ListLinesValidatorInstance = ListLinesValidator()
 
-class ListTextAreaField(PythonField):
+class ListTextAreaField(ZMIField):
     meta_type = "ListTextAreaField"
 
     # field only has internal use
