@@ -52,7 +52,7 @@ Edit <dtml-var meta_type> properties here.
     <td align="left" valign="top">
     <div class="form-element">
     <input class="form-element" type="submit" name="submit"
-     value="Save Changes" />
+     value="Save Changes" accesskey="s" />
     </div>
     </td>
   </tr>

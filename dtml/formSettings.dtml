@@ -18,7 +18,7 @@ Settings for this form.
   </dtml-let></dtml-in>
 
   <tr>
-    <td><input type="submit" value="Change"></td>
+    <td><input type="submit" value="Change" accesskey="s" /></td>
   </tr>
 </table>
 

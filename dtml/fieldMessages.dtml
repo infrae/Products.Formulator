@@ -15,7 +15,7 @@ Edit <dtml-var meta_type> error messages here.
   </tr>
   </dtml-let>
 </dtml-in>
-<tr><td><input type="submit" value=" OK "></td></tr>
+<tr><td><input type="submit" value=" OK " accesskey="s" /></td></tr>
 </table>
 </form>
 
