@@ -5,7 +5,7 @@ from AccessControl import ClassSecurityInfo
 import OFS
 from Shared.DC.Scripts.Bindings import Bindings
 from Errors import ValidationError
-from Products.Formulator.Widget import MultiItemsWidget, CheckBoxWidget
+from Products.Formulator.Widget import MultiItemsWidget
 
 try:
     from Products.PlacelessTranslationService import translate
@@ -246,12 +246,6 @@ class Field:
         try:
             value = REQUEST.form[key]
         except (KeyError, AttributeError):
-            # Handle checkboxes which are not selected. They will not appear
-            # in the request, but the special permanent field will.
-            if isinstance(self.widget, CheckBoxWidget):
-                if REQUEST is not None and REQUEST.form.has_key('formulator_submission'):
-                    return value
-
             # fall back on default
             return self.get_value('default')
 
