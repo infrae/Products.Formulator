@@ -11,28 +11,28 @@ class Field:
         property, the default value for that property will be used.
         All old property values will be cleared.
 
-        Permissions -- 'Change Formulator Fields'
+        Permission -- 'Change Formulator Fields'
         """
 
     def initialize_overrides():
         """
         Clear (initialize to nothing) overrides for all properties.
 
-        Permissions -- 'Change Formulator Fields'
+        Permission -- 'Change Formulator Fields'
         """
 
     def has_value(id):
         """
         Returns true if a property with name 'id' exists.
 
-        Permissions -- 'Access contents information'
+        Permission -- 'Access contents information'
         """
 
     def get_orig_value(id):
         """
         Get value of property without looking at possible overrides.
 
-        Permissions -- 'Access contents information'
+        Permission -- 'Access contents information'
         """
 
     def get_value(id):
@@ -40,7 +40,7 @@ class Field:
         Get property value for an id. Call override if override
         is defined, otherwise use property value.
 
-        Permissions -- 'Access contents information'
+        Permission -- 'Access contents information'
         """
 
     def get_override(id):
@@ -48,7 +48,7 @@ class Field:
         Get the override method for an id, or empty string
         if no such override method exists.
 
-        Permissions -- 'Access contents information'
+        Permission -- 'Access contents information'
         """
         
     def is_required():
@@ -56,7 +56,7 @@ class Field:
         A utility method that returns true if this field is required.
         (checks for 'required' property).
 
-        Permissions -- 'Access contents information'
+        Permission -- 'Access contents information'
         """
 
     def get_error_names():
@@ -64,7 +64,7 @@ class Field:
         Get all keys of error messages that the validator
         of this field provides.
 
-        Permissions -- 'View management screens'
+        Permission -- 'View management screens'
         """
 
     def get_error_message(name):
@@ -72,7 +72,7 @@ class Field:
         Get the contents of a particular error message with key
         'name'.
 
-        Permissions -- 'View management screens'
+        Permission -- 'View management screens'
         """
 
     def render(value=None, REQUEST=None):
@@ -90,7 +90,7 @@ class Field:
         If neither 'value' or 'REQUEST' are supplied, the field's
         default value will be used instead.
 
-        Permissions -- 'View'
+        Permission -- 'View'
         """
 
     def render_from_request(REQUEST):
@@ -109,7 +109,7 @@ class Field:
         'DateTimeField'. 'id' is the id of the sub field. 'value' and
         'REQUEST' work like in 'render()', but for the sub field.
 
-        Permissions -- 'View'
+        Permission -- 'View'
         """
 
     def render_sub_field_from_request(id, REQUEST):
@@ -117,7 +117,7 @@ class Field:
         A convenience method to render a sub field widget from
         'REQUEST' (unvalidated data).
 
-        Permissions -- 'View'
+        Permission -- 'View'
         """
         
     def validate(REQUEST):
@@ -128,7 +128,7 @@ class Field:
         Returns the validated and processed value, or raises a
         ValidationError.
 
-        Permissions -- 'View'
+        Permission -- 'View'
         """
         
     def validate_sub_field(id, REQUEST):
@@ -140,7 +140,7 @@ class Field:
         Returns the validated and processed value, or raises a
         ValidationError.
 
-        Permissions -- 'View'
+        Permission -- 'View'
         """
 
     

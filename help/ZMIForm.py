@@ -16,7 +16,7 @@ class ZMIForm:
         it's better to use BasicForm and 'add_field' if you want to
         use Formulator Forms outside the Zope Management Interface.
         
-        Permissions -- 'Change Formulator Forms'
+        Permission -- 'Change Formulator Forms'
         """
 
         
