@@ -78,7 +78,7 @@ Many thanks go to:
   Maciej Pietrzak (magh at apcoh.org) -- Fixes for DateTime validation
                                       issues in Zope 2.7
 
-  Patrick Earl (pat at dril.com) -- Fix for DateTime field rendering
+  Patrick Earl (pat at dril.com) -- Fixes for DateTime / CheckBox field rendering
 
   Special thanks also goes to Rik Hoekstra.
 
