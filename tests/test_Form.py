@@ -122,7 +122,7 @@ class FormTestCase(unittest.TestCase):
 
     def test_datetime_css_class_rendering(self):
         # test that a bug is fixed, which causing the css_class value
-        # not to be rendered
+        # not to be rendered for DateTime fields
 
         self.form.manage_addProduct['Formulator']\
                  .manage_addField('date_time','Test Field','DateTimeField')
@@ -273,8 +273,8 @@ class FormTestCase(unittest.TestCase):
     def test_render_view_items(self):
         # test that the render_view is correct for fields
         # for which the values internally handled by Formulator
-        # are different form the une shown to the user
-        # (e.g. checkboxes, radio buttons, option-lists
+        # are different from the ones shown to the user
+        # (e.g. checkboxes, radio buttons, option-lists)
 
         self.form.manage_addProduct['Formulator']\
                   .manage_addField('single_list','Test Field','ListField')
