@@ -7,6 +7,7 @@ from Testing import ZopeTestCase
 ZopeTestCase.installProduct('Formulator')
 
 import unittest
+import xml.sax.handler
 from ZPublisher.TaintedString import TaintedString
 from Products.Formulator import Validator
 from Products.Formulator.StandardFields import DateTimeField
@@ -33,19 +34,30 @@ class FakeSaxHandler:
     def __init__(self):
         self._xml = ''
 
-    def characters(self, characters):
-        # a real sax handler would encode the output to something like utf-8
-        # here we just output the unicode strings directly
-        self._xml = self._xml + characters
-    
     def startElement(self, key):
         self._xml = self._xml + '<%s>' % key
-
+        
     def endElement(self, key):
         self._xml = self._xml + '</%s>' % key
 
+    def characters(self, characters):
+        self._xml = self._xml + characters
+        
     def getXml(self):
         return self._xml
+        
+class FakeSaxProducer:
+    def __init__(self):
+        self.handler = FakeSaxHandler()
+
+    def startElement(self, key):
+        self.handler.startElement(key)
+
+    def endElement(self, key):
+        self.handler.endElement(key)
+
+    def getXml(self):
+        return self.handler.getXml()
         
 class ValidatorTestCase(ZopeTestCase.ZopeTestCase):
     def assertValidatorRaises(self, exception, error_key, f, *args, **kw):
@@ -155,7 +167,7 @@ class StringValidatorTestCase(ValidatorTestCase):
         self.assertEqual('<foo>', result)
     
     def test_serializeValue(self):
-        handler = FakeSaxHandler()
+        handler = FakeSaxProducer()
         string = 'This is the string value'
         field = TestField('f', max_length=0, truncate=0, required=0, unicode=1)
         self.v.serializeValue(field, string, handler)
@@ -220,7 +232,7 @@ class LinesValidatorTestVase(ValidatorTestCase):
             'f', {'f': '\nToo long \ntext'} )
 
     def test_serializeValue(self):
-        handler = FakeSaxHandler()
+        handler = FakeSaxProducer()
         value = ['Two Lines ',' of Text']
         field = TestField('f', max_lenght=0, truncate=0, required=1, unicode=0)
         self.v.serializeValue(field, value, handler)
@@ -271,7 +283,7 @@ class EmailValidatorTestCase(ValidatorTestCase):
             'f', {'f': ''})
 
     def test_serializeValue(self):
-        handler = FakeSaxHandler()
+        handler = FakeSaxProducer()
         string = 'eric@infrae.com'
         field = TestField('f', max_length=0, truncate=0, required=0, unicode=1)
         self.v.serializeValue(TestField, string, handler)
@@ -313,12 +325,12 @@ class BooleanValidatorTestCase(ValidatorTestCase):
         self.assertEquals(0, result)
 
     def test_serializeValue(self):
-        handler = FakeSaxHandler()
+        handler = FakeSaxProducer()
         value = False
         field = TestField('f', max_length=0, truncate=0, required=0, unicode=1)
         self.v.serializeValue(field, value, handler)
         self.assertEqual('False', handler.getXml())
-        handler2 = FakeSaxHandler()
+        handler2 = FakeSaxProducer()
         value = True
         self.v.serializeValue(field, value, handler2)
         self.assertEqual('True', handler2.getXml())
@@ -461,7 +473,7 @@ class IntegerValidatorTestCase(ValidatorTestCase):
             'f', {})
 
     def test_serializeValue(self):
-        handler = FakeSaxHandler()
+        handler = FakeSaxProducer()
         value = 1337
         field = TestField('f', max_length=0, truncate=0, required=0, unicode=1)
         self.v.serializeValue(field, value, handler)
@@ -506,7 +518,7 @@ class FloatValidatorTestCase(ValidatorTestCase):
            'f', {'f': '1f'})
 
     def test_serializeValue(self):
-        handler = FakeSaxHandler()
+        handler = FakeSaxProducer()
         value = 1.00001
         field = TestField('f', max_length=0, truncate=0, required=0, unicode=1)
         self.v.serializeValue(field, value, handler)
@@ -655,7 +667,7 @@ class DateTimeValidatorTestCase(ValidatorTestCase):
                   'subfield_f_minute': '61'})
 
     def test_serializeValue(self):
-        handler = FakeSaxHandler()
+        handler = FakeSaxProducer()
         value = self.v.validate(
             DateTimeField('f', allow_empty_time=1),
             'f', {'subfield_f_year': '2002',

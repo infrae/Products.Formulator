@@ -42,9 +42,9 @@ class ValidatorBase:
     def validate(self, field, key, REQUEST):
         pass # override in subclass
 
-    def serializeValue(self, field, value, sax_handler):
-        """Given a field, a value and a sax_handler, this method sends
-        sax events to the sax handler that represent the XMLified value.
+    def serializeValue(self, field, value, sax_producer):
+        """Given a field, a value and a sax_producer, this method sends
+        sax events to the sax producer that represent the XMLified value.
         """
         pass # override in subclass
 
@@ -110,8 +110,8 @@ class StringBaseValidator(Validator):
             self.raise_error('required_not_found', field)
         return value
 
-    def serializeValue(self, field, value, handler):
-        handler.characters(value)
+    def serializeValue(self, field, value, producer):
+        producer.handler.characters(value)
 
 class StringValidator(StringBaseValidator):
     property_names = StringBaseValidator.property_names +\
@@ -230,12 +230,12 @@ class BooleanValidator(Validator):
     def validate(self, field, key, REQUEST):
         return not not REQUEST.get(key, 0)
 
-    def serializeValue(self, field, value, handler):
+    def serializeValue(self, field, value, producer):
         if value:
             value_string = 'True'
         else:
             value_string = 'False'
-        handler.characters(value_string)
+        producer.handler.characters(value_string)
 
     def deserializeValue(self, field, value):
         if value == 'True':
@@ -289,9 +289,9 @@ class IntegerValidator(StringBaseValidator):
             self.raise_error('integer_out_of_range', field)
         return value
 
-    def serializeValue(self, field, value, handler):
+    def serializeValue(self, field, value, producer):
         value_string = str(value)
-        handler.characters(value_string)
+        producer.handler.characters(value_string)
     
 IntegerValidatorInstance = IntegerValidator()
 
@@ -311,9 +311,9 @@ class FloatValidator(StringBaseValidator):
             self.raise_error('not_float', field)
         return value
 
-    def serializeValue(self, field, value, handler):
+    def serializeValue(self, field, value, producer):
         value_string = str(value)
-        handler.characters(value_string)
+        producer.handler.characters(value_string)
     
 FloatValidatorInstance = FloatValidator()
 
@@ -393,9 +393,9 @@ class LinesValidator(StringBaseValidator):
 
         return result
 
-    def serializeValue(self, field, value, handler):
+    def serializeValue(self, field, value, producer):
         value_string = '\n'.join(value)
-        handler.characters(value_string)
+        producer.handler.characters(value_string)
     
 LinesValidatorInstance = LinesValidator()
 
@@ -409,8 +409,8 @@ class TextValidator(LinesValidator):
         # join everything into string again with \n and return
         return "\n".join(value)
 
-    def serializeValue(self, field, value, handler):
-        handler.characters(value)
+    def serializeValue(self, field, value, producer):
+        producer.handler.characters(value)
     
 TextValidatorInstance = TextValidator()
 
@@ -533,12 +533,12 @@ class MultiSelectionValidator(Validator):
         # everything checks out
         return result
 
-    def serializeValue(self, field, values, handler):
+    def serializeValue(self, field, values, producer):
         for value in values:
             # XXX How should I handle integer types here?
-            handler.startElement('value')
-            handler.characters(value)
-            handler.endElementNS('value')
+            producer.startElement('value')
+            producer.handler.characters(value)
+            producer.endElement('value')
     
 MultiSelectionValidatorInstance = MultiSelectionValidator()
 
@@ -754,10 +754,10 @@ class DateTimeValidator(Validator):
 
         return result
 
-    def serializeValue(self, field, value, handler):
+    def serializeValue(self, field, value, producer):
         if value is not None:
             value_string = value.HTML4()
-            handler.characters(value_string)
+            producer.handler.characters(value_string)
     
     def deserializeValue(self, field, value):
         return DateTime(value)
