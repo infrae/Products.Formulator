@@ -4,6 +4,10 @@ Formulator changes
 
     Features Added
 
+      - Added ProductForm, which provides a wrapping around
+        Formulator.BasicForm, allowing it to be created inside a
+        product but used outside it.
+
     Bugs Fixed
 
       - XML serialization should be more consistent now.

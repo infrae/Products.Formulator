@@ -53,6 +53,8 @@ Many thanks go to:
 
   Kapil Thangavelu (k_vertigo@objectrealms.net) -- Enabled ':record' rendering.
 
+  Pierre-Julien Grizel (grizel@ingeniweb.com) -- ProductForm.
+
   Sébastien Robin (seb@nexedi.com) -- more consistent ordering in
                                          XML serialization.
                                             
