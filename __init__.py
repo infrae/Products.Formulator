@@ -70,11 +70,6 @@ def initialize(context):
     FieldRegistry.registerField(StandardFields.RangedIntegerField,
                                 'www/RangedIntegerField.gif')
 
-    # register help for the product
-    context.registerHelp()
-    # register field help for all fields
-    FieldRegistry.registerFieldHelp(context)
-
     # register the form itself
     context.registerClass(
         Form.ZMIForm,
@@ -88,3 +83,7 @@ def initialize(context):
     # do initialization of Form class to make fields addable
     Form.initializeForm(FieldRegistry)
 
+    # register help for the product
+    context.registerHelp()
+    # register field help for all fields
+    FieldRegistry.registerFieldHelp(context)

@@ -50,15 +50,15 @@ class FieldRegistry:
                 getattr(field_class, 'internal_field')):
                 continue
 
-            # unregister any help topic already registered
-            if field_name in help.objectIds('Help Topic'):
-                help._delObject(field_name)
-
             # register help topic
             ht = FieldHelpTopic(field_name,
                                 "Formulator Field - %s" % field_name,
                                 field_class)
 
+            # if we already know the field, don't reregister
+            if field_name in help.objectIds('Help Topic'):
+                continue
+            # register help topic    
             context.registerHelpTopic(field_name, ht)
 
     def initializeFields(self):
