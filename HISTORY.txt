@@ -1,10 +1,45 @@
 Formulator changes
+
+  1.2.0
+
+    Features Added
+
+      - Changes to exception infrastructure so errors can now be
+        imported and caught in a through the web Python script. Example::
+
+          from Products.Formulator.Errors import ValidationError, FormValidationError
+
+      - added __getitem__ to Field so instead of using get_value() you can
+        also do this in Python: form.field['title'], and in ZPT you can
+        use this in path expressions: form/field/title
+
+      - made a start with Formulator unit tests; some validators get
+        automatically tested now.
+
+    Bugs Fixed
+
+      - Removed dependencies of the name of 'Add and Edit' button to make
+        internationalization of the management interface easier.
+
+      - added permission to make ZClasses work a bit better (but they
+        still don't cooperate well with Formulator, I think. I don't use
+        ZClasses, so I hope to hear from this from ZClass users)
  
+      - Form's properties tab now visible and form tabs stopped
+        misbehaving.
+
+      - Lists and such should handle multiple items with the same value 
+        a bit better, selecting only one.
+
+      - the LinkField now checks site-internal links better.
+
   1.1.0
    
     Bugs Fixed
 
        - Fixed bug in form settings tab.
+
+      - the LinkField now checks site-internal links better.
 
   1.0.9
 
