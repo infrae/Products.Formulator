@@ -67,6 +67,8 @@ Many thanks go to:
   Vladimir Voznesensky (vovic at smtp.ru) -- Enabling/disabling of fields,
                                           bugfix in 'render_view'
 
+  Jeff Kowalczyk -- Whitespace normalization of sources.
+
   Special thanks also goes to Rik Hoekstra.
 
   Also a thank you to those few valiant souls who suffered through the
