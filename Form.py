@@ -540,9 +540,9 @@ class ZMIForm(ObjectManager, Item, Form):
         try:
             result = self.settings_form.validate_all(REQUEST)
         except FormValidationError, e:
-            message = "Validation error(s).<br>" + string.join(
+            message = "Validation error(s).<br />" + string.join(
                 map(lambda error: "%s: %s" % (error.field.get_value('title'),
-                                              error.error_text), e.errors), "<br>")
+                                              error.error_text), e.errors), "<br />")
             return self.formSettings(self, REQUEST,
                                      manage_tabs_message=message)
         else:

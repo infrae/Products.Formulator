@@ -412,7 +412,7 @@ class RadioWidget(Widget):
         if orientation == 'horizontal':
             return string.join(radios, "&nbsp;")
         else:
-            return string.join(radios, "<br>")
+            return string.join(radios, "<br />")
     
 RadioWidgetInstance = RadioWidget()
 
