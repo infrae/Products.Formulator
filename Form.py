@@ -352,7 +352,7 @@ class Form:
         if not hasattr(self, "name"):
             self.name = ""
         name = self.name
-        
+
         if self.enctype is not "":
             if name:
                 return render_tag("form",
@@ -529,7 +529,7 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
         id    -- id of form
         title -- the title of the form
         """
-        ZMIForm.inheritedAttribute('__init__')(self, "", "POST", None, id)
+        ZMIForm.inheritedAttribute('__init__')(self, "", "POST", "", id)
         self.id = id
         self.title = title
         self.row_length = 4
@@ -583,7 +583,7 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
         """
         if hasattr(self, id):
             field = getattr(self, id)
-            return hasattr(field.aq_explicit, 'is_field')
+            return hasattr(field, 'aq_explicit') and hasattr(field.aq_explicit, 'is_field')
         else:
             return 0
     
