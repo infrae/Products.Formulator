@@ -415,6 +415,16 @@ class ZMIField(
         """
         return self.render(REQUEST=REQUEST)
 
+    security.declareProtected('View management screens', 'isTALESAvailable')
+    def isTALESAvailable(self):
+        """Return true only if TALES is available.
+        """
+        try:
+            from Products.PageTemplates.Expressions import getEngine
+            return 1
+        except ImportError:
+            return 0
+        
 Globals.InitializeClass(ZMIField)
 PythonField = ZMIField # NOTE: for backwards compatibility
 
