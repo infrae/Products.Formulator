@@ -9,6 +9,10 @@ Formulator changes
       - added action, method and enctype property to form settings.
         These are displayed using the special form.header() and form.footer()
         methods.
+ 
+      - added override tab to allow all properties to be overridden by
+        method calls instead. 'items_method' in ListField went
+        away.
 
     Bugs Fixed
 

@@ -78,7 +78,7 @@ class Field:
         else:
             # get normal value
             value = self.get_orig_value(id)
-        # if normal value is a callable itself, call it
+        # if normal value is a callable itself, wrap it
         if callable(value):
             return value.__of__(self)
         else:

@@ -236,7 +236,7 @@ class ListWidget(Widget):
     """List widget.
     """
     property_names = Widget.property_names +\
-                     ['first_item', 'items', 'items_method', 'size', 'extra']
+                     ['first_item', 'items', 'size', 'extra']
     
     default = fields.StringField('default',
                                  title='Default',
@@ -266,20 +266,6 @@ class ListWidget(Widget):
                                      width=20,
                                      height=5,
                                      required=0)
-
-    items_method = fields.MethodField('items_method',
-                                      title='Items Method',
-                                      description=(
-        "When a method name is supplied, the "
-        "field will try to call the (acquired) method of this name. "
-        "The method should return a list of tuples. Each tuple is a list "
-        "item and should contain two elements. The first element of the "
-        "tuple should be the display value, and the second element of the "
-        "tuple should be the value of the item. Overrides the "
-        "items property if it is supplied. NOTE: "
-        "experimental"),
-                                      default="",
-                                      required=0)
     
     size = fields.IntegerField('size',
                                title='Size',
@@ -291,12 +277,8 @@ class ListWidget(Widget):
                                required=1)
 
     def render(self, field, key, value, REQUEST):
-        # call items method if one is supplied, otherwise get default list
-        items_method = field.get_value('items_method')
-        if items_method:
-            items = items_method()
-        else:
-            items = field.get_value('items')
+        # get items
+        items = field.get_value('items')
     
         # check if we want to select first item
         if not value and field.get_value('first_item') and len(items) > 0:
