@@ -10,7 +10,7 @@ Formulator changes
            also be used with CMF (if FileSystemSite is not installed).
 
          * Formulator forms should have better updating behavior from
-           the filesystem in development mode.
+           the filesystem in development mode. (This is buggy, so disabled)
 
          * FSForm gets automatically registered with the directory
            view system if CMF or FileSystemSite is installed.
