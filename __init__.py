@@ -45,7 +45,8 @@ def initialize(context):
     # some helper fields
     FieldRegistry.registerField(HelperFields.ListTextAreaField)
     FieldRegistry.registerField(HelperFields.MethodField)
-
+    FieldRegistry.registerField(HelperFields.TALESField)
+    
     # obsolete field (same as helper; useable but not addable)
     FieldRegistry.registerField(StandardFields.RangedIntegerField,
                                 'www/RangedIntegerField.gif')
