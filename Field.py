@@ -22,6 +22,8 @@ class Field:
         self.id = id
         # initialize values of fields in form
         self.initialize_values(kw)
+        # initialize overrides of fields in form
+        self.initialize_overrides()
         
         # initialize message values with defaults
         message_values = {}
@@ -36,13 +38,21 @@ class Field:
         associated form.
         """
         values = {}
-        overrides = {}
         for field in self.form.get_fields():
             id = field.id
             value = dict.get(id, field.get_value('default'))
             values[id] = value
-            overrides[id] = ""
         self.values = values
+    
+    security.declareProtected('Change Formulator Fields',
+                              'initialize_overrides')
+    def initialize_overrides(self):
+        """Initialize overrides for properties (to nothing).
+        """
+        overrides = {}
+        for field in self.form.get_fields():
+            id = field.id
+            overrides[id] = ""
         self.overrides = overrides
         
     security.declareProtected('Access contents information', 'has_value')
