@@ -5,7 +5,7 @@
 Test this form.
 </p>
 
-<dtml-if formTestActivated>
+<dtml-if formulator_submission>
   <dtml-try>
     <dtml-call "validate_all(REQUEST)">
     <p>All fields were validated correctly.</p>
@@ -37,7 +37,7 @@ Test this form.
   <hr>
 </dtml-if>
 
-<form action="formTest" method="POST">
+<dtml-var header>
   <table cellspacing="0" cellpadding="2" border="0">
   <dtml-in "get_groups()">
   <dtml-let group=sequence-item fields="get_fields_in_group(group)">
@@ -52,7 +52,7 @@ Test this form.
     </div>
     </td>
     <td align="left" valign="top">
-    <dtml-var "field.render()">
+    <dtml-var "field.render_from_request(REQUEST)">
     </td>
   </tr>
   </dtml-let>
@@ -61,11 +61,10 @@ Test this form.
   </dtml-let>
   </dtml-in>
 
-  <input type="hidden" name="formTestActivated" value="1">
   <tr><td><input type="submit" value="Test"></td></tr>
 
   </table>
-</form>
+<dtml-var footer >
 
 
 <dtml-var manage_page_footer>
