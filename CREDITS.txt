@@ -50,6 +50,8 @@ Many thanks go to:
 
   Iutin Vyacheslav (iutin@whirix.com) -- am/pm feature for DateTime
                                          fields.
+
+  Kapil Thangavelu (k_vertigo@objectrealms.net) -- Enabled ':record' rendering.
                                                  
   Special thanks also goes to Rik Hoekstra.
 
