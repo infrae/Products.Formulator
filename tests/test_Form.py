@@ -175,9 +175,9 @@ class FormTestCase(unittest.TestCase):
         self.form.manage_addProduct['Formulator']\
                  .manage_addField('date_time','Test Field','DateTimeField')
         self.form.manage_addProduct['Formulator']\
-                  .manage_addField('multi_list','Test Field','MultiCheckBoxField')
+                  .manage_addField('multi_list','Test Field','MultiListField')
         self.form.manage_addProduct['Formulator']\
-                 .manage_addField('check_boxes','Test Field','MultiListField')
+                 .manage_addField('check_boxes','Test Field','MultiCheckBoxField')
         self.form.manage_addProduct['Formulator']\
                   .manage_addField('lines','Test Field','LinesField')
 
@@ -242,6 +242,42 @@ class FormTestCase(unittest.TestCase):
 c" name="field_lines" type="hidden"  />'''
         self.assertEquals(hidden_lines_expected,
                           self.form.lines.render())
+
+
+    def test_render_view_items(self):
+        # test tht the render_view is correct for fields
+        # for which the values internally handled by Formulator
+        # are different form the une shown to the user
+        # (e.g. checkboxes, radio buttons, option-lists
+
+        self.form.manage_addProduct['Formulator']\
+                  .manage_addField('single_list','Test Field','ListField')
+        self.form.manage_addProduct['Formulator']\
+                  .manage_addField('multi_list','Test Field','MultiListField')
+        self.form.manage_addProduct['Formulator']\
+                 .manage_addField('check_boxes','Test Field',
+                                  'MultiCheckBoxField')
+        self.form.manage_addProduct['Formulator']\
+                 .manage_addField('radio','Test Field','RadioField')
+
+        for field in self.form.single_list, self.form.radio:
+            field.values['items'] = [ ('Alpha','a'),
+                                      ('Beta','b'),
+                                      ('Gamma','c'), ]
+            self.assertEquals('Gamma',field.render_view('c'),msg=field.id)
+
+
+        for field in self.form.multi_list, self.form.check_boxes:
+            field.values['items'] = [ ('Alpha','a'),
+                                      ('Beta','b'),
+                                      ('Gamma','c'), ]
+
+            field.values['view_separator'] = '|||'
+            self.assertEquals('Gamma',field.render_view(['c']))
+            self.assertEquals('|||'.join(('Alpha','Gamma')),
+                              field.render_view(['a','c']))
+            self.assertEquals('', field.render_view([]))
+            
 
 def test_suite():
     suite = unittest.TestSuite()
