@@ -274,6 +274,7 @@ class SerializeTestCase(unittest.TestCase):
             request.update( {'field_input_style':'list',
                              'field_input_order':'mdy',
                              'field_date_only':'',
+                             'field_css_class':'test_css',
                              'field_time_separator':'$'})
             date_field.manage_edit(REQUEST=request)
             
