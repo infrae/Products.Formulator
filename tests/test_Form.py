@@ -1,8 +1,8 @@
 import unittest, re
+from xml.dom.minidom import parseString
+
 import Zope
 from DateTime import DateTime
-
-from xml.dom.minidom import parseString
 
 # XXX this does not work for zope2.x if x < 3
 # can we fake this? should we do this?
@@ -411,6 +411,26 @@ class FormTestCase(unittest.TestCase):
         request.form['formulator_submission']='1'
         rendered = checkbox_field.render_from_request(request)
         self.assertEquals(-1, rendered.find('checked="checked"'))
+
+
+    def test_edit_listitem(self):
+        """ if eding a list item via ZMI (or xml rpc) in unicode mode
+        this has blown because some lists of strings have
+        not been converted properly
+        """
+        self.form.unicode_mode = 1
+        self.form.manage_addField('list_field','Test Listfield','ListField')
+        list_field = self.form.list_field
+        # just to make sure
+        self.assert_(list_field.get_unicode_mode())
+
+        values = {'items': [('item\xc3\xbc','item_ue'), ('item2','item2')],
+                  'default' : 'item\xc3\xbc' }
+        list_field._edit(values)
+        self.assertEquals(unicode(values['default'],'utf-8'),
+                          list_field.get_value('default') )
+        self.assertEquals([ (unicode(x,'utf-8'), unicode(y,'utf-8')) for x,y in values['items'] ],
+                          list_field.get_value('items') )
 
 
 def test_suite():
