@@ -322,7 +322,7 @@ class DateTimeWidget(Widget):
                                         title='Date separator',
                                         description=(
         "Separator to appear between year, month, day."),
-                                        default="-",
+                                        default="/",
                                         required=0,
                                         display_width=2,
                                         display_maxwith=2,
