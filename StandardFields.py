@@ -121,9 +121,6 @@ class LabelField(ZMIField):
     widget = Widget.LabelWidgetInstance
     validator = Validator.SuppressValidatorInstance
 
-    def get_orig_value(self, id):
-        return None
-
 class DateTimeField(ZMIField):
     meta_type = "DateTimeField"
 
