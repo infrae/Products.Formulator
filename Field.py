@@ -7,7 +7,8 @@ from Shared.DC.Scripts.Bindings import Bindings
 from Errors import ValidationError
 from Products.Formulator.Widget import MultiItemsWidget
 from helpers import is_sequence, convert_unicode
-    
+from Products.Formulator.i18n import translate as _
+
 class Field:
     """Base class of all fields.
     A field is an object consisting of a widget and a validator.
@@ -123,9 +124,24 @@ class Field:
         # if normal value is a callable itself, wrap it
         if callable(value):
             return value.__of__(self)
-        else:
-            return value
-                
+    
+        # create message id for title and description in right domain
+        if id in ['title', 'description']:
+            i18n_domain = self.get_i18n_domain()
+            if i18n_domain:
+                return _(value, i18n_domain)
+        return value
+
+    # this also works if field is not in form for testing
+    # reasons..
+    def get_i18n_domain(self):
+        try:
+            # try to acquire it
+            return self.aq_inner.aq_parent.get_i18n_domain()
+        except AttributeError:
+            # otherwise, return empty domain
+            return ''
+        
     security.declareProtected('View management screens', 'get_override')
     def get_override(self, id):
         """Get override method for id (not wrapped)."""

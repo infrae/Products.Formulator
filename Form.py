@@ -283,6 +283,12 @@ class Form:
         """
         return getattr(self, 'unicode_mode', 0)
 
+    security.declareProtected('View', 'get_i18n_domain')
+    def get_i18n_domain(self):
+        """Get i18n domain, if any.
+        """
+        return getattr(self, 'i18n_domain', '')
+    
     security.declareProtected('View', 'render')
     def render(self, dict=None, REQUEST=None):
         """Render form in a default way.
