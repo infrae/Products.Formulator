@@ -331,7 +331,9 @@ class SingleItemsWidget(ItemsWidget):
                 
         css_class = field.get_value('css_class')
         
-        # FIXME: what if we run into multiple items with same value?
+        # if we run into multiple items with same value, we select the
+        # first one only (for now, may be able to fix this better later)
+        selected_found = 0
         rendered_items = []
         for item in items:
             try:
@@ -340,11 +342,12 @@ class SingleItemsWidget(ItemsWidget):
                 item_text = item
                 item_value = item
 
-            if item_value == value:
+            if item_value == value and not selected_found:
                 rendered_item = self.render_selected_item(item_text,
                                                           item_value,
                                                           key,
                                                           css_class)
+                selected_found = 1
             else:
                 rendered_item = self.render_item(item_text,
                                                  item_value,
