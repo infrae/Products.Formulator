@@ -252,7 +252,7 @@ class Form:
             raise FormValidationError(errors, result) 
         return result
 
-    security.declareProtected('View', 'validate_to_request')
+    security.declareProtected('View', 'validate_all_to_request')
     def validate_all_to_request(self, REQUEST):
         """Validation, continue validating all fields, catch errors.
         """

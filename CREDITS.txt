@@ -5,6 +5,9 @@ Formulator Credits
   Kit Blake (kitblake@v2.nl) -- user interface design help and
                                 general testing
 
+  Yury Don (yura@vpcit.ru) -- contributed EmailField and FloatField,
+                              and general improvements to the code
+                             
   Also a thank you to those few valiant souls who suffered through the
   bugs of ZFormulator, the previous implementation. Let's hope this
   one's better!
