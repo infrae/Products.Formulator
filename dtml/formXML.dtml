@@ -8,7 +8,7 @@ XML Representation of this form.
 
 <form action="manage_editXML" method="POST">
   <table cellspacing="0" cellpadding="2" border="0">
-     <textarea wrap="off" style="width: 100%;" cols="50" rows="20" name="form_data"><dtml-var get_xml></textarea>
+     <textarea wrap="off" style="width: 100%;" cols="50" rows="20" name="form_data"><dtml-var get_xml html_quote></textarea>
   </table>
   <input type="submit" name="save_xml" value=" Save " accesskey="s" />
 </form>
