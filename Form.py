@@ -492,7 +492,9 @@ class ZMIForm(ObjectManager, Item, Form):
 
     security = ClassSecurityInfo()
 
-    # security.declareObjectProtected('View')
+    # should be helpful with ZClasses, but not sure why I
+    # had it in here as a comment in the first place..
+    security.declareObjectProtected('View')
     
     # the tabs we want to show
     manage_options = (
