@@ -120,6 +120,23 @@ class Form:
 
         Permission -- 'View'
         """
+
+    def render(self, dict=None, REQUEST=None):
+        """
+        Returns a basic HTML rendering (in a table) of this form.
+        For more sophisticated renderings you'll have to write
+        DTML or ZPT code yourself.
+
+        You can supply an optional 'dict' argument; this should be a
+        dictionary ('_', the namespace stack, is legal). The
+        dictionary can contain data that should be pre-filled in the
+        form (indexed by field id). The optional 'REQUEST' argument
+        can contain raw form data, which will be used in case nothing
+        can be found in the dictionary (or if the dictionary does not
+        exist).
+
+        Permission -- 'View'
+        """
         
     def validate(REQUEST):
         """
