@@ -16,15 +16,15 @@ def initialize(context):
     FieldRegistry.registerField(StandardFields.TextAreaField,
                                 'www/TextAreaField.gif')
     FieldRegistry.registerField(StandardFields.LinesField,
-                                'www/TextAreaField.gif')
+                                'www/LinesField.gif')
     FieldRegistry.registerField(StandardFields.ListField,
                                 'www/ListField.gif')
     FieldRegistry.registerField(StandardFields.MultiListField,
-                                'www/ListField.gif')
+                                'www/MultiListField.gif')
     FieldRegistry.registerField(StandardFields.RadioField,
                                 'www/RadioField.gif')
     FieldRegistry.registerField(StandardFields.MultiCheckBoxField,
-                                'www/RadioField.gif')
+                                'www/MultiCheckBoxField.gif')
     FieldRegistry.registerField(StandardFields.PasswordField,
                                 'www/PasswordField.gif')
     FieldRegistry.registerField(StandardFields.EmailField,
