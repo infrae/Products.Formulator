@@ -8,6 +8,18 @@ from urlparse import urljoin
 from Errors import ValidationError
 from helpers import is_sequence
 
+try:
+    from DateTime.DateTime import DateError
+    _have_date_error = 1
+except ImportError:
+    _have_date_error = 0
+
+try:
+    from DateTime.DateTime import TimeError
+    _have_time_error = 1
+except ImportError:
+    _have_time_error = 0
+
 class ValidatorBase:
     """Even more minimalistic base class for validators.
     """
@@ -680,10 +692,14 @@ class DateTimeValidator(Validator):
             elif ampm == 'pm' and hour < 12:
                 hour += 12
 
+        exceptions_to_catch = ('DateTimeError', 'Invalid Date Components', 'TimeError')
+        if _have_date_error: exceptions_to_catch += (DateError, )
+        if _have_time_error: exceptions_to_catch += (TimeError, )
+
         try:
             result = DateTime(int(year), int(month), int(day), hour, minute)
         # ugh, a host of string based exceptions
-        except ('DateTimeError', 'Invalid Date Components', 'TimeError'):
+        except exceptions_to_catch:
             self.raise_error('not_datetime', field)
 
         # check if things are within range
