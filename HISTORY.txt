@@ -1,82 +1,5 @@
 Formulator changes
 
-  Recent Development
-
-    Bugs Fixed
-
-      - Zope 2.7 compatibility: Because in Zope 2.7 the behaviour
-        of constructing invalid DateTime object changes from raising
-        string exceptions to class based exceptions.
-         This caused the DateTimeField's to pass through the new
-        exceptions instead of convering them to ValidationError
-        changed:
-             Validator.py:DateTimeValidator and import section;
-             test/test_validators.py:DateTimeValidatorTestCase
-
-      - PatternFields are no longer documented as "experimental"
-        in the Help system.
-        changed 
-             Validator.py:PatternValidator
-
-      - DateTime values field values (like start or end time) have
-        been wrongly represented as strings in the XML representation.
-        changed:
-             XMLToForm.py, FormToXML.py.
-             test/test_serialize.py
-
-      - fix bug with rendering of listfields similar to the
-        "single element list with one two-char string" bug fixed
-        for validation in 1.6.2
-        changed:
-           Widgets.py: SingleItemsWidget, MultiItemsWidget
-           test/test_Form.py
-
-      - fixed bug in DateTime field where a set "default to now" overwrote
-        values in the request
-        changed:
-          Widgets.py:DateTimeWidget.render
-          tests/test_serialize.py:FakeRequest
-          tests/test_Form.py
-
-      - several spelling bugs
-        changed
-             tests/test_Form.py
-
-      - fixed bug where a set "default" for a checkbox field
-        would always render a checked checbox, even if redisplaying
-        a submitted form where the user has unchecked the checkbox
-         Actually the works only if the opening <form> tag is
-        rendered by the form.header() method, or if a hidden
-        field "formulator_submission" is included manually 
-        in the form.
-         Patch form Patrick Earl.
-
-        changed:
-           Form.py:  Form.header
-           StandardField.py: CheckBoxField._get_default (added)
-           dtml/formTest.dtml
-           tests/test_Form.py
-
-			- added tests for the LinesValidator
-        changed:
-           tests/test_validator.py
-
-      - fixed bug with render_from_request LinesField, whic splitted
-        strings coming in as raw unvalidated data from the request into
-        many lines with one single character on each line
-        changed
-           Widget.py: LinesTextAreaWidget.render/render_hidden
-           tests/test_Form.py: test_lines_field_rendering (added)
-
-      - fixed bug where entering non ascii values in the ListField items
-        has not been handled properly in unicode mode
-         Patch from He Wei
-
-        changed:
-          Field.py: ZMIField._edit
-          helpers.py: convert_unicode (added)
-          tests/test_Form.py: test_edit_listitem (added)
-
   1.7.0
  
     Features Added
@@ -85,7 +8,7 @@ Formulator changes
         representations of forms from filesystem code like
         PageTemplateFile.
 
-      - i18n-id and i18n-domain support for forms, error-messages, 
+      - i18n-id and i18n-domain support for forms, error-messages,
         except field items
 
     Bugs Fixed
@@ -97,6 +20,84 @@ Formulator changes
         help, to avoid ZODB writes on startup.
 
       - Fixed singleton submit button that wasn't properly closed.
+
+      - Zope 2.7 compatibility: In Zope 2.7 the behaviour when trying
+        to construct invalid DateTime object changed from raising
+        string exceptions to class based exceptions.
+         This has caused the DateTimeField's to pass through the new
+        exceptions instead of converting them to ValidationError.
+         changed:
+             Validator.py:DateTimeValidator and import section;
+             test/test_validators.py:DateTimeValidatorTestCase
+
+      - PatternFields are no longer documented as "experimental"
+        in the Help system.
+         changed:
+             Validator.py:PatternValidator
+
+      - DateTime values field values (like start or end time) have
+        been wrongly represented as strings in the XML representation.
+         changed:
+             XMLToForm.py, FormToXML.py.
+             test/test_serialize.py
+
+      - Fixed bug with rendering of Listfields similar to the
+        "single element list with one two-char string" bug fixed
+        for validation in 1.6.2
+         changed:
+           Widgets.py: SingleItemsWidget, MultiItemsWidget
+           test/test_Form.py
+
+      - Fixed bug in DateTime field where a set "default to now" overwrote
+        values in the request
+         changed:
+          Widgets.py:DateTimeWidget.render
+          tests/test_serialize.py:FakeRequest
+          tests/test_Form.py
+
+      - several spelling bugs
+         changed
+             tests/test_Form.py
+
+      - Fixed bug where a set "default" for a checkbox field
+        would always render a checked checbox, even if redisplaying
+        a submitted form where the user has unchecked the checkbox
+         Actually the works only if the opening <form> tag is
+        rendered by the form.header() method, or if a hidden
+        field "formulator_submission" is included manually
+        in the form.
+         changed:
+           Form.py:  Form.header
+           StandardField.py: CheckBoxField._get_default (added)
+           dtml/formTest.dtml
+           tests/test_Form.py
+
+      - Added tests for the LinesValidator
+         changed:
+           tests/test_validator.py
+
+      - Fixed bug with render_from_request LinesField, which splitted
+        strings coming in as raw unvalidated data from the request into
+        many lines with one single character on each line
+         changed
+           Widget.py: LinesTextAreaWidget.render/render_hidden
+           tests/test_Form.py: test_lines_field_rendering (added)
+
+      - Fixed bug where entering non ascii values in the ListField items
+        has not been handled properly in unicode mode
+         changed:
+          Field.py: ZMIField._edit
+          helpers.py: convert_unicode (added)
+          tests/test_Form.py: test_edit_listitem (added)
+
+      - Worked around Zope2.7/python2.3 compatibility bug.
+        If a character like "<" has inserted in a string field
+        this triggered an obscure Zope bug when feeding this value
+        into the "string.strip()" function on validation.
+         changed:
+            Validators.py: (several places)
+            tests/test_validators.py:
+               StringValidatorTestCase.test_brokenTaintedString (added)
 
   1.6.2
 
@@ -353,7 +354,7 @@ Formulator changes
     Bugs Fixed
 
        - More compliance with Zope product guidelines; moved dtml
-	 files from www dir to dtml dir.
+         files from www dir to dtml dir.
 
        - Fixed a bug in that form titles would not work. Forms now have
          titles, and you can change them in the settings tab. (Formulator
