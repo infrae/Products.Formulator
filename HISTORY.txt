@@ -1,5 +1,11 @@
 Formulator changes
 
+  1.6.2
+  
+      - Fixed bug which caused validation of listfields to throw
+        an exception when a list of strings was used as the value
+        of <items> and one of the elements was 2 characters long
+
   1.6.1
   
     Bugs Fixed

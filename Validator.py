@@ -389,12 +389,12 @@ class SelectionValidator(StringBaseValidator):
         
         # get the text and the value from the list of items
         for item in field.get_value('items'):
-            try:
+            if type(item) in [tuple, list]:
                 item_text, item_value = item
-            except ValueError:
+            else:
                 item_text = item
                 item_value = item
-            
+
             # check if the value is equal to the string/unicode version of
             # item_value; if that's the case, we can return the *original*
             # value in the list (not the submitted value). This way, integers
@@ -458,9 +458,9 @@ class MultiSelectionValidator(Validator):
         # create a dictionary of possible values
         value_dict = {}
         for item in field.get_value('items'):
-            try:
+            if type(item) in [tuple, list]:
                 item_text, item_value = item
-            except ValueError:
+            else:
                 item_text = item
                 item_value = item
             value_dict[item_value] = 0
