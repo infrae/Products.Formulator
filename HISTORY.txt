@@ -1,5 +1,13 @@
 Formulator changes
 
+  1.4.2
+  
+    Bugs Fixed
+
+      - Sticky forms should now work correctly in the presence of unicode.
+        Encoded data is automatically converted to unicode if the information
+        is pulled from the REQUEST form.
+
   1.4.1
 
     Bugs Fixed
