@@ -2,6 +2,9 @@ Formulator Field - Override
 
   Description
 
+    Note: the Override tab is being phased out in favor of the TALES
+    tab.
+
     Sometimes you'd like a field property to be dynamic instead of
     just a value filled in in the 'Edit' tab of the field. If you fill
     in the name of an 'override' method for a property in the Override

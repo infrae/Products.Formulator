@@ -71,21 +71,31 @@ class FieldRegistry:
         for field_class in self._fields.values():
             field_class.form._realize_fields()
             field_class.override_form._realize_fields()
+            field_class.tales_form._realize_fields()
             
 # initialize registry as a singleton
 FieldRegistry = FieldRegistry()
         
 def initializeFieldForm(field_class):
     """Initialize the properties (fields and values) on a particular
-    field class. Also add the override methods.
+    field class. Also add the tales and override methods.
     """
     from Form import BasicForm
     from DummyField import fields
     
     form = BasicForm()
     override_form = BasicForm()
+    tales_form = BasicForm()
     for field in getPropertyFields(field_class.widget):
         form.add_field(field, "widget")
+        tales_field = fields.TALESField(field.id,
+                                        title=field.get_value('title'),
+                                        description="",
+                                        default="",
+                                        display_width=40,
+                                        required=0)
+        tales_form.add_field(tales_field, "widget")
+        
         method_field = fields.MethodField(field.id,
                                           title=field.get_value("title"),
                                           description="",
@@ -95,6 +105,14 @@ def initializeFieldForm(field_class):
         
     for field in getPropertyFields(field_class.validator): 
         form.add_field(field, "validator")
+        tales_field = fields.TALESField(field.id,
+                                        title=field.get_value('title'),
+                                        description="",
+                                        default="",
+                                        display_with=40,
+                                        required=0)
+        tales_form.add_field(tales_field, "validator")
+        
         method_field = fields.MethodField(field.id,
                                           title=field.get_value("title"),
                                           description="",
@@ -104,7 +122,8 @@ def initializeFieldForm(field_class):
         
     field_class.form = form         
     field_class.override_form = override_form
-        
+    field_class.tales_form = tales_form
+    
 def getPropertyFields(obj):
     """Get property fields from a particular widget/validator.
     """

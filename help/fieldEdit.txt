@@ -4,10 +4,14 @@ Formulator Field - Edit
 
     A field has a number of properties that determine its look and
     feel as well as its behavior. You can configure these properties
-    in this view.
+    in this tab. You can also use the TALES tab and the Override tab
+    to associate dynamic behavior with field properties, though the
+    Override tab is eventually to be phased out in favor of the TALES
+    tab. Overridden fields will have their names be shown in square
+    brackets.
 
     Which properties appear in this view depends on what kind of field
-    the field you are editing is.
+    you are editing.
 
     Each field has two sets of properties; widget properties and
     validator properties.
@@ -24,9 +28,8 @@ Formulator Field - Edit
 
     Another very common widget property is the 'Default' value of the
     widget. This is what will be filled in before the user changes
-    anything to the form (unless you override the default passing one
-    to the 'render' function; see the API reference for more
-    information (and until that is written, the source :)).
+    anything to the form, unless you pass a value to the 'render'
+    function; see the API reference for more information.
 
     Many widgets also have size information; the StringField for
     instance has a 'Display width' property which determines how large

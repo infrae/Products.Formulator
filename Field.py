@@ -43,6 +43,17 @@ class Field:
             value = dict.get(id, field.get_value('default'))
             values[id] = value
         self.values = values
+
+    security.declareProtected('Change Formulator Fields',
+                              'initialize_tales')
+    def initialize_tales(self):
+        """Initialize tales expressions for properties (to nothing).
+        """
+        tales = {}
+        for field in self.form.get_fields():
+            id = field.id
+            tales[id] = ""
+        self.tales = tales
     
     security.declareProtected('Change Formulator Fields',
                               'initialize_overrides')
@@ -76,27 +87,42 @@ class Field:
     security.declareProtected('Access contents information', 'get_value')
     def get_value(self, id):
         """Get value for id."""
-        # FIXME: backwards compatibility hack
-        if not hasattr(self, 'overrides'):
-            self.overrides = {}
-        override = self.overrides.get(id, "")
-        if override:
-            # call wrapped method
-            value = override.__of__(self)()
+        # FIXME: backwards compat hack to make sure tales dict exists
+        if not hasattr(self, 'tales'):
+            self.tales = {}
+
+        tales_expr = self.tales.get(id, "")
+        if tales_expr:
+            value = tales_expr.__of__(self)(field=self, form=self.aq_parent)
         else:
-            # get normal value
-            value = self.get_orig_value(id)
+            # FIXME: backwards compat hack to make sure overrides dict exists
+            if not hasattr(self, 'overrides'):
+                self.overrides = {}
+                
+            override = self.overrides.get(id, "")
+            if override:
+                # call wrapped method to get answer
+                value = override.__of__(self)()
+            else:
+                # get normal value
+                value = self.get_orig_value(id)
+
         # if normal value is a callable itself, wrap it
         if callable(value):
             return value.__of__(self)
         else:
             return value
         
-    security.declareProtected('Access contents information', 'get_override')
+    security.declareProtected('View management screens', 'get_override')
     def get_override(self, id):
         """Get override method for id (not wrapped)."""
         return self.overrides.get(id, "")
 
+    security.declareProtected('View management screens', 'get_tales')
+    def get_tales(self, id):
+        """Get tales expression method for id."""
+        return self.tales.get(id, "")
+    
     security.declareProtected('Access contents information', 'is_required')
     def is_required(self):
         """Check whether this field is required (utility function)
@@ -212,6 +238,8 @@ class ZMIField(
     manage_options = (
         {'label':'Edit',       'action':'manage_main',
          'help':('Formulator', 'fieldEdit.txt')},
+        {'label':'TALES',      'action':'manage_talesForm',
+         'help':('Formulator', 'fieldTales.txt')},
         {'label':'Override',    'action':'manage_overrideForm',
          'help':('Formulator', 'fieldOverride.txt')},
         {'label':'Messages',   'action':'manage_messagesForm',
@@ -316,7 +344,39 @@ class ZMIField(
             message="Content changed."
             return self.manage_overrideForm(self,REQUEST,
                                             manage_tabs_message=message)
-    
+
+    # tales screen
+    security.declareProtected('View management screens',
+                              'manage_talesForm')
+    manage_talesForm = DTMLFile('www/fieldTales', globals())
+
+    security.declareProtected('Change Formulator Forms', 'manage_tales')
+    def manage_tales(self, REQUEST):
+        """Change TALES expressions.
+        """
+        try:
+            # validate the form and get results
+            result = self.tales_form.validate(REQUEST)
+        except ValidationError, err:
+            if REQUEST:
+                message = "Error: %s - %s" % (err.field.get_value('title'),
+                                              err.error_text)
+                return self.manage_talesForm(self,REQUEST,
+                                             manage_tabs_message=message)
+            else:
+                raise
+
+        if not hasattr(self, 'tales'):
+            self.tales = result
+        else:
+            self.tales.update(result)
+            self.tales = self.tales
+
+        if REQUEST:
+            message="Content changed."
+            return self.manage_talesForm(self, REQUEST,
+                                         manage_tabs_message=message)
+        
     # display test screen
     security.declareProtected('View management screens', 'fieldTest')
     fieldTest = DTMLFile('www/fieldTest', globals())

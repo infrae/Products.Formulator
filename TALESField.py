@@ -6,7 +6,7 @@ import Acquisition
 from Field import ZMIField
 from AccessControl import getSecurityManager
 from Products.PageTemplates.Expressions import getEngine
-
+ 
 class TALESWidget(Widget.TextWidget):
     default = fields.MethodField('default',
                                  title='Default',
