@@ -8,6 +8,7 @@ import Acquisition
 from urllib import quote
 import os
 import string
+from cStringIO import StringIO
 
 from Validator import ValidationError
 from FieldRegistry import FieldRegistry
@@ -232,7 +233,32 @@ class Form:
         """Get a list of all groups, in display order.
         """
         return self.group_list
-                
+
+    security.declareProtected('View', 'render')
+    def render(self, dict=None, REQUEST=None):
+        """Render form in a default way.
+        """
+        dict = dict or {}
+        result = StringIO()
+        w = result.write
+        w(self.header())
+        for group in self.get_groups():
+            w('<h2>%s</h2>\n' % group)
+            w('<table border="0" cellspacing="0" cellpadding="2">\n')
+            for field in self.get_fields_in_group(group):
+                w('<tr>\n')
+                w('<td>%s</td>\n' % field.get_value('title'))
+                if dict.has_key(field.id):
+                    value = dict[field.id]
+                else:
+                    value = None
+                w('<td>%s</td>\n' % field.render(value, REQUEST))
+                w('</tr>\n')
+            w('</table>\n')
+        w('<input type="submit" value=" OK ">\n')
+        w(self.footer())
+        return result.getvalue()
+
     security.declareProtected('View', 'validate')
     def validate(self, REQUEST):
         """Validate all fields in this form. Stop validating and
