@@ -34,7 +34,17 @@ class FSForm(FSObject, ZMIForm):
     def _readFile(self, reparse):
         f = open(expandpath(self._filepath), 'rb')
         # update the form with the xml data
-        XMLToForm(f.read(), self)
+        try:
+            XMLToForm(f.read(), self)
+        except:
+            # bare except here, but I hope this is ok, as the
+            # exception should be reraised
+            # (except if the LOG raises another one ... should we be more paranoid here?)
+            import zLOG
+            zLOG.LOG('Formulator.FSForm',zLOG.ERROR,
+                     'error reading form from file '+expandpath(self._filepath))
+            raise
+        
         f.close()
         
 Globals.InitializeClass(FSForm)
