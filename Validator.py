@@ -1,6 +1,9 @@
 import string, re
 from DummyField import fields
 from DateTime import DateTime
+from threading import Thread
+from urllib import urlopen
+from urlparse import urljoin
 
 class ValidationError(Exception):
     __allow_access_to_unprotected_subobjects__ = 1
@@ -298,6 +301,93 @@ class SelectionValidator(StringBaseValidator):
         self.raise_error('unknown_selection', field)
             
 SelectionValidatorInstance = SelectionValidator()
+
+class FileValidator(Validator):
+    def validate(self, field, key, REQUEST):
+        return REQUEST.get(key, None)
+    
+FileValidatorInstance = FileValidator()
+
+class LinkHelper:
+    """A helper class to check if links are openable.
+    """
+    status = 0
+
+    def __init__(self, link):
+        self.link = link
+        
+    def open(self):
+        try:
+            urlopen(self.link)
+        except:
+            # all errors will definitely result in a failure
+            pass
+        else:
+            # FIXME: would like to check for 404 errors and such?
+            self.status = 1
+
+class LinkValidator(StringValidator):
+    property_names = StringValidator.property_names +\
+                     ['check_link', 'check_timeout', 'link_type']
+    
+    check_link = fields.CheckBoxField('check_link',
+                                      title='Check Link',
+                                      description=(
+        "Check whether the link is not broken."),
+                                      default=0)
+
+    check_timeout = fields.FloatField('check_timeout',
+                                      title='Check Timeout',
+                                      description=(
+        "Maximum amount of seconds to check link. Required"),
+                                      default=7.0,
+                                      required=1)
+    
+    link_type = fields.ListField('link_type',
+                                 title='Type of Link',
+                                 default="external",
+                                 size=1,
+                                 items=[('External Link', 'external'),
+                                        ('Internal Link', 'internal'),
+                                        ('Relative Link', 'relative')],
+                                 description=(
+        "Define the type of the link. Required."),
+                                 required=1)
+    
+    message_names = StringValidator.message_names + ['not_link']
+    
+    not_link = 'The specified link is broken.'
+    
+    def validate(self, field, key, REQUEST):
+        value = StringValidator.validate(self, field, key, REQUEST)
+        if value == "" and not field.get_value('required'):
+            return value
+        
+        link_type = field.get_value('link_type')
+        if link_type == 'internal':
+            value = urljoin(REQUEST['BASE0'], value)
+        elif link_type == 'relative':
+            value = urljoin(REQUEST['URL1'], value)
+        # otherwise must be external
+
+        # FIXME: should try regular expression to do some more checking here?
+        
+        # if we don't need to check the link, we're done now
+        if not field.get_value('check_link'):
+            return value
+
+        # check whether we can open the link
+        link = LinkHelper(value)
+        thread = Thread(target=link.open)
+        thread.start()
+        thread.join(field.get_value('check_timeout'))
+        del thread
+        if not link.status:
+            self.raise_error('not_link', field)
+            
+        return value
+
+LinkValidatorInstance = LinkValidator()       
 
 class DateTimeValidator(Validator):
 

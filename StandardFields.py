@@ -70,7 +70,19 @@ class RadioField(ZMIField):
 
     widget = Widget.RadioWidgetInstance
     validator = Validator.SelectionValidatorInstance
+
+class FileField(ZMIField):
+     meta_type = "FileField"
+ 
+     widget = Widget.FileWidgetInstance
+     validator = Validator.FileValidatorInstance
+ 
+class LinkField(ZMIField):
+    meta_type = "LinkField"
     
+    widget = Widget.TextWidgetInstance
+    validator = Validator.LinkValidatorInstance
+
 class DateTimeField(ZMIField):
     meta_type = "DateTimeField"
 

@@ -233,6 +233,31 @@ class TextAreaWidget(Widget):
             
 TextAreaWidgetInstance = TextAreaWidget()
 
+class FileWidget(TextWidget):
+    def render(self, field, key, value, REQUEST):
+        """Render text input field.
+        """
+        display_maxwidth = field.get_value('display_maxwidth') or 0
+        if display_maxwidth > 0:
+            return render_element("input",
+                                  type="file",
+                                  name=key,
+                                  css_class=field.get_value('css_class'),
+                                  value=value,
+                                  size=field.get_value('display_width'),
+                                  maxlength=display_maxwidth,
+                                  extra=field.get_value('extra'))
+        else:
+            return render_element("input",
+                                  type="file",
+                                  name=key,
+                                  css_class=field.get_value('css_class'),
+                                  value=value,
+                                  size=field.get_value('display_width'),
+                                  extra=field.get_value('extra'))
+        
+FileWidgetInstance = FileWidget()
+
 class ListWidget(Widget):
     """List widget.
     """
