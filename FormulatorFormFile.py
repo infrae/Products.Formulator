@@ -50,7 +50,7 @@ class FormulatorFormFile(Item_w__name__, ZMIForm):
         self._v_last_read = mtime
         self.set_xml(text)
 
-    security.declareProtected('View management screens', 'refresh')
+    security.declareProtected('View management screens', 'refresh_form')
     def refresh_form(self):
         """Trigger refresh check explicitly.
         """
@@ -117,7 +117,7 @@ class FormulatorFormFile(Item_w__name__, ZMIForm):
         self._refresh_check()
         return FormulatorFormFile.inheritedAttribute(
             'render_view')(self, dict)
-     
+    
     def getOwner(self, info=0):
         """Gets the owner of the executable object.
 
