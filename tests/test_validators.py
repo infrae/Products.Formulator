@@ -1,5 +1,6 @@
 import unittest
-import Zope
+import ZODB
+import OFS.Application
 from Products.Formulator import Validator
 
 
