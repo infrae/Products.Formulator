@@ -1,5 +1,12 @@
 Formulator changes
 
+  1.0.1
+
+    Bugs Fix
+
+       - Fixed bug with renaming groups. Previously, renamed groups were not
+         properly stored in the ZODB.
+            
   1.0
 
     Features Added

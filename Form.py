@@ -161,6 +161,8 @@ class Form:
         group_list[i] = name
         groups[name] = groups[group]
         del groups[group]
+        self.group_list = group_list
+        self.groups = groups
         return 1
 
     security.declareProtected('Change Formulator Forms', 'move_group_up')

@@ -2,6 +2,8 @@ Formulator Credits
 
   Martijn Faassen (faassen@vet.uu.nl) -- Main developer, design and
                               implementation. 
+
+Many thanks go to:
       
   Kit Blake (kitblake@v2.nl) -- UI help and design help.
 
