@@ -383,7 +383,7 @@ class SelectionValidator(StringBaseValidator):
             else:
                 str_value = str(item_value)
 
-            if str_value.strip() == value:
+            if str_value == value:
                 return item_value
             
         # if we didn't find the value, return error
