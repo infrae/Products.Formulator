@@ -1,3 +1,2 @@
-This directory should eventually contain unit tests for Formulator,
-but not yet in this release. :)
+This directory now contains some unit tests for Formulator.
 
