@@ -160,7 +160,7 @@ class Field:
             return value
         try:
             return REQUEST.form[key]
-        except:
+        except KeyError:
             return self.get_value('default')
 
     security.declareProtected('View', 'render')

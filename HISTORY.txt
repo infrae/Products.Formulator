@@ -27,6 +27,9 @@ Formulator changes
    
       - Fixed a Python2.2 compatibility bug in XMLObjects.py
 
+      - DateTimeField now picks up default values from REQUEST
+        properly if necessary.
+
   1.3.1 (2002/12/20)
 
     Features Added

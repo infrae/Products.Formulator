@@ -118,7 +118,7 @@ class DateTimeField(ZMIField):
 
     widget = Widget.DateTimeWidgetInstance
     validator = Validator.DateTimeValidatorInstance
-
+    
     def __init__(self, id, **kw):
         # icky but necessary...
         apply(ZMIField.__init__, (self, id), kw)
@@ -130,7 +130,19 @@ class DateTimeField(ZMIField):
             self.sub_form = create_datetime_list_sub_form()
         else:
             assert 0, "Unknown input_style '%s'" % input_style
-            
+
+    # XXX hack -- have to override this to make it default properly to
+    # request values if they are there
+    def _get_default(self, key, value, REQUEST):
+        if value is not None:
+            return value
+        # if there is something in the request then return None
+        # sub fields should pick up defaults themselves
+        if REQUEST.form.has_key('subfield_%s_%s' % (self.id, 'year')):
+            return None
+        else:
+            return self.get_value('default')
+
     def on_value_input_style_changed(self, value):
         if value == 'text':
             self.sub_form = create_datetime_text_sub_form()
