@@ -38,7 +38,7 @@ class Validator:
 class StringBaseValidator(Validator):
     """Simple string validator.
     """
-    property_names = Validator.property_names + ['required']
+    property_names = Validator.property_names + ['required', 'whitespace_preserve']
     
     required = fields.CheckBoxField('required',
                                     title='Required',
@@ -46,13 +46,22 @@ class StringBaseValidator(Validator):
         "Checked if the field is required; the user has to fill in some "
         "data."),
                                     default=1)
+
+    whitespace_preserve = fields.CheckBoxField('whitespace_preserve',
+                                               title="Preserve whitespace",
+                                               description=(
+        "Checked if the field preserves whitespace. This means even "
+        "just whitespace input is considered to be data."),
+                                               default=0)
     
     message_names = Validator.message_names + ['required_not_found']
     
     required_not_found = 'Input is required but no input given.'
         
     def validate(self, field, key, REQUEST):
-        value = string.strip(REQUEST.get(key, ""))
+        value = REQUEST.get(key, "")
+        if not field.get_value('whitespace_preserve'):
+            value = string.strip(value)
         if field.get_value('required') and value == "":
             self.raise_error('required_not_found', field)
         return value
@@ -308,8 +317,10 @@ class LinesValidator(StringBaseValidator):
         # short enough
         max_linelength = field.get_value('max_linelength') or 0
         result = []
+        whitespace_preserve = field.get_value('whitespace_preserve')
         for line in lines:
-            line = string.strip(line)
+            if not whitespace_preserve:
+                line = string.strip(line)
             if max_linelength and len(line) > max_linelength:
                 self.raise_error('line_too_long', field)
             result.append(line)

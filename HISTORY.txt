@@ -24,6 +24,13 @@ Formulator changes
       - DateTime fields can now optionally be set to allow time to 
         be left empty.
 
+      - 'whitespace_preserve' option on string type fields. If turned on,
+        whitespace will not be automatically stripped and will count as
+        input.
+
+      - 'render_view' method on fields to render the value outside a
+        widget.
+  
       - Should fix XML export/import which currently is in latin1..
 
     Bugs Fixed

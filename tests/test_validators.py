@@ -10,7 +10,8 @@ class TestField:
         self.kw = kw
 
     def get_value(self, name):
-        return self.kw[name]
+        # XXX hack
+        return self.kw.get(name, 0)
 
     def get_error_message(self, key):
         return "nothing"
@@ -96,6 +97,25 @@ class StringValidatorTestCase(ValidatorTestCase):
             self.v.validate,
             TestField('f', max_length=0, truncate=0, required=1, unicode=0),
             'f', {})
+
+    def test_whitespace_preserve(self):
+        result = self.v.validate(
+            TestField('f', max_length=0, truncate=0, required=0, unicode=0,
+                      whitespace_preserve=1),
+            'f', {'f' : ' '})
+        self.assertEqual(' ', result)
+
+        result = self.v.validate(
+            TestField('f', max_length=0, truncate=0, required=0, unicode=0,
+                      whitespace_preserve=0),
+            'f', {'f' : ' '})
+        self.assertEqual('', result)
+
+        result = self.v.validate(
+            TestField('f', max_length=0, truncate=0, required=0, unicode=0,
+                      whitespace_preserve=1),
+            'f', {'f' : ' foo '})
+        self.assertEqual(' foo ', result)
         
 class EmailValidatorTestCase(ValidatorTestCase):
      

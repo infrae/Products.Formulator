@@ -413,7 +413,17 @@ class MultiItemsWidget(ItemsWidget):
                                 width=20, height=3,
                                 default=[],
                                 required=0)
-        
+
+    view_separator = fields.StringField('view_separator',
+                                        title='View separator',
+                                        description=(
+        "When called with render_view, this separator will be used to "
+        "render individual items."),
+                                        width=20,
+                                        default='<br />\n',
+                                        whitespace_preserve=1,
+                                        required=1)
+    
     def render_items(self, field, key, value, REQUEST):
         # need to deal with single item selects
         if type(value) is not type([]):
@@ -444,6 +454,30 @@ class MultiItemsWidget(ItemsWidget):
 
         return rendered_items
 
+    def render_items_view(self, field, value):
+        if type(value) is not type([]):
+            value = [value]
+
+        items = field.get_value('items')
+        d = {}
+        for item in items:
+            try:
+                item_text, item_value = item
+            except ValueError:
+                item_text = item
+                item_value = item
+            d[item_value] = item_text
+        result = []
+        for e in value:
+            result.append(d[e])
+        return result
+
+    def render_view(self, field, key, value):
+        if value is None:
+            return ''
+        return string.join(self.render_items_view(field, value),
+                           field.get_value('view_separator'))
+    
 class ListWidget(SingleItemsWidget):
     """List widget.
     """
@@ -487,7 +521,7 @@ class MultiListWidget(MultiItemsWidget):
     """List widget with multiple select.
     """
     property_names = Widget.property_names +\
-                     ['items', 'size', 'extra']
+                     ['items', 'size', 'view_separator', 'extra']
     
     size = fields.IntegerField('size',
                                title='Size',
@@ -515,11 +549,6 @@ class MultiListWidget(MultiItemsWidget):
     def render_selected_item(self, text, value, key, css_class):
         return render_element('option', contents=text, value=value,
                               selected=None)
-
-    def render_view(self, field, key, value):
-        if value is None:
-            return ''
-        return string.join(value, "<br />\n")
     
 MultiListWidgetInstance = MultiListWidget()
 
@@ -574,7 +603,7 @@ class MultiCheckBoxWidget(MultiItemsWidget):
     """multiple checkbox widget.
     """
     property_names = Widget.property_names +\
-                     ['items', 'orientation']
+                     ['items', 'orientation', 'view_separator']
     
     orientation = fields.ListField('orientation',
                                    title='Orientation',
@@ -610,10 +639,6 @@ class MultiCheckBoxWidget(MultiItemsWidget):
                               value=value,
                               checked=None) + text
 
-    def render_view(self, field, key, value):
-        if value is None:
-            return ''
-        return string.join(value, "<br />\n")
     
 MultiCheckBoxWidgetInstance = MultiCheckBoxWidget()
 

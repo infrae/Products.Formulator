@@ -227,7 +227,7 @@ class SerializeTestCase(unittest.TestCase):
         """ test checking if the field values are of the proper type.
         after reading from XML some field values may not have the right type,
         if they have a special type (currently int and "list").
-        Also tests, if rendering and validation are the same
+        Also tests if rendering and validation are the same
         between the original form and the one after one form -> xml -> form
         roundtrip.
         """
@@ -288,6 +288,7 @@ class SerializeTestCase(unittest.TestCase):
                              'field_size':'3',
                              'field_items':'Foo | foo\n Bar | bar\nBaz | baz',
                              'field_orientation':'horizontal',
+                             'field_view_separator':'<br />\n',
                              })
             multi_field.manage_edit(REQUEST=request)
 
