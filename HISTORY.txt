@@ -32,7 +32,7 @@ Formulator changes
            test/test_Form.py
 
       - fixed bug in DateTime field where a set "default to now" overwrote
-        values in the request 
+        values in the request
         changed:
           Widgets.py:DateTimeWidget.render
           tests/test_serialize.py:FakeRequest
@@ -40,7 +40,7 @@ Formulator changes
 
       - several spelling bugs
         changed
-             test_Form.py
+             tests/test_Form.py
 
       - fixed bug where a set "default" for a checkbox field
         would always render a checked checbox, even if redisplaying
@@ -56,6 +56,17 @@ Formulator changes
            StandardField.py: CheckBoxField._get_default (added)
            dtml/formTest.dtml
            tests/test_Form.py
+
+			- added tests for the LinesValidator
+        changed:
+           tests/test_validator.py
+
+      - fixed bug with render_from_request LinesField, whic splitted
+        strings coming in as raw unvalidated data from the request into
+        many lines with one single character on each line
+        changed
+           tests/test_Form.py: test_lines_field_rendering
+           Widget.py: LinesTextAreaWidget.render/render_hidden
 
 
   1.7.0
