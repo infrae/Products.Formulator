@@ -52,7 +52,10 @@ Many thanks go to:
                                          fields.
 
   Kapil Thangavelu (k_vertigo@objectrealms.net) -- Enabled ':record' rendering.
-                                                 
+
+  Sébastien Robin (seb@nexedi.com) -- more consistent ordering in
+                                         XML serialization.
+                                            
   Special thanks also goes to Rik Hoekstra.
 
   Also a thank you to those few valiant souls who suffered through the

@@ -1,5 +1,13 @@
 Formulator changes
 
+  1.5.0
+
+    Features Added
+
+    Bugs Fixed
+
+      - XML serialization should be more consistent now.
+
   1.4.2
   
     Bugs Fixed
