@@ -49,7 +49,7 @@ class Field:
     def has_value(self, id):
         """Return true if the field defines such a value.
         """
-        if self.values.has_key(id) or self.form.has_field_id(id):
+        if self.values.has_key(id) or self.form.has_field(id):
             return 1
         else:
             return 0
@@ -186,7 +186,7 @@ class Field:
 
 Globals.InitializeClass(Field)
     
-class PythonField(
+class ZMIField(
     Acquisition.Implicit,
     Persistent,
     OFS.SimpleItem.Item,
@@ -343,7 +343,8 @@ class PythonField(
         """
         return self.render(REQUEST=REQUEST)
 
-Globals.InitializeClass(PythonField)
+Globals.InitializeClass(ZMIField)
+PythonField = ZMIField # NOTE: for backwards compatibility
 
 class ZClassField(Field):
     """Base class for a field implemented as a ZClass.
