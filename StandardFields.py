@@ -80,9 +80,12 @@ class DateTimeField(PythonField):
     def __init__(self, id, **kw):
         # icky but necessary...
         apply(PythonField.__init__, (self, id), kw)
-        
-        self.sub_form = create_datetime_text_sub_form()
 
+        if self.get_value('input_style') == 'text':
+            self.sub_form = create_datetime_text_sub_form()
+        else:
+            self.sub_form = create_datetime_list_sub_form()
+            
     def on_value_input_style_changed(self, value):
         if value == 'text':
             self.sub_form = create_datetime_text_sub_form()
