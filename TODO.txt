@@ -14,8 +14,3 @@ Formulator TODO
 
   - Phone/Zipcode/etc field, with ####-##### style patterns. 
 
-  - Multiple select fields (list and checkbox)
-
-  - Separate out common code of RadioWidget and ListWidget; also
-    do this for future MultiSelectListWidget and MultiSelectCheckBoxWidget.
-    They're all ItemsWidgets.
