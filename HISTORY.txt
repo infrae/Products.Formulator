@@ -16,6 +16,9 @@ Formulator changes
       - changed way selection fields check whether their items
         property is a list or single item.
 
+      - Made system not reregister help for Fields which already have
+        help, to avoid ZODB writes on startup.
+
   1.6.2
 
     Bugs Fixed
