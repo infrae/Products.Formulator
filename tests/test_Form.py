@@ -15,6 +15,7 @@ from Products.Formulator.TALESField import TALESMethod
 
 from Products.PythonScripts.PythonScript import PythonScript
 
+from test_serialize import FakeRequest
 
 """ random assembly testing some reported bugs.
     This is _not_ a structured or even complete test suite
@@ -121,7 +122,7 @@ class FormTestCase(unittest.TestCase):
         list_field = self.form.list_field
         list_field.values['items'] = [ ('foo', 'foo'), ('bar', 'bar') ]
 
-        items1 = list_field.render(  ('foo',) )
+        items1 = list_field.render( ('foo',) )
 
         list_field.tales['items'] = TALESMethod("python:('foo', 'bar')")
         self.assertEquals(('foo', 'bar'), list_field.get_value('items'))
@@ -195,8 +196,8 @@ class FormTestCase(unittest.TestCase):
         self.assertEquals(0, len(css_matches))
 
 
-    def _helper_render_hidden_datetime(self,expected_values,rendered):
-        # heper to check if the generated HTML from render_hidden
+    def _helper_render_datetime(self,expected_values,rendered, type='hidden'):
+        # heper to check if the generated HTML from render or render_hidden
         # meets the expectations
         dom = parseString('<dummy>%s</dummy>' % rendered)
         elements = [ child for child in dom.documentElement.childNodes \
@@ -204,8 +205,8 @@ class FormTestCase(unittest.TestCase):
         self.assertEquals(len(expected_values.keys()), len(elements))
         values={}
         for child in elements:
-            self.assertEquals('input',child.nodeName)
-            self.assertEquals('hidden',child.getAttribute('type'))
+            self.assertEquals('input', child.nodeName)
+            self.assertEquals(type, child.getAttribute('type'))
             self.failIf(child.childNodes)
             values[child.getAttribute('name')] = child.getAttribute('value')
         self.assertEquals(expected_values, values)
@@ -254,22 +255,22 @@ class FormTestCase(unittest.TestCase):
             'subfield_date_time_hour'  : '00',
             'subfield_date_time_minute': '00',
             }
-        self._helper_render_hidden_datetime(expected_values,
-                                            self.form.date_time.render())
+        self._helper_render_datetime(expected_values,
+                                     self.form.date_time.render())
 
         self.form.date_time.values['date_only']=1
         del expected_values['subfield_date_time_hour']
         del expected_values['subfield_date_time_minute']
-        self._helper_render_hidden_datetime(expected_values,
-                                            self.form.date_time.render())
+        self._helper_render_datetime(expected_values,
+                                     self.form.date_time.render())
 
         self.form.date_time.values['date_only']=0
         self.form.date_time.values['ampm_time_style']=1
         expected_values['subfield_date_time_hour']='12'
         expected_values['subfield_date_time_minute']='00'
         expected_values['subfield_date_time_ampm']='am'
-        self._helper_render_hidden_datetime(expected_values,
-                                            self.form.date_time.render())
+        self._helper_render_datetime(expected_values,
+                                     self.form.date_time.render())
 
         self.form.multi_list.values['items'] = (('a','a'),('b','b'), ('c','c'))
         self.form.multi_list.values['default'] = ['a','c']
@@ -330,6 +331,30 @@ class FormTestCase(unittest.TestCase):
             self.assertEquals('|||'.join(('Alpha','Gamma')),
                               field.render_view(['a','c']))
             self.assertEquals('', field.render_view([]))
+
+    def test_default_to_now_does_not_overwite_request_values(self):
+        self.form.manage_addField('date_field','Test DateTime Field','DateTimeField')
+        date_field = self.form.date_field
+
+        date_field.values['default_now'] = 1
+        date_field.values['date_only'] = 1 # for less typing in test only ...
+
+        expected_values = \
+                       {'subfield_date_field_year':'1970',
+                        'subfield_date_field_month':'01',
+                        'subfield_date_field_day' : '01'}
+
+        request = FakeRequest()
+        request.update(expected_values)
+
+        rendered = date_field.render_from_request(request)
+        self._helper_render_datetime(expected_values, rendered, type='text')
+
+        # as we are already here, check yet another thing:
+        # test that default is honored if no value given
+        date_field.values['default'] = DateTime('1970/01/01')
+        rendered = date_field.render_from_request( FakeRequest() )
+        self._helper_render_datetime(expected_values, rendered, type='text')
 
 
 def test_suite():
