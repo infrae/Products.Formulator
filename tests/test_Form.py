@@ -261,7 +261,7 @@ class FormTestCase(unittest.TestCase):
         self.form.lines.values['hidden'] = 1
         expect_str = 'a\nc'
         # FIXME: a straight comparision fails ...
-        # minidom seems to string linebreaks in attributes (?)
+        # minidom seems to barf on string linebreaks in attributes (?)
         # instead ...
         rendered = self.form.lines.render()
         rendered = rendered.replace('\n','NEWLINE_HERE')
@@ -271,7 +271,7 @@ class FormTestCase(unittest.TestCase):
 
 
     def test_render_view_items(self):
-        # test tht the render_view is correct for fields
+        # test that the render_view is correct for fields
         # for which the values internally handled by Formulator
         # are different form the une shown to the user
         # (e.g. checkboxes, radio buttons, option-lists
