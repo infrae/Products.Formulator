@@ -365,20 +365,6 @@ class DateTimeWidget(Widget):
         "Display the date only, not the time."),
                                      default=0)
 
-    def get_sub_field_default(self, field, key, value):
-        if value is None:
-            return ''
-        if key == 'text_year':
-            return value.year()
-        elif key == 'text_month':
-            return value.month()
-        elif key == 'text_day':
-            return value.day()
-        elif key == 'hour':
-            return value.hour()
-        elif key == 'minute':
-            return value.minute()
-        
     def render(self, field, key, value, REQUEST):
         if value is None:
             year = None

@@ -120,7 +120,12 @@ class Field:
     
     security.declarePrivate('_validate_helper')
     def _validate_helper(self, key, REQUEST):
-        return self.validator.validate(self, key, REQUEST)
+        value = self.validator.validate(self, key, REQUEST)
+        # now call external validator after all other validation
+        external_validator = self.get_value('external_validator')
+        if external_validator and not external_validator(value, REQUEST):
+            self.validator.raise_error('external_validator_failed', self)
+        return value
     
     security.declareProtected('View', 'validate')    
     def validate(self, REQUEST):

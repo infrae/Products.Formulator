@@ -21,7 +21,7 @@ class MethodWidget(Widget.TextWidget):
             else:
                 method_name = ""
                 
-        return Widget.TextWidget.render(self, field, key, method_name)
+        return Widget.TextWidget.render(self, field, key, method_name, REQUEST)
 
 MethodWidgetInstance = MethodWidget()
 

@@ -15,14 +15,30 @@ class ValidationError(Exception):
 class Validator:
     """Validates input and possibly transforms it to output.
     """
-    property_names = []
-    message_names = []
+    property_names = ['external_validator']
+
+    external_validator = fields.MethodField('external_validator',
+                                            title="External Validator",
+                                            description=(
+        "When a method name is supplied, this method will be "
+        "called each time this field is being validated. All other "
+        "validation code is called first, however. The value (result of "
+        "previous validation) and the REQUEST object will be passed as "
+        "arguments to this method. Your method should return true if the "
+        "validation succeeded. Anything else will cause "
+        "'external_validator_failed' to be raised."),
+                                            default="",
+                                            required=0)
+    
+    message_names = ['external_validator_failed']
+
+    external_validator_failed = "The input failed the external validator."
     
     def raise_error(self, error_key, field):
         raise ValidationError(error_key, field)
     
-    def validate(self, field, key, REQUEST):
-        return REQUEST.get(key, None)
+    def validate(self, field, key, REQUEST):    
+        pass # override in subclass
     
 class StringBaseValidator(Validator):
     """Simple string validator.
@@ -45,7 +61,7 @@ class StringBaseValidator(Validator):
         if field.get_value('required') and value == "":
             self.raise_error('required_not_found', field)
         return value
-
+    
 class StringValidator(StringBaseValidator):
     property_names = StringBaseValidator.property_names +\
                      ['max_length', 'truncate']
@@ -334,7 +350,7 @@ class DateTimeValidator(Validator):
     not_datetime = 'You did not enter a valid date and time.'
     datetime_out_of_range = 'The date and time you entered were out of range.'
     
-    def validate(self, field, key, REQUEST):
+    def validate(self, field, key, REQUEST):    
         try:
             year = field.validate_sub_field('text_year', REQUEST)
             month = field.validate_sub_field('text_month', REQUEST)
