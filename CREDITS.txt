@@ -30,6 +30,8 @@ Many thanks go to:
 
   Matt Behrens (matt.behrens@kohler.com) -- feedback and bugfixes.
 
+  Nikolay Kim (fafhrd@datacom.kz) -- code inspiration for XMLSerialize.
+
   Special thanks also goes to Rik Hoekstra.
 
   Also a thank you to those few valiant souls who suffered through the
