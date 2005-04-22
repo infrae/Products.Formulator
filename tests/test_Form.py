@@ -373,7 +373,7 @@ class FormTestCase(ZopeTestCase.ZopeTestCase):
                               field.render_view(['a','c']))
             self.assertEquals('', field.render_view([]))
 
-    def test_default_to_now_does_not_overwite_request_values(self):
+    def test_default_to_now_does_not_overwrite_request_values(self):
         self.form.manage_addField('date_field','Test DateTime Field','DateTimeField')
         date_field = self.form.date_field
 
@@ -399,7 +399,7 @@ class FormTestCase(ZopeTestCase.ZopeTestCase):
         self._helper_render_datetime(expected_values, rendered, type='text')
 
 
-    def test_checkbox_default_does_now_overwrite_submitted_values(self):
+    def test_checkbox_default_overwrites_submitted_values(self):
         
         self.form.manage_addField('checkbox_field','Test Checkbox','CheckBoxField')
         checkbox_field = self.form.checkbox_field
