@@ -297,7 +297,23 @@ class EmailValidatorTestCase(ValidatorTestCase):
             self.v.deserializeValue(field, string)
             )
         
-# skip PatternValidator for now
+# not much for PatternValidator for now
+class PatternValidatorTestCase(ValidatorTestCase):
+    def setUp(self):
+        self.v = Validator.PatternValidatorInstance
+
+    def test_ff_pattern(self):
+        # test bug where an 'd','e' or 'f' in the input
+        # caused garbled output for some patterns
+        pattern='f-f'
+        value='d-1'
+        
+        field= \
+            TestField('f', max_length=0, truncate=0, required=1, unicode=0,
+                      pattern=pattern)
+        result = self.v.validate(field, 'f', {'f': value} )
+        self.assertEquals(value, result)
+
 
 class BooleanValidatorTestCase(ValidatorTestCase):
     def setUp(self):
@@ -694,6 +710,7 @@ def test_suite():
     suite.addTest(unittest.makeSuite(StringValidatorTestCase, 'test'))
     suite.addTest(unittest.makeSuite(LinesValidatorTestVase, 'test'))
     suite.addTest(unittest.makeSuite(EmailValidatorTestCase, 'test'))
+    suite.addTest(unittest.makeSuite(PatternValidatorTestCase, 'test'))
     suite.addTest(unittest.makeSuite(BooleanValidatorTestCase, 'test'))
     suite.addTest(unittest.makeSuite(IntegerValidatorTestCase, 'test'))
     suite.addTest(unittest.makeSuite(FloatValidatorTestCase, 'test'))
