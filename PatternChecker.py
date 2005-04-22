@@ -78,9 +78,7 @@ class PatternChecker:
             values.append(pattern[:match.start()])
             values.append(res)
             pattern = pattern[match.end():]
-        # pattern should be filly consumed
-        # or maybe I am just bold to place this here ?
-        assert pattern==''
+        values.append(pattern)
         return ''.join(values)
 
     def clean_value(self, value):
