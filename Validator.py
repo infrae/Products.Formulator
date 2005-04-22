@@ -773,7 +773,8 @@ class SuppressValidator(ValidatorBase):
                                             description=(
         "Ignored, as a validator isn't used here."),
                                             default="",
-                                            required=0)
+                                            required=0,
+                                            enabled=0)
     def need_validate(self, field, key, REQUEST):
         """Don't ever validate; suppress result in output.
         """
