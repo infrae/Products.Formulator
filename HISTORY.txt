@@ -29,6 +29,9 @@ Formulator changes
         created form or field if the unicode property has been set
         (Patch from Bertrand Croq)
 
+      - Calling "validate" on LabelField directly failed with a 
+        KeyError: 'external_validator' (Patch from Reinout van Rees)
+
   1.8.0
 
     Features Added

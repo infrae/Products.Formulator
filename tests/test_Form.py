@@ -180,6 +180,14 @@ class FormTestCase(ZopeTestCase.ZopeTestCase):
             {'field_int_field': '3'})
         self.assertEquals({'int_field': 3}, result)
 
+    def test_labels_with_direct_validation(self):
+        """ PloneFormMailer calls validate() directly on each field,
+        this used to give a KeyError as 'external_validator' wasn't
+        known for a label field.
+        """
+        self.form.manage_addField(
+            'label_field', 'Test Label Field', 'LabelField')
+        self.form['label_field'].validate(REQUEST=FakeRequest())
 
     def test_datetime_css_class_rendering(self):
         # test that a bug is fixed, which causing the css_class value

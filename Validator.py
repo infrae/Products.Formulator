@@ -767,6 +767,13 @@ DateTimeValidatorInstance = DateTimeValidator()
 class SuppressValidator(ValidatorBase):
     """A validator that is actually not used.
     """
+    property_names = ValidatorBase.property_names + ['external_validator']
+    external_validator = fields.MethodField('external_validator',
+                                            title="External Validator",
+                                            description=(
+        "Ignored, as a validator isn't used here."),
+                                            default="",
+                                            required=0)
     def need_validate(self, field, key, REQUEST):
         """Don't ever validate; suppress result in output.
         """

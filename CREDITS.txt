@@ -89,6 +89,8 @@ Many thanks go to:
 
   Ian Duggan (ian at swishmark.com) -- "Hide day" in DateTimeField feature
 
+  Reinout van Rees (reinout at vanrees.org) -- LabelField validation bugfix
+
   Special thanks also goes to Rik Hoekstra.
 
   Also a thank you to those few valiant souls who suffered through the
