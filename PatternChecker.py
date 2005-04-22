@@ -39,7 +39,7 @@ class PatternChecker:
         """Reverse the escaping, so that the final string is as close as
         possible to the original one.
         """
-        return re.sub(r'\\\\', '', s)
+        return re.sub('\\\\', '', s)
 
     def _replace_symbol_by_regex(self, match_object):
         """Replace the character symbol with their respective regex.
