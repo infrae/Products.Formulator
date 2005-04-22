@@ -32,6 +32,10 @@ Formulator changes
       - Calling "validate" on LabelField directly failed with a 
         KeyError: 'external_validator' (Patch from Reinout van Rees)
 
+      - A PatternField may have returned garbled results if the pattern
+        has several 'e' or 'f' in the pattern and 'd', 'e' of 'f' in the 
+        field value
+
   1.8.0
 
     Features Added

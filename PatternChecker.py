@@ -39,7 +39,7 @@ class PatternChecker:
         """Reverse the escaping, so that the final string is as close as
         possible to the original one.
         """
-        return re.sub('\\\\', '', s)
+        return re.sub(r'\\\\', '', s)
 
     def _replace_symbol_by_regex(self, match_object):
         """Replace the character symbol with their respective regex.
@@ -69,13 +69,19 @@ class PatternChecker:
         """After we validated the string, we put it back together; this is
         good, since we can easily clean up the data this way.
         """
-        value = self._escape_special_characters(pattern)
+        pattern = self._escape_special_characters(pattern)
         _symbols = '['+NUMBERSYMBOL + CHARSYMBOL + NUMCHARSYMBOL + ']'
         re_obj = re.compile(_symbols+'{1,}\*?')
+        values=[]
         for res in result.groups():
-            match = re_obj.search(value)
-            value = value[:match.start()] + res + value[match.end():]
-        return value
+            match = re_obj.search(pattern)
+            values.append(pattern[:match.start()])
+            values.append(res)
+            pattern = pattern[match.end():]
+        # pattern should be filly consumed
+        # or maybe I am just bold to place this here ?
+        assert pattern==''
+        return ''.join(values)
 
     def clean_value(self, value):
         """Clean up unnecessary white characters.
