@@ -1,4 +1,7 @@
-from Products.Formulator.PatternChecker import PatternChecker
+try:
+    from Products.Formulator.PatternChecker import PatternChecker
+except ImportError:
+    from PatternChecker import PatternChecker
 
 import unittest
 
@@ -54,5 +57,5 @@ def test_suite():
     return suite
 
 if __name__ == '__main__':
-    framework()
+    unittest.TextTestRunner().run(test_suite())
 
