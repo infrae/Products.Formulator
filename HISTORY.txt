@@ -1,5 +1,7 @@
 Formulator changes
 
+  1.9.0
+
     Features Added
 
       - Added the 'modules' namespace for TALES expresions.
