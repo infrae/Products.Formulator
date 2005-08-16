@@ -1,5 +1,11 @@
 Formulator changes
 
+    Features Added
+
+      - Allow to group fields of the ZMI form for each field 
+        into more groups than the default "widget" and "validator"
+        (Patch from Mikaël Barbero)
+
   1.9.0
 
     Features Added

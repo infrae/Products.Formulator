@@ -87,38 +87,40 @@ def initializeFieldForm(field_class):
     override_form = BasicForm()
     tales_form = BasicForm()
     for field in getPropertyFields(field_class.widget):
-        form.add_field(field, "widget")
+        group = field.get_value("group") or "widget"
+        form.add_field(field, group)
         tales_field = fields.TALESField(field.id,
                                         title=field.get_value('title'),
                                         description="",
                                         default="",
                                         display_width=40,
                                         required=0)
-        tales_form.add_field(tales_field, "widget")
+        tales_form.add_field(tales_field, group)
 
         method_field = fields.MethodField(field.id,
                                           title=field.get_value("title"),
                                           description="",
                                           default="",
                                           required=0)
-        override_form.add_field(method_field, "widget")
+        override_form.add_field(method_field, group)
 
     for field in getPropertyFields(field_class.validator):
-        form.add_field(field, "validator")
+        group = field.get_value("group") or "validator"
+        form.add_field(field, group)
         tales_field = fields.TALESField(field.id,
                                         title=field.get_value('title'),
                                         description="",
                                         default="",
                                         display_with=40,
                                         required=0)
-        tales_form.add_field(tales_field, "validator")
+        tales_form.add_field(tales_field, group)
 
         method_field = fields.MethodField(field.id,
                                           title=field.get_value("title"),
                                           description="",
                                           default="",
                                           required=0)
-        override_form.add_field(method_field, "validator")
+        override_form.add_field(method_field, group)
 
     field_class.form = form
     field_class.override_form = override_form
