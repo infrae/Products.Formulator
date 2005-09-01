@@ -45,6 +45,8 @@ class DummyMessageID:
         self.__parsed = s
         return s
 
+    __call__ = translate
+
     def __str__(self):
         return self.translate()
 
