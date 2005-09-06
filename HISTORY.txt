@@ -6,6 +6,10 @@ Formulator changes
         into more groups than the default "widget" and "validator"
         (Patch from Mikaël Barbero)
 
+    Bugs fixed
+
+      - Fixed AttributeError (on __call__) on DummyMessageID.
+
   1.9.0
 
     Features Added
