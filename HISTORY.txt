@@ -1,5 +1,7 @@
 Formulator changes
 
+  1.10
+
     Features Added
 
       - Allow to group fields of the ZMI form for each field 
