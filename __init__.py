@@ -87,3 +87,7 @@ def initialize(context):
     context.registerHelp()
     # register field help for all fields
     FieldRegistry.registerFieldHelp(context)
+
+# monkey patches
+import monkey
+monkey.patch_all()

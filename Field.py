@@ -7,9 +7,10 @@ from Shared.DC.Scripts.Bindings import Bindings
 from Errors import ValidationError
 from Products.Formulator.Widget import MultiItemsWidget
 from helpers import is_sequence, convert_unicode
-from Products.Formulator.i18n import translate as _
 
 from Products.PageTemplates.Expressions import SecureModuleImporter
+
+from zope.i18nmessageid import MessageIDFactory
 
 class Field:
     """Base class of all fields.
@@ -127,12 +128,12 @@ class Field:
         # if normal value is a callable itself, wrap it
         if callable(value):
             return value.__of__(self)
-    
+
         # create message id for title and description in right domain
         if id in ['title', 'description']:
             i18n_domain = self.get_i18n_domain()
             if i18n_domain:
-                return _(value, i18n_domain)
+                return MessageIDFactory(i18n_domain)(value)
         return value
 
     # this also works if field is not in form for testing
@@ -211,7 +212,7 @@ class Field:
             return result
         if want_message_id:
             # we do want a message id, so construct one from form domain
-            result = _(result, self.get_i18n_domain())
+            result = MessageIDFactory(self.get_i18n_domain())(result)
         else:
             try:
                 # looks into message id internals..
