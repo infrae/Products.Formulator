@@ -3,7 +3,7 @@ import Form
 import StandardFields, HelperFields
 from FieldRegistry import FieldRegistry
 import Errors
-from Products.PythonScripts.Utility import allow_module
+from AccessControl import allow_module
 
 try:
     import Products.FileSystemSite

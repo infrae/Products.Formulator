@@ -1,4 +1,4 @@
-from Products.PythonScripts.Utility import allow_class
+from AccessControl import allow_class
 
 def monkey_zope3_message_id():
     from zope.i18nmessageid.messageid import MessageID

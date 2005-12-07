@@ -4,7 +4,7 @@
 # scripts. To do so, add the following line to your Py script:
 # from Products.Formulator.Errors import ValidationError, FormValidationError
 
-from Products.PythonScripts.Utility import allow_class
+from AccessControl import allow_class
 
 class FormValidationError(Exception):
 
