@@ -33,7 +33,7 @@ Information
 
   Information is also available at the Formulator web site:
 
-     http://www.zope.org/Members/faassen/Formulator
+     http://www.infrae.com/products/formulator
 
   There are also instructions to join the Formulator mailing list there.
   Discussion about Formulator should preferably happen on the mailing list

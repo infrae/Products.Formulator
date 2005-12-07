@@ -2,15 +2,17 @@ Installing Formulator
 
   Requirements
 
-    Formulator should work with Zope versions 2.6 or higher:
+    Formulator should work with Zope versions 2.8 or higher:
 
       http://www.zope.org/Products/Zope
 
-    For reading in forms as XML you need to have minidom installed;
-    this should come with a normal python 2.1 distribution. This is
-    not required to use Formulator, however.
-
   Upgrading
+
+    to 1.11 from earlier versions
+
+      Five 1.2 is needed to make i18n work. Alternatively remove the
+      file `configure.zcml` from the Formulator directory -- this is
+      safe and just removes the i18n support.
 
     to 1.9 from 1.8
 

@@ -205,7 +205,7 @@ class Field:
             if not want_message_id:
                 try:
                     # looks into message id internals..
-                    result = result.ustr
+                    result = unicode(result)
                 except AttributeError:
                     pass
             return result
@@ -215,7 +215,7 @@ class Field:
         else:
             try:
                 # looks into message id internals..
-                result = result.ustr
+                result = unicode(result)
             except AttributeError:
                 pass
         return result

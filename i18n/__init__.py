@@ -2,18 +2,12 @@
 
     from Products.Formulator.i18n import translate as _
 
-    and will provide, if PlacelessTranslationService is installed, a 
-    MessageIDFactory that returns MessageIDs for i18n'ing Product code 
-    and Python scripts.
+and will provide a MessageIDFactory that returns MessageIDs for
+i18n'ing Product code and Python scripts.
 
-    If PlacelessTranslationService is not installed, it will return a
-    'dummy' object that provides the MessageID interface but doesn't
-    translate strings (it just returns what comes in, optionally interpolating
-    values)
+Five 1.2 or later needs to be installed to make this work.
 """
 
-try:
-    from Products import PlacelessTranslationService
-    from formulatormessageid import FormulatorMessageIDFactory as translate    
-except ImportError:
-    from dummymessageid import DummyMessageIDFactory as translate
+from zope.i18nmessageid import MessageIDFactory
+
+translate = MessageIDFactory('formulator')
