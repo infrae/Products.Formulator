@@ -1,18 +1,13 @@
 Formulator changes
 
-  1.11 (under development)
+  Current development version
 
-    Features Added
+    Bugs fixed
 
-      - Formulator now needs Zope 2.8.4 + Five 1.2. It uses Five's
-        i18n architecture instead of PlacelessTranslationService.
-        Five 1.2 can be downloaded at http://codespeak.net/z3/five
+      - Fixed unicode issues in FormToXML, when the form was in unicode mode
+        and message fields contained non-ascii chars, XML serialization didn't
+        work.
 
-        If you do not want to install Five 1.2 for some reason, simply
-        remove 'configure.zcml' in the Formulator package. Formulator
-        will then work (but not have i18n support) in a plain Zope 2.8
-        installation.
- 
   1.10
 
     Features Added

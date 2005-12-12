@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import os, sys
 if __name__ == '__main__':
     execfile(os.path.join(sys.path[0], 'framework.py'))
@@ -250,7 +253,7 @@ class SerializeTestCase(ZopeTestCase.ZopeTestCase):
             self.assertEquals(1, len(e.errors))
             text2 = e.errors[0].error_text
         # XXX compare original message ids..
-        self.assertEquals(unicode(text1), unicode(text2))
+        self.assertEquals(text1.ustr, text2.ustr)
 
 
     def test_fieldValueTypes(self):
@@ -473,6 +476,124 @@ class SerializeTestCase(ZopeTestCase.ZopeTestCase):
         self.failIf( form2.has_field('another_field') )
         self.failIf('another_field' in form2.objectIds() )
 
+    def test_serializeDeserializeEncodedMessages(self):
+        # test for serializing and deserializing XML with non-ascii text in
+        # the message tags
+        xml1 = """\
+<?xml version="1.0"?>
+
+<form>
+  <title></title>
+  <row_length>4</row_length>
+  <name>testform_bugs</name>
+  <action></action>
+  <method>POST</method>
+  <enctype></enctype>
+  <encoding>UTF-8</encoding>
+  <stored_encoding>UTF-8</stored_encoding>
+  <unicode_mode>false</unicode_mode>
+  <i18n_domain></i18n_domain>
+  <groups>
+    <group>
+      <title>Default</title>
+      <fields>
+
+      <field><id>string</id> <type>StringField</type>
+        <values>
+          <alternate_name></alternate_name>
+          <css_class></css_class>
+          <default></default>
+          <description>मैं काँच खा सकता हूँ, मुझे उस से कोई पीडा</description>
+          <display_maxwidth></display_maxwidth>
+          <display_width type="int">20</display_width>
+          <enabled type="int">1</enabled>
+          <external_validator></external_validator>
+          <extra></extra>
+          <hidden type="int">0</hidden>
+          <max_length></max_length>
+          <required type="int">1</required>
+          <title>मैं काँच खा सकता हूँ, मुझे उस से कोई पीडा</title>
+          <truncate type="int">0</truncate>
+          <unicode type="int">0</unicode>
+          <whitespace_preserve type="int">0</whitespace_preserve>
+        </values>
+        <tales>
+        </tales>
+        <messages>
+          <message name="external_validator_failed">मैं काँच खा सकता हूँ, मुझे उस से कोई पीडा</message>
+          <message name="required_not_found">मैं काँच खा सकता हूँ, मुझे उस से कोई पीडा</message>
+          <message name="too_long">मैं काँच खा सकता हूँ, मुझे उस से कोई पीडा</message>
+        </messages>
+      </field>
+      </fields>
+    </group>
+  </groups>
+</form>
+"""
+
+        # we're not expecting exceptions, and don't really care about anything
+        # else, so no asserts here...
+        form = ZMIForm('foo', 'Foo')
+        XMLToForm(xml1, form)
+        xml_roundtrip = formToXML(form)
+
+        xml1 = """\
+<?xml version="1.0"?>
+
+<form>
+  <title></title>
+  <row_length>4</row_length>
+  <name>testform_bugs</name>
+  <action></action>
+  <method>POST</method>
+  <enctype></enctype>
+  <encoding>UTF-8</encoding>
+  <stored_encoding>UTF-8</stored_encoding>
+  <unicode_mode>true</unicode_mode>
+  <i18n_domain></i18n_domain>
+  <groups>
+    <group>
+      <title>Default</title>
+      <fields>
+
+      <field><id>string</id> <type>StringField</type>
+        <values>
+          <alternate_name></alternate_name>
+          <css_class></css_class>
+          <default></default>
+          <description>मैं काँच खा सकता हूँ, मुझे उस से कोई पीडा</description>
+          <display_maxwidth></display_maxwidth>
+          <display_width type="int">20</display_width>
+          <enabled type="int">1</enabled>
+          <external_validator></external_validator>
+          <extra></extra>
+          <hidden type="int">0</hidden>
+          <max_length></max_length>
+          <required type="int">1</required>
+          <title>मैं काँच खा सकता हूँ, मुझे उस से कोई पीडा</title>
+          <truncate type="int">0</truncate>
+          <unicode type="int">0</unicode>
+          <whitespace_preserve type="int">0</whitespace_preserve>
+        </values>
+        <tales>
+        </tales>
+        <messages>
+          <message name="external_validator_failed">मैं काँच खा सकता हूँ, मुझे उस से कोई पीडा</message>
+          <message name="required_not_found">मैं काँच खा सकता हूँ, मुझे उस से कोई पीडा</message>
+          <message name="too_long">मैं काँच खा सकता हूँ, मुझे उस से कोई पीडा</message>
+        </messages>
+      </field>
+      </fields>
+    </group>
+  </groups>
+</form>
+"""
+
+        # we're not expecting exceptions, and don't really care about anything
+        # else, so no asserts here...
+        form = ZMIForm('foo', 'Foo')
+        XMLToForm(xml1, form)
+        xml_roundtrip = formToXML(form)
 
 def test_suite():
     suite = unittest.TestSuite()
