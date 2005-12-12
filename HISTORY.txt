@@ -1,5 +1,13 @@
 Formulator changes
 
+  1.10.1
+
+    Bugs fixed
+
+      - Fixed unicode issues in FormToXML, when the form was in unicode mode
+        and message fields contained non-ascii chars, XML serialization didn't
+        work.
+
   1.10
 
     Features Added
