@@ -89,8 +89,9 @@ def formToXML(form, prologue=1):
                 message_text = field.get_error_message(message_key,
                                                        want_message_id=False)
                 # we don't want unicode here
-                if isinstance(message_text, unicode):
-                    message_text = message_text.encode(form.stored_encoding)
+                if not form.unicode_mode:
+                    if isinstance(message_text, unicode):
+                        message_text = message_text.encode(form.stored_encoding)
                 write('          <message name="%s">%s</message>\n' %
                       (escape(message_key), escape(message_text)))
             write('        </messages>\n')
