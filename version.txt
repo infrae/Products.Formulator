@@ -1,1 +1,1 @@
-Formulator 1.10 (CVS/UNRELEASED)
+Formulator 1.10.1 b2
