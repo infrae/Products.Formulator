@@ -7,6 +7,9 @@ Formulator changes
       - Fixed unicode issues in FormToXML, when the form was in unicode mode
         and message fields contained non-ascii chars, XML serialization didn't
         work.
+      
+      - Fixed string conversion issue with serialization of non-string type  
+        fields.
 
   1.10
 
