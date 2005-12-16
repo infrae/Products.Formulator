@@ -1,10 +1,27 @@
 Formulator changes
 
+  1.10.1
+
+    Bugs fixed
+
+      - Fixed unicode issues in FormToXML, when the form was in unicode mode
+        and message fields contained non-ascii chars, XML serialization didn't
+        work.
+      
+      - Fixed string conversion issue with serialization of non-string type  
+        fields.
+
+  1.10
+
     Features Added
 
       - Allow to group fields of the ZMI form for each field 
         into more groups than the default "widget" and "validator"
         (Patch from Mikaël Barbero)
+
+    Bugs fixed
+
+      - Fixed AttributeError (on __call__) on DummyMessageID.
 
   1.9.0
 

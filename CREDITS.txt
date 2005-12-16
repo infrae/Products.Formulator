@@ -63,6 +63,8 @@ Many thanks go to:
   Guido Wesdorp (guido at infrae.com) -- Added extra_item attribute on
                                       compound fields, bugfixes.
 
+                                      -- Fixed unicode error in XMLToForm.
+
   Yura Petrov (ypetrov at naumen.ru) -- Various FSForm related
                                      improvements.
 
