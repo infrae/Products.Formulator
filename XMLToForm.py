@@ -110,11 +110,12 @@ def XMLToForm(s, form, override_encoding=None):
                 entries = getattr(messages.elements, 'message', [])
                 for entry in entries:
                     name = entry.attributes.get('name')
-                    text = encode(entry.text, encoding)
+                    text = entry.text
                     # ignore messages that are identical to default
                     if (name in field.validator.message_names and
                         getattr(field.validator, name) == text):
                         continue
+                    text = encode(text, encoding)
                     field.message_values[name] = text
 
             # for persistence machinery
