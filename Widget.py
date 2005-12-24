@@ -647,27 +647,23 @@ class RadioWidget(SingleItemsWidget):
             return string.join(rendered_items, "<br />")
 
     def render_item(self, text, value, key, css_class, extra_item):
-        id = '%s_%s' % (key, value)
         contents = render_element('input',
                                   type="radio",
                                   css_class=css_class,
                                   name=key,
                                   value=value,
-                                  id=id,
                                   extra=extra_item) + text
-        return render_element('label', contents=contents, **{'for': id})
+        return render_element('label', contents=contents)
 
     def render_selected_item(self, text, value, key, css_class, extra_item):
-        id = '%s_%s' % (key, value)
         contents = render_element('input',
                                   type="radio",
                                   css_class=css_class,
                                   name=key,
                                   value=value,
-                                  id=id,
                                   checked=None,
                                   extra=extra_item) + text
-        return render_element('label', contents=contents, **{'for': id})
+        return render_element('label', contents=contents)
 
 RadioWidgetInstance = RadioWidget()
 
