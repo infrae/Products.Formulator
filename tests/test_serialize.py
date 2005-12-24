@@ -253,7 +253,7 @@ class SerializeTestCase(ZopeTestCase.ZopeTestCase):
             self.assertEquals(1, len(e.errors))
             text2 = e.errors[0].error_text
         # XXX compare original message ids..
-        self.assertEquals(text1.ustr, text2.ustr)
+        self.assertEquals(unicode(text1), unicode(text2))
 
 
     def test_fieldValueTypes(self):
