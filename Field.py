@@ -205,21 +205,16 @@ class Field:
             # if we don't want message id, strip it off
             if not want_message_id:
                 try:
-                    # looks into message id internals..
+                    # convert message id into unicode string
                     result = unicode(result)
                 except AttributeError:
                     pass
             return result
-        if want_message_id:
-            # we do want a message id, so construct one from form domain
-            result = MessageIDFactory(self.get_i18n_domain())(result)
         else:
-            try:
-                # looks into message id internals..
-                result = unicode(result)
-            except AttributeError:
-                pass
-        return result
+            if want_message_id:
+                # we do want a message id, so construct one from form domain
+                result = MessageIDFactory(self.get_i18n_domain())(result)
+            return result
     
     security.declarePrivate('_render_helper')
     def _render_helper(self, key, value, REQUEST):
