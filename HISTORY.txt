@@ -1,6 +1,22 @@
 Formulator changes
 
-  Current development version
+  1.11 (under development)
+
+    Features Added
+
+      - Formulator now needs Zope 2.8.4 + Five 1.2. It uses Five's
+        i18n architecture instead of PlacelessTranslationService.
+        Five 1.2 can be downloaded at http://codespeak.net/z3/five
+
+        If you do not want to install Five 1.2 for some reason, simply
+        remove 'configure.zcml' in the Formulator package. Formulator
+        will then work (but not have i18n support) in a plain Zope 2.8
+        installation.
+
+      - Radiobuttons are now rendered with a label around
+        their field value, allowing to click on the value
+        instead of the radio button itself.
+        (Patch from Bertrand Croq)
 
     Bugs fixed
 
