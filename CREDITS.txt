@@ -86,8 +86,9 @@ Many thanks go to:
 
   He Wei (hewei at ied.org.cn) -- ZMI and Unicode related fixes
 
-  Bertrand Croq (bertrand.croq at freeskop.com) -- Fixes for a Unicode issue
-                                                related to titles of new fields
+  Bertrand Croq (bertrand.croq at freeskop.com) -- 
+                      Fixes for a Unicode issue related to titles of new fields
+                      and label for radiobuttons patch
 
   Ian Duggan (ian at swishmark.com) -- "Hide day" in DateTimeField feature
 
