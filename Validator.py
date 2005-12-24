@@ -77,7 +77,7 @@ class Validator(ValidatorBase):
 
     message_names = ValidatorBase.message_names + ['external_validator_failed']
 
-    external_validator_failed = "The input failed the external validator."
+    external_validator_failed = _('The input failed the external validator.')
 
 class StringBaseValidator(Validator):
     """Simple string validator.
