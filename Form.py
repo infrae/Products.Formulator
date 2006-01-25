@@ -779,7 +779,13 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
     # security declaration for the generic "add field" form,
     # which is set as a class attribute in "initializeForm" later on
     security.declareProtected('Change Formulator Forms', 'fieldAdd')
+    def fieldAdd(self):
+        """Dummy implementation, set in initializeForm later on.
 
+        This is use to shut up Zope's security warnings. Hopefully it's still
+        secure...
+        """
+        
     security.declareProtected('View management screens', 'formTest')
     formTest = DTMLFile('dtml/formTest', globals())
 

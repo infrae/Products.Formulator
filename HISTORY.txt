@@ -1,5 +1,12 @@
 Formulator changes
 
+  to be released
+
+    Bugs fixed
+
+      - Shut up startup warnings about security declarations in Zope
+        2.8.5.
+
   1.11
 
     Features Added
