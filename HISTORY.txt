@@ -1,6 +1,6 @@
 Formulator changes
 
-  to be released
+  1.11.1
 
     Bugs fixed
 
