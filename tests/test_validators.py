@@ -180,6 +180,14 @@ class StringValidatorTestCase(ValidatorTestCase):
             'This is the string value',
             self.v.deserializeValue(field, string)
             )
+
+    def test_serializeNonStringValues(self):
+        not_a_string = 0
+        handler = FakeSaxProducer()
+        field = TestField('f', max_length=0, truncate=0, required=0, unicode=1)
+        self.v.serializeValue(field, not_a_string, handler)
+        self.assertEquals('0', handler.getXml())
+
         
 class LinesValidatorTestVase(ValidatorTestCase):
 
