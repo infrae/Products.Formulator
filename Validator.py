@@ -111,6 +111,10 @@ class StringBaseValidator(Validator):
         return value
 
     def serializeValue(self, field, value, producer):
+        # if our value is not a string type, the SAX lib won't eat it, 
+        # therefore convert to string first
+        if type(value) not in (str, unicode):
+            value = str(value)
         producer.handler.characters(value)
 
 class StringValidator(StringBaseValidator):
