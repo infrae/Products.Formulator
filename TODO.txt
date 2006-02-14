@@ -12,8 +12,6 @@ Formulator TODO
 
   - Investigate duration and time only field.
 
-  - internationalisation (or error messages first)
-
   - HTML filtering field?
 
   - Add more unit tests.
