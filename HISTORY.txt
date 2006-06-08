@@ -1,5 +1,12 @@
 Formulator changes
 
+  1.11.2
+
+    Bugs fixed
+
+      - Copied fix from the 1.10 branch, TypeError when passing something other
+        than a string into the Validator.
+
   1.11.1
 
     Bugs fixed
