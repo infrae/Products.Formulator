@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<configuration>
+
+    <mapper
+        name="Products.Formulator.Form.ZMIForm"
+        class="Products.Formulator.Form.ZMIForm"
+        extends="common_text"
+        parent="root">
+    
+        <serializer name="text"
+            factory="Products.Formulator.ape.FormulatorSerializer" />
+
+    </mapper>
+
+    <store exact-class="Products.Formulator.Form.ZMIForm"
+        using="Products.Formulator.Form.ZMIForm" />
+</configuration> 
+
