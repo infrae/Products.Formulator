@@ -1,5 +1,11 @@
 Formulator changes
 
+Sinde 1.11.2
+  Bugs fixed
+
+    - Field Validators 'validate' functions did not accept unicode values as
+      input on fields that require unicode.
+
   1.11.2
 
     Bugs fixed
