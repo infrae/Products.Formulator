@@ -9,7 +9,7 @@ Sinde 1.11.2
     - Zope 2.10 compatibility:
       "MessageIDFactory" got renamed to "MessageFactory";
       same for "MessageID"; the monkey to allow this class
-      got influmences, too, so all ZODB importing that class
+      got influenced, too, so all ZODB importing that class
       need to be updated, too
       (Problem reported by Yinghoong Chan and Josef Meile)
 
