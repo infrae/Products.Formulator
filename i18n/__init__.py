@@ -8,6 +8,11 @@ i18n'ing Product code and Python scripts.
 Five 1.2 or later needs to be installed to make this work.
 """
 
-from zope.i18nmessageid import MessageIDFactory
+try:
+     #Zope since 2.10
+     from zope.i18nmessageid import MessageFactory
+except ImportError:
+     #BBB Zope 2.9 and earlier
+     from zope.i18nmessageid import MessageIDFactory as MessageFactory
 
-translate = MessageIDFactory('formulator')
+translate = MessageFactory('formulator')

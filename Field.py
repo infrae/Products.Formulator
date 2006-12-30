@@ -10,7 +10,12 @@ from helpers import is_sequence, convert_unicode
 
 from Products.PageTemplates.Expressions import SecureModuleImporter
 
-from zope.i18nmessageid import MessageIDFactory
+try:
+     #Zope since 2.10
+     from zope.i18nmessageid import MessageFactory
+except ImportError:
+     #BBB Zope 2.9 and earlier
+     from zope.i18nmessageid import MessageIDFactory as MessageFactory
 
 class Field:
     """Base class of all fields.
@@ -133,7 +138,7 @@ class Field:
         if id in ['title', 'description']:
             i18n_domain = self.get_i18n_domain()
             if i18n_domain:
-                return MessageIDFactory(i18n_domain)(value)
+                return MessageFactory(i18n_domain)(value)
         return value
 
     # this also works if field is not in form for testing
@@ -213,7 +218,7 @@ class Field:
         else:
             if want_message_id:
                 # we do want a message id, so construct one from form domain
-                result = MessageIDFactory(self.get_i18n_domain())(result)
+                result = MessageFactory(self.get_i18n_domain())(result)
             return result
     
     security.declarePrivate('_render_helper')
