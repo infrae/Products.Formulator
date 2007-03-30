@@ -413,21 +413,21 @@ class ZMIField(
                 getattr(self, method_name)(values[key])
 
 
-    security.declareProtected('Change Formulator Forms', 'manage_beforeDelete')
-    def manage_beforeDelete(self, item, container):
-        """Remove name from list if object is deleted.
-        """
-        # update group info in form
-        if hasattr(item.aq_explicit, 'is_field'):
-            container.field_removed(item.id)
+##     security.declareProtected('Change Formulator Forms', 'manage_beforeDelete')
+##     def manage_beforeDelete(self, item, container):
+##         """Remove name from list if object is deleted.
+##         """
+##         # update group info in form
+##         if hasattr(item.aq_explicit, 'is_field'):
+##             container.field_removed(item.id)
 
-    security.declareProtected('Change Formulator Forms', 'manage_afterAdd')
-    def manage_afterAdd(self, item, container):
-        """What happens when we add a field.
-        """
-        # update group info in form
-        if hasattr(item.aq_explicit, 'is_field'):
-            container.field_added(item.id)
+##     security.declareProtected('Change Formulator Forms', 'manage_afterAdd')
+##     def manage_afterAdd(self, item, container):
+##         """What happens when we add a field.
+##         """
+##         # update group info in form
+##         if hasattr(item.aq_explicit, 'is_field'):
+##             container.field_added(item.id)
 
     # methods screen
     security.declareProtected('View management screens',
@@ -573,4 +573,12 @@ class ZClassField(Field):
     pass
 
 
+def field_added(object, event):
+     # update group info in form
+     if hasattr(object.aq_explicit, 'is_field'):
+          event.newParent.field_added(object.id)
 
+def field_removed(object, event):
+     # update group info in form
+     if hasattr(object.aq_explicit, 'is_field'):
+          event.oldParent.field_removed(object.id)

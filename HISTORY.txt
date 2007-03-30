@@ -1,6 +1,7 @@
 Formulator changes
 
-Sinde 1.11.2
+Since 1.11.2
+
   Bugs fixed
 
     - Field Validators 'validate' functions did not accept unicode values as
@@ -12,6 +13,21 @@ Sinde 1.11.2
       got influenced, too, so all ZODB importing that class
       need to be updated, too
       (Problem reported by Yinghoong Chan and Josef Meile)
+
+    - Zope 2.10 event handling. Formulator now uses Zope 3 style
+      event handling so that no deprecation warnings are seen anymore.
+    
+    - in Zope 2.10 copy & paste of fields did not work anymore, as
+      apparently Zope now requires permission info in the data
+      structure returned by all_meta_types. We have created a new
+      permission "Add Formulator Fields" which is checked when you
+      create a formulator field, or copy & paste it.
+      
+      Note that there is still a "cosmetic" security issue if a
+      non-manager user tries to add a formulator field. "Add and Edit"
+      works, but "Add" gives a login dialog. Actually the field *did*
+      get added, but the URL to which the system tries to return
+      afterwards does not allow access.
 
   1.11.2
 

@@ -21,6 +21,7 @@ from Products.Formulator.MethodField import Method
 from Products.Formulator.Errors import ValidationError, FormValidationError
 
 import re
+from layer import FormulatorZCMLLayer
 
 class FakeRequest:
     """ a fake request for testing.
@@ -52,6 +53,8 @@ class FakeRequest:
         return 0
 
 class SerializeTestCase(ZopeTestCase.ZopeTestCase):
+    layer = FormulatorZCMLLayer
+    
     def afterSetUp(self):
         self.root = self.folder
         

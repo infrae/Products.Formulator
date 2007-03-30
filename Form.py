@@ -1011,6 +1011,16 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
         return self.formOrder(self, REQUEST,
                               manage_tabs_message=message)
 
+    security.declareProtected('Add Formulator Fields',
+                              'hack_method')
+    def hack_method(self):
+        """This method does nothing, but is a hack to make
+        'Add Formulator Fields' exist in Zope as a permission.
+        We need this as we require this permission for the
+        addition of fields to forms (necessary in at least
+        Zope 2.10)
+        """
+
 PythonForm = ZMIForm # NOTE: backwards compatibility
 Globals.InitializeClass(ZMIForm)
 
@@ -1056,6 +1066,7 @@ def initializeForm(field_registry):
 
         # set up individual add dictionaries for meta_types
         dict = { 'name': field.meta_type,
+                 'permission': 'Add Formulator Fields',
                  'action':
                  'manage_addProduct/Formulator/manage_add%sForm' % meta_type }
         meta_types.append(dict)

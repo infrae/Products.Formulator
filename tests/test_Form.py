@@ -2,6 +2,13 @@ import os, sys
 if __name__ == '__main__':
     execfile(os.path.join(sys.path[0], 'framework.py'))
 
+
+""" random assembly testing some reported bugs.
+    This is _not_ a structured or even complete test suite.
+    Most tests test the "render" method of fields, thus they
+    maybe could be moved to a "test_widgets" test case partially
+"""
+
 from Testing import ZopeTestCase
 
 ZopeTestCase.installProduct('Formulator')
@@ -18,15 +25,11 @@ from Products.Formulator.TALESField import TALESMethod
 from Products.PythonScripts.PythonScript import PythonScript
 
 from test_serialize import FakeRequest
-
-""" random assembly testing some reported bugs.
-    This is _not_ a structured or even complete test suite.
-    Most tests test the "render" method of fields, thus they
-    maybe could be moved to a "test_widgets" test case partially
-"""
+from layer import FormulatorZCMLLayer
 
 class FormTestCase(ZopeTestCase.ZopeTestCase):
-
+    layer = FormulatorZCMLLayer
+    
     def afterSetUp(self):
         self.root = self.folder
         self.root.manage_addProduct['Formulator'] \
