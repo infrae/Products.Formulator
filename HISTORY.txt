@@ -1,5 +1,12 @@
 Formulator changes
 
+  1.11.4 (unreleased)
+
+    Bugs fixed
+
+      - Small fix to Selection Field Validators, whose 'validate' 
+        functions faled if items values are stored as unicode
+
   1.11.3
 
     Bugs fixed

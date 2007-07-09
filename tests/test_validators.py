@@ -196,7 +196,7 @@ class LinesValidatorTestVase(ValidatorTestCase):
 
     def test_whitespace_preserve(self):
         result = self.v.validate(
-            TestField('f', max_lenght=0, truncate=0, required=1, unicode=0),
+            TestField('f', max_length=0, truncate=0, required=1, unicode=0),
             'f', {'f': 'Two Lines \n of Text'})
         self.assertEquals(['Two Lines','of Text'], result)
         # without stripping whitespace
@@ -242,7 +242,7 @@ class LinesValidatorTestVase(ValidatorTestCase):
     def test_serializeValue(self):
         handler = FakeSaxProducer()
         value = ['Two Lines ',' of Text']
-        field = TestField('f', max_lenght=0, truncate=0, required=1, unicode=0)
+        field = TestField('f', max_length=0, truncate=0, required=1, unicode=0)
         self.v.serializeValue(field, value, handler)
         self.assertEqual('Two Lines \n of Text', handler.getXml())
 
@@ -253,7 +253,32 @@ class LinesValidatorTestVase(ValidatorTestCase):
             ['Two Lines ', ' of Text'], 
             self.v.deserializeValue(field, string)
             )
-        
+
+class SelectionValidatorTestCase(ValidatorTestCase):
+
+    def setUp(self):
+        self.v = Validator.SelectionValidatorInstance
+
+    def test_basic(self):
+        result = self.v.validate(
+            TestField('f', required=1, unicode=True, items=[('Some A here','a'),('Some B then','b')]),
+            'f', {'f': 'b'})
+        self.assertEquals('b', result)
+        # with single items
+        result = self.v.validate(
+            TestField('f', required=1, unicode=True, items=[('ab','bb')]),
+            'f', {'f': 'bb'})
+        self.assertEquals('bb', result)
+
+    def test_unicode_items(self):
+        aUmlPlain='\xc3\xa4'
+        aUmlUnicode=u'\xe4'
+        result = self.v.validate(
+            TestField('f', required=1, unicode=True, items=[(u'Some \xc3\x84 here',aUmlUnicode),(u'Some B then',u'b')]),
+            'f', {'f': aUmlPlain})
+        self.assertEquals(aUmlUnicode, result)
+
+
 class EmailValidatorTestCase(ValidatorTestCase):
 
     def setUp(self):
@@ -717,6 +742,7 @@ def test_suite():
 
     suite.addTest(unittest.makeSuite(StringValidatorTestCase, 'test'))
     suite.addTest(unittest.makeSuite(LinesValidatorTestVase, 'test'))
+    suite.addTest(unittest.makeSuite(SelectionValidatorTestCase, 'test'))
     suite.addTest(unittest.makeSuite(EmailValidatorTestCase, 'test'))
     suite.addTest(unittest.makeSuite(PatternValidatorTestCase, 'test'))
     suite.addTest(unittest.makeSuite(BooleanValidatorTestCase, 'test'))
