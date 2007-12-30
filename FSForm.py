@@ -5,10 +5,17 @@ try:
     import Products.FileSystemSite
 except ImportError:
     # use CMF product
-    from Products.CMFCore.CMFCorePermissions import View
+    try: 
+        from Products.CMFCore.permissions import View
+    except ImportError: # older CMF
+        from Products.CMFCore.CMFCorePermissions import View
     from Products.CMFCore.FSObject import FSObject
     from Products.CMFCore.DirectoryView import registerFileExtension,\
-                                               registerMetaType, expandpath
+                                               registerMetaType
+    try:
+        from Products.CMFCore.utils import expandpath
+    except ImportError:
+        from Products.CMFCore.DirectoryView import expandpath
 else:
     # use FileSystemSite product
     from Products.FileSystemSite.Permissions import View

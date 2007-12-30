@@ -5,7 +5,13 @@ Formulator changes
     Bugs fixed
 
       - Small fix to Selection Field Validators, whose 'validate' 
-        functions faled if items values are stored as unicode
+        functions failed if items values are stored as unicode
+ 
+      - update imports needed by the file system Formulator form
+        representation, if CMF is installed.
+        Now both CMF 1.x (for Plone 2.x) and CMF 2.x (for Plone 3.x)
+        should work.
+        Patch provided by "lcanacheu"
 
   1.11.3
 
