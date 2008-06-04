@@ -1,5 +1,6 @@
 import re
 import PatternChecker
+from ZPublisher.TaintedString import TaintedString
 from DummyField import fields
 from DateTime import DateTime
 from threading import Thread
@@ -410,6 +411,16 @@ class TextValidator(LinesValidator):
         # we need to add this check again
         if value == [] and not field.get_value('required'):
             return ""
+
+        # if we got TaintedString, convert them to regular string
+        def convert(value):
+            if isinstance(value, TaintedString):
+                return str(value)
+            if isinstance(value, str) or isinstance(value, unicode):
+                return value
+            raise ValueError, "Invalid string type"
+
+        value = map(convert, value)
 
         # join everything into string again with \n and return
         return "\n".join(value)
