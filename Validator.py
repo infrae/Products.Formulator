@@ -10,6 +10,7 @@ from Errors import ValidationError
 from helpers import is_sequence
 from Products.Formulator.i18n import translate as _
 from types import UnicodeType
+from xml.sax.saxutils import escape
 
 try:
     from DateTime.DateTime import DateError, TimeError
@@ -371,7 +372,9 @@ class LinesValidator(StringBaseValidator):
         # we need to add this check again
         if value == "" and not field.get_value('required'):
             return []
-        if field.get_value('unicode') and not isinstance(value,UnicodeType):
+        if isinstance(value, TaintedString):
+            value = str(value)
+        if field.get_value('unicode') and not isinstance(value, UnicodeType):
             value = unicode(value, field.get_form_encoding())
         # check whether the entire input is too long
         max_length = field.get_value('max_length') or 0
@@ -411,16 +414,6 @@ class TextValidator(LinesValidator):
         # we need to add this check again
         if value == [] and not field.get_value('required'):
             return ""
-
-        # if we got TaintedString, convert them to regular string
-        def convert(value):
-            if isinstance(value, TaintedString):
-                return str(value)
-            if isinstance(value, str) or isinstance(value, unicode):
-                return value
-            raise ValueError, "Invalid string type"
-
-        value = map(convert, value)
 
         # join everything into string again with \n and return
         return "\n".join(value)
