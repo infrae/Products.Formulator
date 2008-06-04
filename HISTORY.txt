@@ -3,6 +3,8 @@ Formulator changes
   1.11.4 (unreleased)
 
     Bugs fixed
+      - Tainted strings caused instance error, converted  
+        tainted strings back to strings.	 
 
       - Small fix to Selection Field Validators, whose 'validate' 
         functions failed if items values are stored as unicode
