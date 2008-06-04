@@ -30,6 +30,9 @@ class Method(Persistent, Acquisition.Implicit):
     def __init__(self, method_name):
         self.method_name = method_name
 
+    def __str__(self):
+        return self.method_name
+
     def __call__(self, *arg, **kw):
         # get method from acquisition path
         method = getattr(self, self.method_name)
