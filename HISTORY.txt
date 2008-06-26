@@ -3,6 +3,11 @@ Formulator changes
   1.11.4 (unreleased)
 
     Bugs fixed
+      - Zope i18n *needs* an 'en' directory, or browsers like firefox
+        will use the first language in the language preferences list
+        that does have a translation, even if english is above it in
+        the list of preferences.
+
       - Tainted strings caused instance error, converted  
         tainted strings back to strings.	 
 
