@@ -20,6 +20,9 @@ Formulator changes
         should work.
         Patch provided by "lcanacheu"
 
+      - checkbox fields and multicheckboxfield items are now 
+        rendered with labels around them
+
   1.11.3
 
     Bugs fixed

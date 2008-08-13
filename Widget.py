@@ -200,18 +200,19 @@ class CheckBoxWidget(Widget):
         """Render checkbox.
         """
         if value:
-            return render_element("input",
+            contents = render_element("input",
                                   type="checkbox",
                                   name=key,
                                   css_class=field.get_value('css_class'),
                                   checked=None,
                                   extra=field.get_value('extra'))
         else:
-            return render_element("input",
+            contents = render_element("input",
                                   type="checkbox",
                                   name=key,
                                   css_class=field.get_value('css_class'),
                                   extra=field.get_value('extra'))
+        return render_element('label', contents=contents)
 
     def render_view(self, field, value):
         if value:
@@ -693,21 +694,23 @@ class MultiCheckBoxWidget(MultiItemsWidget):
             return string.join(rendered_items, "<br />")
 
     def render_item(self, text, value, key, css_class, extra_item):
-        return render_element('input',
+        contents = render_element('input',
                               type="checkbox",
                               css_class=css_class,
                               name=key,
                               value=value,
                               extra=extra_item) + text
+        return render_element('label', contents=contents)
 
     def render_selected_item(self, text, value, key, css_class, extra_item):
-        return render_element('input',
+        contents =  render_element('input',
                               type="checkbox",
                               css_class=css_class,
                               name=key,
                               value=value,
                               checked=None,
                               extra=extra_item) + text
+        return render_element('label', contents=contents)
 
 MultiCheckBoxWidgetInstance = MultiCheckBoxWidget()
 
