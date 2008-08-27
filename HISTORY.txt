@@ -1,6 +1,6 @@
 Formulator changes
 
-  1.11.4 (unreleased)
+  1.11.4
 
     Bugs fixed
       - Zope i18n *needs* an 'en' directory, or browsers like firefox
