@@ -2,7 +2,7 @@ Installing Formulator
 
   Requirements
 
-    Formulator should work with Zope versions 2.8 or higher:
+    Formulator should work with Zope versions 2.10 or higher:
 
       http://www.zope.org/Products/Zope
 
