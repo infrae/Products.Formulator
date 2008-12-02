@@ -58,7 +58,7 @@ Many thanks go to:
 
 - Pierre-Julien Grizel (grizel at ingeniweb.com) -- ProductForm.
 
-- Sébastien Robin (seb at nexedi.com) -- more consistent ordering in
+- Sebastien Robin (seb at nexedi.com) -- more consistent ordering in
   XML serialization, bugfixes
 
 - Guido Wesdorp (guido at infrae.com) -- Added extra_item attribute on
@@ -96,7 +96,7 @@ Many thanks go to:
 - Reinout van Rees (reinout at vanrees.org) -- LabelField validation
   bugfix.
 
-- Mikaël Barbero (mikael at emu-france.com) -- ZMI enhancement.
+- Mikael Barbero (mikael at emu-france.com) -- ZMI enhancement.
 
 Special thanks also goes to Rik Hoekstra.
 
