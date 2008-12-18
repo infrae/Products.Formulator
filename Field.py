@@ -323,6 +323,7 @@ class Field:
 
 Globals.InitializeClass(Field)
 
+
 class ZMIField(
     Acquisition.Implicit,
     Persistent,
@@ -573,12 +574,14 @@ class ZClassField(Field):
     pass
 
 
-def field_added(object, event):
+def field_added(the_object, event):
      # update group info in form
-     if hasattr(object.aq_explicit, 'is_field'):
-          event.newParent.field_added(object.id)
+     if the_object != event.object:
+          return
+     event.newParent.field_added(the_object.id)
 
-def field_removed(object, event):
+def field_removed(the_object, event):
      # update group info in form
-     if hasattr(object.aq_explicit, 'is_field'):
-          event.oldParent.field_removed(object.id)
+     if the_object != event.object:
+          return
+     event.oldParent.field_removed(the_object.id)
