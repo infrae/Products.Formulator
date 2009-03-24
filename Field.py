@@ -109,14 +109,18 @@ class Field:
         tales_expr = self.tales.get(id, "")
 
         if tales_expr:
-            # For some reason, path expressions expect 'here' and 'request'
-            # to exist, otherwise they seem to fail. python expressions
-            # don't seem to have this problem.
+            # In old Zope version, for some reason, path expressions
+            # expect 'here' and 'request' to exist, otherwise they
+            # seem to fail. python expressions don't seem to have this
+            # problem. However on newer version, it's fixed, and you
+            # might not have request available as self.REQUEST (if
+            # your field is in a Zope utility).
 
             # add 'here' if not in kw
             if not kw.has_key('here'):
                 kw['here'] = self.aq_parent
-            kw['request'] = self.REQUEST
+            if hasattr(self, 'REQUEST'):
+                 kw['request'] = self.REQUEST
             kw['modules'] = SecureModuleImporter
             value = tales_expr.__of__(self)(
                 field=self,

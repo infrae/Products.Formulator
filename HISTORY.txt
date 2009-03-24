@@ -3,9 +3,13 @@ Changes
 
 1.11.6 (unreleased)
 -------------------
- 
-- Fixed field events: copy of forms containing fields and folders containing 
-  forms was broken.
+
+- Fix the factor that a REQUEST is required to use a field object on
+  recent Zope (2.11).
+
+- Fixed field events: copy of forms containing fields and folders
+  containing forms was broken.
+
 
 1.11.5 (2008/30/09)
 -------------------
