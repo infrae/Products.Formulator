@@ -18,8 +18,9 @@ try:
 except ImportError:
     # uh, a host of string based exceptions
     # for DateTime errors, if Zope 2.x, x<7
-    date_time_format_exceptions = \
-         ('DateTimeError', 'Invalid Date Components', 'TimeError')
+    date_time_format_exceptions = ('DateTimeError', 
+                                   'Invalid Date Components',
+                                   'TimeError')
 
 class ValidatorBase:
     """Even more minimalistic base class for validators.
@@ -31,12 +32,12 @@ class ValidatorBase:
     enabled = fields.CheckBoxField('enabled',
                                    title="Enabled",
                                    description=(
-        "If a field is not enabled, it will considered to be not "
-        "in the form during rendering or validation. Be careful "
-        "when you change this state dynamically (in the TALES tab): "
-        "a user could submit a field that since got disabled, or "
-        "get a validation error as a field suddenly got enabled that "
-        "wasn't there when the form was drawn."),
+                                       "If a field is not enabled, it will considered to be not "
+                                       "in the form during rendering or validation. Be careful "
+                                       "when you change this state dynamically (in the TALES tab): "
+                                       "a user could submit a field that since got disabled, or "
+                                       "get a validation error as a field suddenly got enabled that "
+                                       "wasn't there when the form was drawn."),
                                    default=1)
 
     def raise_error(self, error_key, field):
@@ -54,7 +55,7 @@ class ValidatorBase:
     def deserializeValue(self, field, value):
         REQUEST = {'key': value}
         return self.validate(field, 'key', REQUEST)
-    
+
     def need_validate(self, field, key, REQUEST):
         """Default behavior is always validation.
         """
@@ -68,13 +69,13 @@ class Validator(ValidatorBase):
     external_validator = fields.MethodField('external_validator',
                                             title="External Validator",
                                             description=(
-        "When a method name is supplied, this method will be "
-        "called each time this field is being validated. All other "
-        "validation code is called first, however. The value (result of "
-        "previous validation) and the REQUEST object will be passed as "
-        "arguments to this method. Your method should return true if the "
-        "validation succeeded. Anything else will cause "
-        "'external_validator_failed' to be raised."),
+                                                "When a method name is supplied, this method will be "
+                                                "called each time this field is being validated. All other "
+                                                "validation code is called first, however. The value (result of "
+                                                "previous validation) and the REQUEST object will be passed as "
+                                                "arguments to this method. Your method should return true if the "
+                                                "validation succeeded. Anything else will cause "
+                                                "'external_validator_failed' to be raised."),
                                             default="",
                                             required=0)
 
@@ -90,15 +91,15 @@ class StringBaseValidator(Validator):
     required = fields.CheckBoxField('required',
                                     title='Required',
                                     description=(
-        "Checked if the field is required; the user has to fill in some "
-        "data."),
+                                        "Checked if the field is required; the user has to fill in some "
+                                        "data."),
                                     default=1)
 
     whitespace_preserve = fields.CheckBoxField('whitespace_preserve',
                                                title="Preserve whitespace",
                                                description=(
-        "Checked if the field preserves whitespace. This means even "
-        "just whitespace input is considered to be data."),
+                                                   "Checked if the field preserves whitespace. This means even "
+                                                   "just whitespace input is considered to be data."),
                                                default=0)
 
     message_names = Validator.message_names + ['required_not_found']
@@ -122,34 +123,34 @@ class StringBaseValidator(Validator):
 
 class StringValidator(StringBaseValidator):
     property_names = StringBaseValidator.property_names +\
-                     ['unicode', 'max_length', 'truncate']
+                   ['unicode', 'max_length', 'truncate']
 
     unicode = fields.CheckBoxField('unicode',
                                    title='Unicode',
                                    description=(
-        "Checked if the field delivers a unicode string instead of an "
-        "8-bit string."),
+                                       "Checked if the field delivers a unicode string instead of an "
+                                       "8-bit string."),
                                    default=0)
 
     max_length = fields.IntegerField('max_length',
                                      title='Maximum length',
                                      description=(
-        "The maximum amount of characters that can be entered in this "
-        "field. If set to 0 or is left empty, there is no maximum. "
-        "Note that this is server side validation."),
+                                         "The maximum amount of characters that can be entered in this "
+                                         "field. If set to 0 or is left empty, there is no maximum. "
+                                         "Note that this is server side validation."),
                                      default="",
                                      required=0)
 
     truncate = fields.CheckBoxField('truncate',
                                     title='Truncate',
                                     description=(
-        "If checked, truncate the field if it receives more input than is "
-        "allowed. The normal behavior in this case is to raise a validation "
-        "error, but the text can be silently truncated instead."),
+                                        "If checked, truncate the field if it receives more input than is "
+                                        "allowed. The normal behavior in this case is to raise a validation "
+                                        "error, but the text can be silently truncated instead."),
                                     default=0)
 
     message_names = StringBaseValidator.message_names +\
-                    ['too_long']
+                  ['too_long']
 
     too_long = _('Too much input was given.')
 
@@ -201,23 +202,23 @@ class PatternValidator(StringValidator):
     checker = PatternChecker.PatternChecker()
 
     property_names = StringValidator.property_names +\
-                     ['pattern']
+                   ['pattern']
 
     pattern = fields.StringField('pattern',
                                  title="Pattern",
                                  required=1,
                                  default="",
                                  description=(
-        "The pattern the value should conform to. Patterns are "
-        "composed of digits ('d'), alphabetic characters ('e') and "
-        "alphanumeric characters ('f'). Any other character in the pattern "
-        "should appear literally in the value in that place. Internal "
-        "whitespace is checked as well but may be included in any amount. "
-        "Example: 'dddd ee' is a Dutch zipcode (postcode). ")
+                                     "The pattern the value should conform to. Patterns are "
+                                     "composed of digits ('d'), alphabetic characters ('e') and "
+                                     "alphanumeric characters ('f'). Any other character in the pattern "
+                                     "should appear literally in the value in that place. Internal "
+                                     "whitespace is checked as well but may be included in any amount. "
+                                     "Example: 'dddd ee' is a Dutch zipcode (postcode). ")
                                  )
 
     message_names = StringValidator.message_names +\
-                    ['pattern_not_matched']
+                  ['pattern_not_matched']
 
     pattern_not_matched = _("The entered value did not match the pattern.")
 
@@ -248,31 +249,31 @@ class BooleanValidator(Validator):
         if value == 'True':
             return True
         return False
-        
+
 BooleanValidatorInstance = BooleanValidator()
 
 class IntegerValidator(StringBaseValidator):
     property_names = StringBaseValidator.property_names +\
-                     ['start', 'end']
+                   ['start', 'end']
 
     start = fields.IntegerField('start',
                                 title='Start',
                                 description=(
-        "The integer entered by the user must be larger than or equal to "
-        "this value. If left empty, there is no minimum."),
+                                    "The integer entered by the user must be larger than or equal to "
+                                    "this value. If left empty, there is no minimum."),
                                 default="",
                                 required=0)
 
     end = fields.IntegerField('end',
                               title='End',
                               description=(
-        "The integer entered by the user must be smaller than this "
-        "value. If left empty, there is no maximum."),
+                                  "The integer entered by the user must be smaller than this "
+                                  "value. If left empty, there is no maximum."),
                               default="",
                               required=0)
 
     message_names = StringBaseValidator.message_names +\
-                    ['not_integer', 'integer_out_of_range']
+                  ['not_integer', 'integer_out_of_range']
 
     not_integer = _('You did not enter an integer.')
     integer_out_of_range = _('The integer you entered was out of range.')
@@ -299,7 +300,7 @@ class IntegerValidator(StringBaseValidator):
     def serializeValue(self, field, value, producer):
         value_string = str(value)
         producer.handler.characters(value_string)
-    
+
 IntegerValidatorInstance = IntegerValidator()
 
 class FloatValidator(StringBaseValidator):
@@ -321,46 +322,46 @@ class FloatValidator(StringBaseValidator):
     def serializeValue(self, field, value, producer):
         value_string = str(value)
         producer.handler.characters(value_string)
-    
+
 FloatValidatorInstance = FloatValidator()
 
 class LinesValidator(StringBaseValidator):
     property_names = StringBaseValidator.property_names +\
-                     ['unicode', 'max_lines', 'max_linelength', 'max_length']
+                   ['unicode', 'max_lines', 'max_linelength', 'max_length']
 
     unicode = fields.CheckBoxField('unicode',
                                    title='Unicode',
                                    description=(
-        "Checked if the field delivers a unicode string instead of an "
-        "8-bit string."),
+                                       "Checked if the field delivers a unicode string instead of an "
+                                       "8-bit string."),
                                    default=0)
 
     max_lines = fields.IntegerField('max_lines',
                                     title='Maximum lines',
                                     description=(
-        "The maximum amount of lines a user can enter. If set to 0, "
-        "or is left empty, there is no maximum."),
+                                        "The maximum amount of lines a user can enter. If set to 0, "
+                                        "or is left empty, there is no maximum."),
                                     default="",
                                     required=0)
 
     max_linelength = fields.IntegerField('max_linelength',
                                          title="Maximum length of line",
                                          description=(
-        "The maximum length of a line. If set to 0 or is left empty, there "
-        "is no maximum."),
+                                             "The maximum length of a line. If set to 0 or is left empty, there "
+                                             "is no maximum."),
                                          default="",
                                          required=0)
 
     max_length = fields.IntegerField('max_length',
                                      title="Maximum length (in characters)",
                                      description=(
-        "The maximum total length in characters that the user may enter. "
-        "If set to 0 or is left empty, there is no maximum."),
+                                         "The maximum total length in characters that the user may enter. "
+                                         "If set to 0 or is left empty, there is no maximum."),
                                      default="",
                                      required=0)
 
     message_names = StringBaseValidator.message_names +\
-                    ['too_many_lines', 'line_too_long', 'too_long']
+                  ['too_many_lines', 'line_too_long', 'too_long']
 
     too_many_lines = _('You entered too many lines.')
     line_too_long = _('A line was too long.')
@@ -405,7 +406,7 @@ class LinesValidator(StringBaseValidator):
     def serializeValue(self, field, value, producer):
         value_string = '\n'.join(value)
         producer.handler.characters(value_string)
-    
+
 LinesValidatorInstance = LinesValidator()
 
 class TextValidator(LinesValidator):
@@ -420,23 +421,23 @@ class TextValidator(LinesValidator):
 
     def serializeValue(self, field, value, producer):
         producer.handler.characters(value)
-    
+
 TextValidatorInstance = TextValidator()
 
 class SelectionValidator(StringBaseValidator):
 
     property_names = StringBaseValidator.property_names +\
-                     ['unicode']
+                   ['unicode']
 
     unicode = fields.CheckBoxField('unicode',
                                    title='Unicode',
                                    description=(
-        "Checked if the field delivers a unicode string instead of an "
-        "8-bit string."),
+                                       "Checked if the field delivers a unicode string instead of an "
+                                       "8-bit string."),
                                    default=0)
 
     message_names = StringBaseValidator.message_names +\
-                    ['unknown_selection']
+                  ['unknown_selection']
 
     unknown_selection = _('You selected an item that was not in the list.')
 
@@ -479,15 +480,15 @@ class MultiSelectionValidator(Validator):
     required = fields.CheckBoxField('required',
                                     title='Required',
                                     description=(
-        "Checked if the field is required; the user has to fill in some "
-        "data."),
+                                        "Checked if the field is required; the user has to fill in some "
+                                        "data."),
                                     default=1)
 
     unicode = fields.CheckBoxField('unicode',
                                    title='Unicode',
                                    description=(
-        "Checked if the field delivers a unicode string instead of an "
-        "8-bit string."),
+                                       "Checked if the field delivers a unicode string instead of an "
+                                       "8-bit string."),
                                    default=0)
 
     message_names = Validator.message_names + ['required_not_found',
@@ -548,11 +549,22 @@ class MultiSelectionValidator(Validator):
             producer.startElement('value')
             producer.handler.characters(value)
             producer.endElement('value')
-    
+
 MultiSelectionValidatorInstance = MultiSelectionValidator()
 
 class FileValidator(Validator):
+    property_names = Validator.property_names + ['required']
+
+    required = fields.CheckBoxField('required',
+                                    title='Required',
+                                    description=(
+                                        "Checked if the field is required; the user has to fill in some "
+                                        "data."),
+                                    default=1)
+
     def validate(self, field, key, REQUEST):
+        if field.get_value('required') and not REQUEST.has_key(key):
+            self.raise_error('required_not_found', field)
         return REQUEST.get(key, None)
 
 FileValidatorInstance = FileValidator()
@@ -577,18 +589,18 @@ class LinkHelper:
 
 class LinkValidator(StringValidator):
     property_names = StringValidator.property_names +\
-                     ['check_link', 'check_timeout', 'link_type']
+                   ['check_link', 'check_timeout', 'link_type']
 
     check_link = fields.CheckBoxField('check_link',
                                       title='Check Link',
                                       description=(
-        "Check whether the link is not broken."),
+                                          "Check whether the link is not broken."),
                                       default=0)
 
     check_timeout = fields.FloatField('check_timeout',
                                       title='Check Timeout',
                                       description=(
-        "Maximum amount of seconds to check link. Required"),
+                                          "Maximum amount of seconds to check link. Required"),
                                       default=7.0,
                                       required=1)
 
@@ -600,7 +612,7 @@ class LinkValidator(StringValidator):
                                         ('Internal Link', 'internal'),
                                         ('Relative Link', 'relative')],
                                  description=(
-        "Define the type of the link. Required."),
+                                     "Define the type of the link. Required."),
                                  required=1)
 
     message_names = StringValidator.message_names + ['not_link']
@@ -655,15 +667,15 @@ class DateTimeValidator(Validator):
     required = fields.CheckBoxField('required',
                                     title='Required',
                                     description=(
-        "Checked if the field is required; the user has to enter something "
-        "in the field."),
+                                        "Checked if the field is required; the user has to enter something "
+                                        "in the field."),
                                     default=1)
 
     start_datetime = fields.DateTimeField('start_datetime',
                                           title="Start datetime",
                                           description=(
-        "The date and time entered must be later than or equal to "
-        "this date/time. If left empty, no check is performed."),
+                                              "The date and time entered must be later than or equal to "
+                                              "this date/time. If left empty, no check is performed."),
                                           default=None,
                                           input_style="text",
                                           required=0)
@@ -671,8 +683,8 @@ class DateTimeValidator(Validator):
     end_datetime = fields.DateTimeField('end_datetime',
                                         title="End datetime",
                                         description=(
-        "The date and time entered must be earlier than "
-        "this date/time. If left empty, no check is performed."),
+                                            "The date and time entered must be earlier than "
+                                            "this date/time. If left empty, no check is performed."),
                                         default=None,
                                         input_style="text",
                                         required=0)
@@ -680,8 +692,8 @@ class DateTimeValidator(Validator):
     allow_empty_time = fields.CheckBoxField('allow_empty_time',
                                             title="Allow empty time",
                                             description=(
-        "Allow time to be left empty. Time will default to midnight "
-        "on that date."),
+                                                "Allow time to be left empty. Time will default to midnight "
+                                                "on that date."),
                                             default=0)
 
     message_names = Validator.message_names + ['required_not_found',
@@ -718,7 +730,7 @@ class DateTimeValidator(Validator):
         # handling of completely empty sub fields
         if ((year == '' and month == '' and day == '') and
             (field.get_value('date_only') or (hour == '' and minute == '')
-            or (hour == 0 and minute == 0))):
+             or (hour == 0 and minute == 0))):
             if field.get_value('required'):
                 self.raise_error('required_not_found', field)
             else:
@@ -740,9 +752,9 @@ class DateTimeValidator(Validator):
             # handling not am or pm
             # handling hour > 12
             if ((ampm != 'am') and (ampm != 'pm')) or (hour > 12):
-	        self.raise_error('not_datetime', field)
-	    if (ampm == 'pm') and (hour == 0):
-	        self.raise_error('not_datetime', field)
+                self.raise_error('not_datetime', field)
+            if (ampm == 'pm') and (hour == 0):
+                self.raise_error('not_datetime', field)
             elif ampm == 'pm' and hour < 12:
                 hour += 12
 
@@ -767,10 +779,10 @@ class DateTimeValidator(Validator):
         if value is not None:
             value_string = value.HTML4()
             producer.handler.characters(value_string)
-    
+
     def deserializeValue(self, field, value):
         return DateTime(value)
-    
+
 DateTimeValidatorInstance = DateTimeValidator()
 
 class SuppressValidator(ValidatorBase):
@@ -780,7 +792,7 @@ class SuppressValidator(ValidatorBase):
     external_validator = fields.MethodField('external_validator',
                                             title="External Validator",
                                             description=(
-        "Ignored, as a validator isn't used here."),
+                                                "Ignored, as a validator isn't used here."),
                                             default="",
                                             required=0,
                                             enabled=0)

@@ -9,7 +9,11 @@ Changes
 
 - Fixed field events: copy of forms containing fields and folders
   containing forms was broken.
+  
+- Added a 'required' validator property to FileFields
 
+- Property descriptions are now displayed on the edit tab.  These already existed
+  but were never exposed in the ZMI.
 
 1.11.5 (2008/30/09)
 -------------------
