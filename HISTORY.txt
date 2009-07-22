@@ -12,6 +12,11 @@ Changes
   
 - Added a 'required' validator property to FileFields
 
+- Added a validator for FileFields to check whether the value is a 
+  StringType, which is an indicator that the form encoding is set
+  incorrectly.  The error message informs the user the form
+  encoding should be set to multipart/form-data.
+
 - Property descriptions are now displayed on the edit tab.  These already existed
   but were never exposed in the ZMI.
 

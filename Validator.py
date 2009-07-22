@@ -9,7 +9,7 @@ from urlparse import urljoin
 from Errors import ValidationError
 from helpers import is_sequence
 from Products.Formulator.i18n import translate as _
-from types import UnicodeType
+from types import UnicodeType,StringTypes
 from xml.sax.saxutils import escape
 
 try:
@@ -554,17 +554,28 @@ MultiSelectionValidatorInstance = MultiSelectionValidator()
 
 class FileValidator(Validator):
     property_names = Validator.property_names + ['required']
+    message_names = Validator.message_names + ['required_not_found','incorrect_enctype']
+
+    required_not_found = _('Input is required but no input given.')
+    incorrect_enctype = _('Form enctype appears to be either unset or set to application/x-www-form-urlencoded.  For FileUpload types this needs to be set to "multipart/form-data"')
 
     required = fields.CheckBoxField('required',
                                     title='Required',
                                     description=(
-                                        "Checked if the field is required; the user has to fill in some "
-                                        "data."),
-                                    default=1)
+                                        "Checked if the field is required; the user has to supply a file."),
+                                    default=0)
 
     def validate(self, field, key, REQUEST):
-        if field.get_value('required') and not REQUEST.has_key(key):
-            self.raise_error('required_not_found', field)
+        f = REQUEST.get(key,None)
+        if type(f) in StringTypes:
+            self.raise_error('incorrect_enctype', field)
+        if field.get_value('required'):
+            if f.filename == '':
+                #I think we can assume that if the filename part
+                # of the content-disposition header is empty, then
+                # no file was uploaded.  I suppose we should also check to
+                # see if the file is of zero length, too.
+                self.raise_error('required_not_found', field)
         return REQUEST.get(key, None)
 
 FileValidatorInstance = FileValidator()

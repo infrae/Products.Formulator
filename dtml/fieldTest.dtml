@@ -34,7 +34,7 @@ Test this <dtml-var meta_type>.
   <hr>
 </dtml-if>
 
-<form action="fieldTest" method="POST">
+<form action="fieldTest" method="POST" enctype="multipart/form-data">
   <table cellspacing="0" cellpadding="2" border="0">
   <tr>
     <td class="form-label" >
