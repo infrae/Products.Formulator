@@ -3,6 +3,10 @@ Changes
 
 1.11.6 (unreleased)
 -------------------
+- Added the option for the DateTime Widget to use a popup calendar to input
+  the date and time.
+
+- The DateTime Widget now understands both upper and lower case 'am' and 'pm'.
 
 - Fix the factor that a REQUEST is required to use a field object on
   recent Zope (2.11).

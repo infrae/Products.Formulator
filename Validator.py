@@ -762,11 +762,11 @@ class DateTimeValidator(Validator):
             hour = int(hour)
             # handling not am or pm
             # handling hour > 12
-            if ((ampm != 'am') and (ampm != 'pm')) or (hour > 12):
-                self.raise_error('not_datetime', field)
-            if (ampm == 'pm') and (hour == 0):
-                self.raise_error('not_datetime', field)
-            elif ampm == 'pm' and hour < 12:
+            if (not (ampm == 'am' or ampm == 'AM') and not (ampm == 'pm' or ampm == 'PM')) or (hour > 12):
+	        self.raise_error('not_datetime', field)
+	    if (ampm == 'pm' or ampm == 'PM') and (hour == 0):
+	        self.raise_error('not_datetime', field)
+            elif (ampm == 'pm' or ampm == 'PM') and hour < 12:
                 hour += 12
 
         try:

@@ -136,6 +136,7 @@ class TextWidget(Widget):
             return render_element("input",
                                   type="text",
                                   name=key,
+                                  id=key,
                                   css_class=field.get_value('css_class'),
                                   value=value,
                                   size=field.get_value('display_width'),
@@ -145,6 +146,7 @@ class TextWidget(Widget):
             return render_element("input",
                                   type="text",
                                   name=key,
+                                  id=key,
                                   css_class=field.get_value('css_class'),
                                   value=value,
                                   size=field.get_value('display_width'),
@@ -571,6 +573,7 @@ class ListWidget(SingleItemsWidget):
 
         return render_element('select',
                               name=key,
+                              id=key,
                               css_class=field.get_value('css_class'),
                               size=field.get_value('size'),
                               contents=string.join(rendered_items, "\n"),
@@ -718,7 +721,7 @@ class DateTimeWidget(Widget):
     property_names = Widget.property_names +\
                      ['default_now', 'date_separator', 'time_separator',
                       'input_style', 'input_order',
-                      'date_only', 'hide_day', 'ampm_time_style']
+                      'date_only', 'hide_day', 'ampm_time_style', 'calendar_picker', 'calendar_start']
 
     default = fields.DateTimeField('default',
                                    title="Default",
@@ -795,12 +798,35 @@ class DateTimeWidget(Widget):
                                            description=(
         "Display time in am/pm format."),
                                            default=0)
+    calendar_picker = fields.CheckBoxField('calendar_picker',
+                                           title="Enable calendar picker",
+                                           description=(
+        "Displays a floating calendar to select the date.  "
+        "The js calendar is located here: http://www.dynarch.com/projects/calendar/old/"),
+                                           default=0)
+
+    calendar_start = fields.ListField('calendar_start',
+                                      title="Starting day of week",
+                                      description=(
+        "The starting day of the week for the floating calendar."),
+                                      default="Sunday",
+                                      items=[("Sunday", "0"),
+                                             ("Monday", "1"),
+                                             ("Tuesday", "2"),
+                                             ("Wednesday", "3"),
+                                             ("Thursday", "4"),
+                                             ("Friday", "5"),
+                                             ("Saturday", "6"),],
+                                      required=0,
+                                      size=1)
 
     # FIXME: do we want to handle 'extra'?
 
     def render(self, field, key, value, REQUEST):
         use_ampm = field.get_value('ampm_time_style')
         hide_day = field.get_value('hide_day')
+        calendar_picker = field.get_value('calendar_picker')
+        start_day = field.get_value('calendar_start')
         # FIXME: backwards compatibility hack:
         if not hasattr(field, 'sub_form'):
             from StandardFields import create_datetime_text_sub_form
@@ -861,7 +887,33 @@ class DateTimeWidget(Widget):
                 result.append(field.render_sub_field(sub_field_name,
                                                      sub_field_value, REQUEST))
         date_result = string.join(result, field.get_value('date_separator'))
-        if hidden_day_part: date_result += hidden_day_part
+        select_day = ''
+        if hidden_day_part:
+            date_result += hidden_day_part
+        else:
+            select_day = 'document.getElementById("subfield_' + field.id + '_day").value = RegExp.$3;'
+        calendar_popup = ''
+        if calendar_picker:
+            calendar_popup = '&nbsp;' + render_element(
+                'button',
+                css_class='kupu-button kupu-link-reference calendar-button',
+                style='padding: 0px 0px 0px 0px',
+                id=field.id + '_calendar',
+                title='set date',
+                contents=' ') + """<script type="text/javascript">
+setTimeout(function(){Calendar.setup({inputField : '%s_hiddeninput',
+                ifFormat : '%%Y/%%m/%%d %%%s:%%M %%P',
+                showsTime : '%s',
+                button : '%s_calendar',
+                weekNumbers: false,
+                timeFormat: '%s',
+                firstDay: '%s'})},100);</script>"""%(field.id,
+                                                 use_ampm and 'I' or 'H',
+                                                 field.get_value('date_only') and 'false' or 'true',
+                                                 field.id,
+                                                 use_ampm and '12' or '24',
+                                                 start_day,
+)
         if not field.get_value('date_only'):
             time_result = (field.render_sub_field('hour', hour, REQUEST) +
                            field.get_value('time_separator') +
@@ -870,10 +922,19 @@ class DateTimeWidget(Widget):
             if use_ampm:
                 time_result += '&nbsp;' + field.render_sub_field('ampm',
                                                             ampm, REQUEST)
-
-            return date_result + '&nbsp;&nbsp;&nbsp;' + time_result
+            calendar_popup += calendar_picker and render_element(
+                                'input',
+                                type='hidden',
+                                id=field.id + '_hiddeninput',
+                                onchange='var pattern = /(\d{4})\/(\d{2})\/(\d{2}) (\d{2}):(\d{2}) (am|pm)/; if (pattern.exec(this.value)) { document.getElementById("subfield_' + field.id + '_year").value = RegExp.$1; document.getElementById("subfield_' + field.id + '_month").value = RegExp.$2; ' + select_day + ' document.getElementById("subfield_' + field.id + '_hour").value = RegExp.$4; document.getElementById("subfield_' + field.id + '_minute").value = RegExp.$5; ' + str(use_ampm and 'document.getElementById("subfield_' + field.id + '_ampm").value = RegExp.$6;' or '') + ' }') or ''
+            return date_result + '&nbsp;&nbsp;&nbsp;' + time_result + calendar_popup
         else:
-            return date_result
+            calendar_popup += calendar_picker and render_element(
+                                'input',
+                                type='hidden',
+                                id=field.id + '_hiddeninput',
+                                onchange='var pattern = /(\d{4})\/(\d{2})\/(\d{2}) (\d{2}):(\d{2}) (am|pm)/; if (pattern.exec(this.value)) { document.getElementById("subfield_' + field.id + '_year").value = RegExp.$1; document.getElementById("subfield_' + field.id + '_month").value = RegExp.$2; ' + select_day + ' }') or ''
+            return date_result + calendar_popup
 
     def render_hidden(self, field, key, value, REQUEST):
         result = []
