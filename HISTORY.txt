@@ -6,6 +6,8 @@ Changes
 - Added the option for the DateTime Widget to use a popup calendar to input
   the date and time.
 
+- The DateTime Widget popup defaults to midnight for the time.
+
 - The DateTime Widget now understands both upper and lower case 'am' and 'pm'.
 
 - Fix the factor that a REQUEST is required to use a field object on
