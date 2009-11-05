@@ -1,8 +1,13 @@
 Changes
 =======
 
-1.11.6 (unreleased)
--------------------
+1.13 (unreleased)
+-----------------
+
+- Make it compatible with Zope 2.12.
+
+Ported from 1.12 branch:
+
 - Added the option for the DateTime Widget to use a popup calendar to input
   the date and time.
 
