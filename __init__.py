@@ -1,4 +1,4 @@
-from Globals import DTMLFile
+from App.special_dtml import DTMLFile
 import Form
 import StandardFields, HelperFields
 from FieldRegistry import FieldRegistry

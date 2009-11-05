@@ -1,6 +1,7 @@
-import Globals
+from App.special_dtml import DTMLFile
+from App.class_init import InitializeClass
 import Acquisition
-from Globals import Persistent, DTMLFile
+from Persistence import Persistent
 from AccessControl import ClassSecurityInfo
 import OFS
 from Shared.DC.Scripts.Bindings import Bindings
@@ -325,7 +326,7 @@ class Field:
         return self.sub_form.get_field(id)._validate_helper(
             self.generate_subfield_key(id, validation=1), REQUEST)
 
-Globals.InitializeClass(Field)
+InitializeClass(Field)
 
 
 class ZMIField(
@@ -569,7 +570,7 @@ class ZMIField(
         except ImportError:
             return 0
 
-Globals.InitializeClass(ZMIField)
+InitializeClass(ZMIField)
 PythonField = ZMIField # NOTE: for backwards compatibility
 
 class ZClassField(Field):
