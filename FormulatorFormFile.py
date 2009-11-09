@@ -6,7 +6,11 @@ after PageTemplateFile example.
 
 import os
 from AccessControl import ClassSecurityInfo
-from Globals import package_home, DevelopmentMode, InitializeClass
+from App.Common import package_home
+
+from Globals import DevelopmentMode
+from Globals import InitializeClass
+
 from AccessControl import getSecurityManager
 from Products.Formulator.Form import ZMIForm
 from OFS.SimpleItem import Item_w__name__
