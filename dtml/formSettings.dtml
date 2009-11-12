@@ -9,11 +9,18 @@ Settings for this form.
 
 <dtml-var "settings_form.header()">
 
-<table border="0">
+<table border="0" cellspacing="0" cellpadding="2">
+  <tr class="list-header">
+    <td><div class="form-label">Property</div></td>
+    <td><div class="form-label">Value</div></td>
+    <td><div class="form-label">Description</div></td>
+  </tr>
+ 
   <dtml-in "settings_form.get_fields()"><dtml-let field=sequence-item>
   <tr>
-    <td class="form-label"><dtml-var "field.get_value('title')"></td>
+    <td class="form-label"><dtml-if "field.widget.has_html_id"><label for="<dtml-var "field.generate_field_html_id()">"></dtml-if><dtml-var "field.get_value('title')"><dtml-if "field.widget.has_html_id"></label></dtml-if></td>
     <td><dtml-if "_.getattr(me, field.id)"><dtml-var "field.render(_.getattr(me, field.id, None))"><dtml-else><dtml-var "field.render()"></dtml-if></td>
+    <td><dtml-var "field.get_value('description')"></td>
   </tr>
   </dtml-let></dtml-in>
 

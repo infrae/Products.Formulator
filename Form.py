@@ -590,26 +590,31 @@ def create_settings_form():
     title = fields.StringField('title',
                                title="Title",
                                required=0,
-                               default="")
+                               default="",
+                               description="The title of the form.")
     row_length = fields.IntegerField('row_length',
                                      title='Number of groups in row (in order tab)',
                                      required=1,
-                                     default=4)
+                                     default=4,
+                                     description="On the order tab, determines the number of groups in each row when the form's render function is used")
     name = fields.StringField('name',
                               title="Form name",
                               required=0,
-                              default="")
+                              default="",
+                              description="The name of the form.  Indented to be the value of the 'name' attribute of the form.  If the name is not the default of 'form', it is also the prefix for each field's HTML ID")
     action = fields.StringField('action',
                                 title='Form action',
                                 required=0,
-                                default="")
+                                default="",
+                                description="The action of the form.")
     method = fields.ListField('method',
                               title='Form method',
                               items=[('POST', 'POST'),
                                      ('GET', 'GET')],
                               required=1,
                               size=1,
-                              default='POST')
+                              default='POST',
+                              description="Form method (i.e. 'POST','GET')")
     enctype = fields.ListField('enctype',
                                title='Form enctype',
                                items=[('No enctype', ""),
@@ -619,17 +624,20 @@ def create_settings_form():
                                        'multipart/form-data')],
                                required=0,
                                size=1,
-                               default=None)
+                               default=None,
+                               description="The form encoding type.  If any FileField's are present, this must be multipart/form-data")
 
     encoding = fields.StringField('encoding',
                                   title='Encoding of pages the form is in',
                                   default="UTF-8",
-                                  required=1)
+                                  required=1,
+                                  description="The character set of page.")
 
     stored_encoding = fields.StringField('stored_encoding',
                                       title='Encoding of form properties',
                                       default='ISO-8859-1',
-                                      required=1)
+                                      required=1,
+                                      description="The internal encoding of the form properties")
     unicode_mode = fields.CheckBoxField('unicode_mode',
                                         title='Form properties are unicode',
                                         default=0,
@@ -637,7 +645,8 @@ def create_settings_form():
     i18n_domain = fields.StringField('i18n_domain',
                                     title = 'i18n domain',
                                     required=0,
-                                    default="")
+                                    default="",
+                                    description="The i18n translation domain.")
                         
     form.add_fields([title, row_length, name, action, method,
                      enctype, encoding, stored_encoding, unicode_mode,

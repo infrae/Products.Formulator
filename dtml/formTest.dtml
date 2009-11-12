@@ -48,7 +48,8 @@ Test this form.
   <tr>
     <td align="left" valign="top">
     <div class="form-label">
-    <dtml-var "field.title()">
+    <dtml-if "field.widget.has_html_id"><label for="<dtml-var "field.html_id">"><dtml-var "field.title()"></label><dtml-else><dtml-var "field.title()"></dtml-if>
+    
     </div>
     </td>
     <td align="left" valign="top">
