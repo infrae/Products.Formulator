@@ -1,6 +1,10 @@
 Changes
 =======
 
+1.11.7 (unreleased)
+------------------
+- ?
+
 1.11.6 (2009/11/11)
 -------------------
 - Added the option for the DateTime Widget to use a popup calendar to input
