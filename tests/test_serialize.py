@@ -54,10 +54,10 @@ class FakeRequest:
 
 class SerializeTestCase(ZopeTestCase.ZopeTestCase):
     layer = FormulatorZCMLLayer
-    
+
     def afterSetUp(self):
         self.root = self.folder
-        
+
     def test_simpleSerialize(self):
         form = ZMIForm('test', 'My test')
         xml = '''\
@@ -169,7 +169,7 @@ class SerializeTestCase(ZopeTestCase.ZopeTestCase):
     def assertEqualForms(self, form1, form2):
         """ test that the two forms are equal (except for their ids) """
         # in case of failures the messages could be nicer ...
-        
+
         self.assertEquals( map(lambda x: x.getId(), form1.get_fields()), \
                            map(lambda x: x.getId(), form2.get_fields()) )
         for field in form1.get_fields():
@@ -179,7 +179,7 @@ class SerializeTestCase(ZopeTestCase.ZopeTestCase):
             self.assertEquals(field.values, field2.values)
             # test if default renderings are the same
             self.assertEquals(field.render(), field2.render())
-            
+
         self.assertEquals(form1.title, form2.title)
         # self.assertEquals(form1.row_lenght, form2.row_lenght) # not initialized ?
         self.assertEquals(form1.name, form2.name)
@@ -195,7 +195,7 @@ class SerializeTestCase(ZopeTestCase.ZopeTestCase):
 
         # if we have forgotten something, this will usually remind us ;-)
         self.assertEquals(form1.render(), form2.render())
-        
+
 
     def test_escaping(self):
         """ test if the necessary elements are escaped in the XML.
@@ -231,7 +231,7 @@ class SerializeTestCase(ZopeTestCase.ZopeTestCase):
         form2 = ZMIForm('test2', 'ValueTest')
         request = FakeRequest()
         for message_key in form.int_field.get_error_names():
-           request[message_key] = 'test message for error key <%s>' % message_key
+            request[message_key] = 'test message for error key <%s>' % message_key
         form.int_field.manage_messages(REQUEST=request)
 
 
@@ -352,7 +352,7 @@ class SerializeTestCase(ZopeTestCase.ZopeTestCase):
 
         except ValidationError, e:
             self.fail('error when editing field %s; error message: %s' %
-                       (e.field_id, e.error_text) )
+                      (e.field_id, e.error_text) )
 
         form2 = ZMIForm('test2', 'ValueTest')
 
@@ -378,20 +378,20 @@ class SerializeTestCase(ZopeTestCase.ZopeTestCase):
         except FormValidationError, e:
             # XXX only render first error ...
             self.fail('error when editing form1, field %s; error message: %s' %
-                       (e.errors[0].field_id, e.errors[0].error_text) )
+                      (e.errors[0].field_id, e.errors[0].error_text) )
 
         try:
             result2 = form2.validate_all(request)
         except FormValidationError, e:
             # XXX only render first error ...
             self.fail('error when editing form1, field %s; error message: %s' %
-                       (e.errors[0].field_id, e.errors[0].error_text) )
+                      (e.errors[0].field_id, e.errors[0].error_text) )
         self.assertEquals(result1, result2)
         self.assertEquals(42, result2['int_field'])
         self.assertEquals(2.71828, result2['float_field'])
 
-	# check link field timeout value
-	self.assertEquals(link_field.get_value('check_timeout'),
+        # check link field timeout value
+        self.assertEquals(link_field.get_value('check_timeout'),
                           form2.link_field.get_value('check_timeout'))
 
         # XXX not tested: equal form validation failure on invalid input
@@ -413,7 +413,7 @@ class SerializeTestCase(ZopeTestCase.ZopeTestCase):
 
     def test_validatorMethod(self):
         self.root.manage_addProduct['Formulator'] \
-                 .manage_add('form', 'Test Form')
+            .manage_add('form', 'Test Form')
         form = self.root.form
 
         self.root.manage_addDTMLMethod('test_dtml','Test DTML','ok')
@@ -440,7 +440,7 @@ class SerializeTestCase(ZopeTestCase.ZopeTestCase):
 
         # deserialize it
         self.root.manage_addProduct['Formulator'] \
-                  .manage_add('form2', 'Test Form')
+            .manage_add('form2', 'Test Form')
         form2 = self.root.form2
         XMLToForm(xml, form2)
         self.assertEquals('ok',
