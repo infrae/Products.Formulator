@@ -5,18 +5,20 @@ from Persistence import Persistent
 from AccessControl import ClassSecurityInfo
 import OFS
 from Shared.DC.Scripts.Bindings import Bindings
-from Errors import ValidationError
-from Products.Formulator.Widget import MultiItemsWidget
-from helpers import is_sequence, convert_unicode
-
 from Products.PageTemplates.Expressions import SecureModuleImporter
+import zope.cachedescriptors.property
+
+from Errors import ValidationError
+from Widget import MultiItemsWidget
+from helpers import (is_sequence, convert_unicode, 
+                     key_to_id_re, id_value_re)
 
 try:
-     #Zope since 2.10
-     from zope.i18nmessageid import MessageFactory
+    #Zope since 2.10
+    from zope.i18nmessageid import MessageFactory
 except ImportError:
-     #BBB Zope 2.9 and earlier
-     from zope.i18nmessageid import MessageIDFactory as MessageFactory
+    #BBB Zope 2.9 and earlier
+    from zope.i18nmessageid import MessageIDFactory as MessageFactory
 
 class Field:
     """Base class of all fields.
@@ -121,7 +123,7 @@ class Field:
             if not kw.has_key('here'):
                 kw['here'] = self.aq_parent
             if hasattr(self, 'REQUEST'):
-                 kw['request'] = self.REQUEST
+                kw['request'] = self.REQUEST
             kw['modules'] = SecureModuleImporter
             value = tales_expr.__of__(self)(
                 field=self,
@@ -181,7 +183,7 @@ class Field:
     security.declareProtected('Access contents information',
                               'generate_field_key')
     def generate_field_key(self, validation=0):
-        """Generate the key Silva uses to render the field in the form.
+        """Generate the key used to render the field in the form.
         """
         if self.field_record is None:
             return 'field_%s' % self.id
@@ -192,13 +194,79 @@ class Field:
         else:
             return '%s.%s:record' % (self.field_record, self.id)
 
+    security.declareProtected('Access contents information',
+                              'generate_field_key')
+    def generate_field_html_id(self, key=None, validation=0):
+        """Generate the html id used to render the field in the form.
+           The id is generated as follows:
+             the `key` param is prefixed with the name of the form the field is 
+             in and then sanitized to be an xml id addressable by css (i.e. 
+             [._ :] converted to '-'
+             
+           Note that if a field's "extra" parameter has an ID attribute
+           in it, the value of the ID attribute is used rather than the
+           generated one described above.  This is for backward compatibility.
+           
+           The `key` param is useful for subfields (e.g. DateTime).  The 
+           DateTimeWidget's render function needs to compute the subfield_key,
+           and pass it into this function, since the subfield does not know
+           what field it is a part of.
+        
+           Widgets can add this as the 'ID' attribute of rendered elements.
+           The presentation layer can use this id in <label> tags, however using
+           the 'html_id' property is preferred."""
+
+        #if the 'extra' parameter has an ID attribute in it, use the value
+        # of the ID
+        if self.has_value('extra'):
+            res = id_value_re.search(self.get_value('extra'))
+            if res:
+                return res.group(1)
+        
+        #generate the key if one wasn't passed in
+        if not key:
+            key = self.generate_field_key(validation)
+
+        #if the field is acquisition wrapped, has a Form as a parent
+        # and the form's `name` attribute != the default of 'form',
+        # prefix it to the id, to add 'uniqueness'.
+        #NOTE: subfields of datetime are not acquisition wrapped, 
+        #      so this does not work for them.
+        name = None
+        if hasattr(self,'aq_parent'):
+            #name is an attribute of Formulator.Form, but not all
+            # formulator fields have Forms as parents.  An example
+            # is a SilvaMetadata element.  Fields of metadata elements
+            # have a field_record = metadata name, which is part of the
+            # key
+            parent = self.aq_parent
+            #in case a form is not acquisition wrapped
+            #  (e.g. like in the tests)
+            if hasattr(parent, 'aq_explicit'):
+                name = getattr(parent.aq_explicit,'name',None)
+            else:
+                name = getattr(parent, 'name', None)
+        if name is not None and name != 'form':
+            key = '%s%s'%(name,key)
+        return key_to_id_re.sub('-',key)
+    
+    @zope.cachedescriptors.property.CachedProperty
+    def html_id(self):
+        """html_id returns the html id for the field.
+           presentation code can call this property to retrieve
+           the html id for the field.
+           
+           See generate_field_html_id, which actually does
+           the work."""
+        return self.generate_field_html_id()
+
     def generate_subfield_key(self, id, validation=0):
-        """Generate the key Silva uses to render a sub field.
+        """Generate the key used to render a sub field.
         """
         if self.field_record is None or validation:
             return 'subfield_%s_%s'%(self.id, id)
         return '%s.subfield_%s_%s:record' % (self.field_record, self.id, id)
-
+    
     security.declareProtected('View management screens', 'get_error_message')
     def get_error_message(self, name, want_message_id=True):
         try:
@@ -580,13 +648,13 @@ class ZClassField(Field):
 
 
 def field_added(the_object, event):
-     # update group info in form
-     if the_object != event.object:
-          return
-     event.newParent.field_added(the_object.id)
+    # update group info in form
+    if the_object != event.object:
+        return
+    event.newParent.field_added(the_object.id)
 
 def field_removed(the_object, event):
      # update group info in form
-     if the_object != event.object:
-          return
-     event.oldParent.field_removed(the_object.id)
+    if the_object != event.object:
+        return
+    event.oldParent.field_removed(the_object.id)

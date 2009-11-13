@@ -2,7 +2,8 @@ import string, types
 from DummyField import fields
 from DocumentTemplate.DT_Util import html_quote
 from DateTime import DateTime
-from helpers import is_sequence
+from helpers import is_sequence, id_value_re
+
 
 class Widget:
     """A field widget that knows how to display itself as HTML.
@@ -68,6 +69,12 @@ class Widget:
         "to add an onClick attribute to use with JavaScript, for instance."),
                                default="",
                                required=0)
+ 
+    #this property is used to determine whether the widget
+    # uses an html id (e.g. the widget has a single or primary
+    # input), so that the presentation can wrap the field
+    # title within a label or not.
+    has_html_id = True
 
     def render(self, field, key, value, REQUEST):
         """Renders this widget as HTML using property values in field.
@@ -82,11 +89,13 @@ class Widget:
         except KeyError:
             # In case extra is not defined as in DateTimeWidget
             extra = ''
-        return render_element("input",
-                              type="hidden",
-                              name=key,
-                              value=value,
-                              extra=extra)
+        kw = {'type': "hidden",
+              'name': key,
+              'value': value,
+              'extra': extra }
+        if not extra or not id_value_re.search(extra):
+            kw['id'] = field.generate_field_html_id(key)
+        return render_element("input", **kw)
 
     def render_view(self, field, value):
         """Renders this widget for public viewing.
@@ -131,26 +140,17 @@ class TextWidget(Widget):
     def render(self, field, key, value, REQUEST):
         """Render text input field.
         """
+        kwargs = {'type': "text",
+                'name' : key,
+                'css_class' : field.get_value('css_class'),
+                'value' : value,
+                'size' : field.get_value('display_width'),
+                'id' : field.generate_field_html_id(key),
+                'extra': field.get_value('extra')}
         display_maxwidth = field.get_value('display_maxwidth') or 0
         if display_maxwidth > 0:
-            return render_element("input",
-                                  type="text",
-                                  name=key,
-                                  id=key,
-                                  css_class=field.get_value('css_class'),
-                                  value=value,
-                                  size=field.get_value('display_width'),
-                                  maxlength=display_maxwidth,
-                                  extra=field.get_value('extra'))
-        else:
-            return render_element("input",
-                                  type="text",
-                                  name=key,
-                                  id=key,
-                                  css_class=field.get_value('css_class'),
-                                  value=value,
-                                  size=field.get_value('display_width'),
-                                  extra=field.get_value('extra'))
+            kwargs['maxlength'] = display_maxwidth
+        return render_element("input", **kwargs)
 
     def render_view(self, field, value):
         if value is None:
@@ -164,24 +164,21 @@ class PasswordWidget(TextWidget):
     def render(self, field, key, value, REQUEST):
         """Render password input field.
         """
+        extra = field.get_value('extra')
+        kw = {'type': "password",
+              'name': key,
+              'css_class': field.get_value('css_class'),
+              'value': value,
+              'size': field.get_value('display_width'),
+              'extra': extra}
+    
+        if not extra or not id_vlaue_re.search(extra):
+            kw['id'] = field.generate_field_html_id(key)
+
         display_maxwidth = field.get_value('display_maxwidth') or 0
         if display_maxwidth > 0:
-            return render_element("input",
-                                  type="password",
-                                  name=key,
-                                  css_class=field.get_value('css_class'),
-                                  value=value,
-                                  size=field.get_value('display_width'),
-                                  maxlength=display_maxwidth,
-                                  extra=field.get_value('extra'))
-        else:
-            return render_element("input",
-                                  type="password",
-                                  name=key,
-                                  css_class=field.get_value('css_class'),
-                                  value=value,
-                                  size=field.get_value('display_width'),
-                                  extra=field.get_value('extra'))
+            kw['maxlength'] = display_maxwidth
+        return render_element("input", **kw)
 
     def render_view(self, field, value):
         return "[password]"
@@ -201,19 +198,17 @@ class CheckBoxWidget(Widget):
     def render(self, field, key, value, REQUEST):
         """Render checkbox.
         """
+        extra = field.get_value('extra')
+        kw = {'type': "checkbox",
+              'name': key,
+              'css_class': field.get_value('css_class'),
+              'extra': extra
+              }
+        if not extra or not id_value_re.search(extra):
+            kw['id'] = field.generate_field_html_id(key)
         if value:
-            contents = render_element("input",
-                                  type="checkbox",
-                                  name=key,
-                                  css_class=field.get_value('css_class'),
-                                  checked=None,
-                                  extra=field.get_value('extra'))
-        else:
-            contents = render_element("input",
-                                  type="checkbox",
-                                  name=key,
-                                  css_class=field.get_value('css_class'),
-                                  extra=field.get_value('extra'))
+            kw['checked']=None
+        contents = render_element("input", **kw)
         return render_element('label', contents=contents)
 
     def render_view(self, field, value):
@@ -255,14 +250,15 @@ class TextAreaWidget(Widget):
     def render(self, field, key, value, REQUEST):
         width = field.get_value('width')
         height = field.get_value('height')
-
-        return render_element("textarea",
-                              name=key,
-                              css_class=field.get_value('css_class'),
-                              cols=width,
-                              rows=height,
-                              contents=html_quote(value),
-                              extra=field.get_value('extra'))
+        extra=field.get_value('extra')
+        kw = {'name': key,
+              'css_class': field.get_value('css_class'),
+              'cols': width,
+              'rows': height,
+              'contents': html_quote(value)}
+        if not extra or not id_value_re.search(extra):
+            kw['id'] = field.generate_field_html_id(key)
+        return render_element("textarea", **kw)
 
     def render_view(self, field, value):
         if value is None:
@@ -319,24 +315,21 @@ class FileWidget(TextWidget):
     def render(self, field, key, value, REQUEST):
         """Render text input field.
         """
+        extra=field.get_value('extra')
+        kw = {'type': "file",
+              'name': key,
+              'css_class': field.get_value('css_class'),
+              'value': value,
+              'size': field.get_value('display_width'),
+              'extra': extra}
+
+        if not extra or not id_value_re.search(extra):
+            kw['id'] = field.generate_field_html_id(key)
+
         display_maxwidth = field.get_value('display_maxwidth') or 0
         if display_maxwidth > 0:
-            return render_element("input",
-                                  type="file",
-                                  name=key,
-                                  css_class=field.get_value('css_class'),
-                                  value=value,
-                                  size=field.get_value('display_width'),
-                                  maxlength=display_maxwidth,
-                                  extra=field.get_value('extra'))
-        else:
-            return render_element("input",
-                                  type="file",
-                                  name=key,
-                                  css_class=field.get_value('css_class'),
-                                  value=value,
-                                  size=field.get_value('display_width'),
-                                  extra=field.get_value('extra'))
+            kw['maxlength'] = display_maxwidth
+        return render_element("input", **kw)
 
     def render_view(self, field, value):
         return "[File]"
@@ -416,31 +409,39 @@ class SingleItemsWidget(ItemsWidget):
         css_class = field.get_value('css_class')
         extra_item = field.get_value('extra_item')
 
+        field_html_id = None
+        if not extra_item or not id_value_re.search(extra_item):
+            field_html_id = field.generate_field_html_id(key)
+        
         # if we run into multiple items with same value, we select the
         # first one only (for now, may be able to fix this better later)
         selected_found = 0
         rendered_items = []
+        index = 0
         for item in items:
+            index += 1
             if is_sequence(item):
                 item_text, item_value = item
             else:
                 item_text = item
                 item_value = item
 
-
+            item_id = field_html_id and field_html_id + str(index) or None
             if item_value == value and not selected_found:
                 rendered_item = self.render_selected_item(item_text,
                                                           item_value,
                                                           key,
                                                           css_class,
-                                                          extra_item)
+                                                          extra_item,
+                                                          item_id)
                 selected_found = 1
             else:
                 rendered_item = self.render_item(item_text,
                                                  item_value,
                                                  key,
                                                  css_class,
-                                                 extra_item)
+                                                 extra_item,
+                                                 item_id)
 
             rendered_items.append(rendered_item)
 
@@ -494,8 +495,11 @@ class MultiItemsWidget(ItemsWidget):
         items = field.get_value('items')
         css_class = field.get_value('css_class')
         extra_item = field.get_value('extra_item')
+        field_html_id = field.generate_field_html_id(key)
+        index = 0
         rendered_items = []
         for item in items:
+            index += 1
             if is_sequence(item):
                 item_text, item_value = item
             else:
@@ -507,13 +511,15 @@ class MultiItemsWidget(ItemsWidget):
                                                           item_value,
                                                           key,
                                                           css_class,
-                                                          extra_item)
+                                                          extra_item,
+                                                          field_html_id+str(index))
             else:
                 rendered_item = self.render_item(item_text,
                                                  item_value,
                                                  key,
                                                  css_class,
-                                                 extra_item)
+                                                 extra_item,
+                                                 field_html_id+str(index))
 
             rendered_items.append(rendered_item)
 
@@ -571,19 +577,21 @@ class ListWidget(SingleItemsWidget):
     def render(self, field, key, value, REQUEST):
         rendered_items = self.render_items(field, key, value, REQUEST)
 
-        return render_element('select',
-                              name=key,
-                              id=key,
-                              css_class=field.get_value('css_class'),
-                              size=field.get_value('size'),
-                              contents=string.join(rendered_items, "\n"),
-                              extra=field.get_value('extra'))
+        extra=field.get_value('extra')  
+        kw = {'name': key,
+              'css_class': field.get_value('css_class'),
+              'size': field.get_value('size'),
+              'contents': string.join(rendered_items, "\n"),
+              'extra': extra}
+        if not extra or not id_value_re.search(extra):
+            kw['id'] = field.generate_field_html_id(key)
+        return render_element('select', **kw)
 
-    def render_item(self, text, value, key, css_class, extra_item):
+    def render_item(self, text, value, key, css_class, extra_item, html_id):
         return render_element('option', contents=text, value=value,
                               extra=extra_item)
 
-    def render_selected_item(self, text, value, key, css_class, extra_item):
+    def render_selected_item(self, text, value, key, css_class, extra_item, html_id):
         return render_element('option', contents=text, value=value,
                               selected=None, extra=extra_item)
 
@@ -607,19 +615,22 @@ class MultiListWidget(MultiItemsWidget):
     def render(self, field, key, value, REQUEST):
         rendered_items = self.render_items(field, key, value, REQUEST)
 
-        return render_element('select',
-                              name=key,
-                              multiple=None,
-                              css_class=field.get_value('css_class'),
-                              size=field.get_value('size'),
-                              contents=string.join(rendered_items, "\n"),
-                              extra=field.get_value('extra'))
+        extra = field.get_value('extra')
+        kw = {'name': key,
+              'multiple': None,
+              'css_class': field.get_value('css_class'),
+              'size': field.get_value('size'),
+              'contents': string.join(rendered_items, "\n"),
+              'extra': extra }
+        if not extra or not id_value_re.search(extra):
+            kw['id'] = field.generate_field_html_id(key)
+        return render_element('select', **kw)
 
-    def render_item(self, text, value, key, css_class, extra_item):
+    def render_item(self, text, value, key, css_class, extra_item, html_id):
         return render_element('option', contents=text, value=value,
                               extra=extra_item)
 
-    def render_selected_item(self, text, value, key, css_class, extra_item):
+    def render_selected_item(self, text, value, key, css_class, extra_item, html_id):
         return render_element('option', contents=text, value=value,
                               selected=None, extra=extra_item)
 
@@ -641,6 +652,8 @@ class RadioWidget(SingleItemsWidget):
                                    size=1,
                                    items=[('Vertical', 'vertical'),
                                           ('Horizontal', 'horizontal')])
+    
+    has_html_id = False
 
     def render(self, field, key, value, REQUEST):
         rendered_items = self.render_items(field, key, value, REQUEST)
@@ -650,23 +663,27 @@ class RadioWidget(SingleItemsWidget):
         else:
             return string.join(rendered_items, "<br />")
 
-    def render_item(self, text, value, key, css_class, extra_item):
-        contents = render_element('input',
-                                  type="radio",
-                                  css_class=css_class,
-                                  name=key,
-                                  value=value,
-                                  extra=extra_item) + text
+    def render_item(self, text, value, key, css_class, extra_item, html_id):
+        kw = {'type': "radio",
+              'css_class': css_class,
+              'name': key,
+              'value': value,
+              'extra': extra_item}
+        if html_id:
+            kw['id'] = html_id
+        contents = render_element('input', **kw) + text
         return render_element('label', contents=contents)
 
-    def render_selected_item(self, text, value, key, css_class, extra_item):
-        contents = render_element('input',
-                                  type="radio",
-                                  css_class=css_class,
-                                  name=key,
-                                  value=value,
-                                  checked=None,
-                                  extra=extra_item) + text
+    def render_selected_item(self, text, value, key, css_class, extra_item, html_id):
+        kw = {'type': "radio",
+              'css_class': css_class,
+              'name': key,
+              'value': value,
+              'checked': None,
+              'extra': extra_item}
+        if html_id:
+            kw['id'] = html_id
+        contents = render_element('input', **kw) + text
         return render_element('label', contents=contents)
 
 RadioWidgetInstance = RadioWidget()
@@ -688,6 +705,8 @@ class MultiCheckBoxWidget(MultiItemsWidget):
                                    items=[('Vertical', 'vertical'),
                                           ('Horizontal', 'horizontal')])
 
+    has_html_id = False
+
     def render(self, field, key, value, REQUEST):
         rendered_items = self.render_items(field, key, value, REQUEST)
         orientation = field.get_value('orientation')
@@ -696,23 +715,27 @@ class MultiCheckBoxWidget(MultiItemsWidget):
         else:
             return string.join(rendered_items, "<br />")
 
-    def render_item(self, text, value, key, css_class, extra_item):
-        contents = render_element('input',
-                              type="checkbox",
-                              css_class=css_class,
-                              name=key,
-                              value=value,
-                              extra=extra_item) + text
+    def render_item(self, text, value, key, css_class, extra_item, html_id):
+        kw = {'type': "checkbox",
+              'css_class': css_class,
+              'name': key,
+              'value': value,
+              'extra': extra_item}
+        if html_id:
+            kw['id'] = html_id
+        contents = render_element('input', **kw) + text
         return render_element('label', contents=contents)
 
-    def render_selected_item(self, text, value, key, css_class, extra_item):
-        contents =  render_element('input',
-                              type="checkbox",
-                              css_class=css_class,
-                              name=key,
-                              value=value,
-                              checked=None,
-                              extra=extra_item) + text
+    def render_selected_item(self, text, value, key, css_class, extra_item, html_id):
+        kw = {'type': "checkbox",
+              'css_class': css_class,
+              'name': key,
+              'value': value,
+              'checked': None,
+              'extra': extra_item}
+        if html_id:
+            kw['id'] = html_id
+        contents = render_element('input', **kw) + text
         return render_element('label', contents=contents)
 
 MultiCheckBoxWidgetInstance = MultiCheckBoxWidget()
@@ -820,6 +843,8 @@ class DateTimeWidget(Widget):
                                       required=0,
                                       size=1)
 
+    has_html_id = False
+    
     # FIXME: do we want to handle 'extra'?
 
     def render(self, field, key, value, REQUEST):
@@ -893,12 +918,13 @@ class DateTimeWidget(Widget):
         else:
             select_day = 'document.getElementById("subfield_' + field.id + '_day").value = RegExp.$3;'
         calendar_popup = ''
+        html_id = field.generate_field_html_id(key)
         if calendar_picker:
             calendar_popup = '&nbsp;' + render_element(
                 'button',
                 css_class='kupu-button kupu-link-reference calendar-button',
                 style='padding: 0px 0px 0px 0px',
-                id=field.id + '_calendar',
+                id= html_id + '_calendar',
                 title='set date',
                 contents=' ') + """<script type="text/javascript">
 setTimeout(function(){Calendar.setup({inputField : '%s_hiddeninput',
@@ -908,10 +934,10 @@ setTimeout(function(){Calendar.setup({inputField : '%s_hiddeninput',
                 weekNumbers: false,
                 timeFormat: '%s',
                 date: (new Date()).setHours(0,0,0,0),
-                firstDay: '%s'})},100);</script>"""%(field.id,
+                firstDay: '%s'})},100);</script>"""%(html_id,
                                                  use_ampm and 'I' or 'H',
                                                  field.get_value('date_only') and 'false' or 'true',
-                                                 field.id,
+                                                 html_id,
                                                  use_ampm and '12' or '24',
                                                  start_day,
 )
@@ -926,15 +952,15 @@ setTimeout(function(){Calendar.setup({inputField : '%s_hiddeninput',
             calendar_popup += calendar_picker and render_element(
                                 'input',
                                 type='hidden',
-                                id=field.id + '_hiddeninput',
-                                onchange='var pattern = /(\d{4})\/(\d{2})\/(\d{2}) (\d{2}):(\d{2}) (am|pm)/; if (pattern.exec(this.value)) { document.getElementById("subfield_' + field.id + '_year").value = RegExp.$1; document.getElementById("subfield_' + field.id + '_month").value = RegExp.$2; ' + select_day + ' document.getElementById("subfield_' + field.id + '_hour").value = RegExp.$4; document.getElementById("subfield_' + field.id + '_minute").value = RegExp.$5; ' + str(use_ampm and 'document.getElementById("subfield_' + field.id + '_ampm").value = RegExp.$6;' or '') + ' }') or ''
+                                id=html_id + '_hiddeninput',
+                                onchange='var pattern = /(\d{4})\/(\d{2})\/(\d{2}) (\d{2}):(\d{2}) (am|pm)/; if (pattern.exec(this.value)) { document.getElementById("subfield_' + html_id + '_year").value = RegExp.$1; document.getElementById("subfield_' + html_id + '_month").value = RegExp.$2; ' + select_day + ' document.getElementById("subfield_' + html_id + '_hour").value = RegExp.$4; document.getElementById("subfield_' + html_id + '_minute").value = RegExp.$5; ' + str(use_ampm and 'document.getElementById("subfield_' + html_id + '_ampm").value = RegExp.$6;' or '') + ' }') or ''
             return date_result + '&nbsp;&nbsp;&nbsp;' + time_result + calendar_popup
         else:
             calendar_popup += calendar_picker and render_element(
                                 'input',
                                 type='hidden',
-                                id=field.id + '_hiddeninput',
-                                onchange='var pattern = /(\d{4})\/(\d{2})\/(\d{2}) (\d{2}):(\d{2}) (am|pm)/; if (pattern.exec(this.value)) { document.getElementById("subfield_' + field.id + '_year").value = RegExp.$1; document.getElementById("subfield_' + field.id + '_month").value = RegExp.$2; ' + select_day + ' }') or ''
+                                id=html_id + '_hiddeninput',
+                                onchange='var pattern = /(\d{4})\/(\d{2})\/(\d{2}) (\d{2}):(\d{2}) (am|pm)/; if (pattern.exec(this.value)) { document.getElementById("subfield_' + html_id + '_year").value = RegExp.$1; document.getElementById("subfield_' + html_id + '_month").value = RegExp.$2; ' + select_day + ' }') or ''
             return date_result + calendar_popup
 
     def render_hidden(self, field, key, value, REQUEST):

@@ -1,13 +1,29 @@
 Changes
-=======
+1.12 (unreleased)
+-----------------
 
+<<<<<<< .working
 1.13 (unreleased)
 -----------------
 
 - Make it compatible with Zope 2.12.
 
 Ported from 1.12 branch:
+- The majority of Widgets now auto-generate an html 'id' attribute for the 
+  rendered widget.  This 'id' attribute is accessible in page templates via
+  the field/html_id.  If the field has an id attribute set in the 'extra'
+  parameter, the value of this attribute is returned, rather than the 
+  auto-generated id.  The html id and name attributes are now visible
+  in the ZMI edit screen for the fields.  The widgets which do not have
+  html_ids are: RadioWidget, MultiCheckBoxWidget, DateTimeWidget.  The widgets
+  have a property "has_html_id" that templates can use to determine whether
+  to place a label around the field title.
 
+1.12 (unreleased)
+----------------
+
+1.11.6 (2009/11/11)
+-------------------
 - Added the option for the DateTime Widget to use a popup calendar to input
   the date and time.
 

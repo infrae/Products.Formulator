@@ -3,8 +3,13 @@
 <dtml-var manage_tabs>
 </dtml-let>
 
+<dtml-let current_field="this()">
+
 <p class="form-help">
-Edit <dtml-var meta_type> properties here.
+Edit <dtml-var meta_type> properties here.<br />
+This field's HTML name is: <b><dtml-var generate_field_key></b><br />
+This field's HTML ID is: <b><dtml-var html_id></b><br />
+NOTE: for multi-item inputs (e.g. Radios and Checkboxes),  individual input field keys use field's HTML ID + item index.  E.g. the second checkbox would be <dtml-var html_id>2.
 </p>
 
 <form action="manage_edit" method="POST">
@@ -22,7 +27,6 @@ Edit <dtml-var meta_type> properties here.
 
 <dtml-var fieldListHeader>
 
-<dtml-let current_field="this()">
 <dtml-in fields>
 <dtml-let field=sequence-item field_id="field.id"
           value="current_field.get_orig_value(field_id)"
@@ -30,23 +34,26 @@ Edit <dtml-var meta_type> properties here.
           tales="current_field.get_tales(field_id)">
   <tr>
     <td align="left" valign="top">
-    <div class="form-label">
-    <dtml-if "tales or override">[</dtml-if><dtml-var "field.title()"><dtml-if "field.has_value('required') and field.get_value('required')">*</dtml-if><dtml-if "tales or override">]</dtml-if>
-    </div>
+     <div class="form-label"><dtml-if "field.widget.has_html_id"><label for="<dtml-var "field.html_id">"></dtml-if>
+      <dtml-if "tales or override">[</dtml-if><dtml-var "field.title()"><dtml-if "field.has_value('required') and field.get_value('required')">*</dtml-if><dtml-if "tales or override">]</dtml-if><dtml-if "field.widget.has_html_id"></label></dtml-if>
+     </div>
     </td>
     <td align="left" valign="top">
-    <dtml-var "field.render(value)">
+     <dtml-var "field.render(value)">
     </td>
-    <td valign="top" ><div class="form-element">
-    <dtml-var "field.meta_type">
-    </div></td>
+    <td valign="top" >
+     <div class="form-element">
+      <dtml-var "field.meta_type">
+     </div>
+    </td>
     <td align="left" valign="top">
-    <div class="form-element"><dtml-var "field.get_value('description')"></div>
+     <div class="form-element">
+      <dtml-var "field.get_value('description')">
+     </div>
     </td>
   </tr>
 </dtml-let>
 </dtml-in>
-</dtml-let>
 </dtml-if>
 </dtml-let>
 </dtml-in>
@@ -62,6 +69,7 @@ Edit <dtml-var meta_type> properties here.
 </table>
 </form>
 
+</dtml-let>
 <dtml-var manage_page_footer>
 
 
