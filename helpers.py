@@ -1,3 +1,5 @@
+import re
+
 from Acquisition import aq_base
 
 seq_types = [type([]), type(())]
@@ -28,3 +30,10 @@ def convert_unicode(struct):
 
     # if it something else, leave it untouched
     return struct
+
+# for pulling the value of an 'id' attribute out of an 'extra' parameter
+# this should work for:
+# |onclick="blah" id="ASDF"|
+# | id =  "ASDF"|
+# |ID="ASDF"|
+id_value_re = re.compile('^(?:.*\s)?id(?:\s*)=(?:\s*)[\"\'](.*?)[\"\']', re.I)

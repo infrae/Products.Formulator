@@ -3,7 +3,9 @@ Changes
 
 1.11.7 (unreleased)
 ------------------
-- ?
+- for the two widgets that had automatic id attributes added in an earlier
+  1.11 release (not mentioned in HISTORY.txt), ONLY add id=key if there
+  is no id attribute in the EXTRA parameter
 
 1.11.6 (2009/11/11)
 -------------------

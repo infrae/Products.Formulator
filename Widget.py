@@ -2,7 +2,7 @@ import string, types
 from DummyField import fields
 from DocumentTemplate.DT_Util import html_quote
 from DateTime import DateTime
-from helpers import is_sequence
+from helpers import is_sequence, id_value_re
 
 class Widget:
     """A field widget that knows how to display itself as HTML.
@@ -131,26 +131,19 @@ class TextWidget(Widget):
     def render(self, field, key, value, REQUEST):
         """Render text input field.
         """
+        extra = field.get_value('extra')
+        kwargs = {'type': "text",
+                'name' : key,
+                'css_class' : field.get_value('css_class'),
+                'value' : value,
+                'size' : field.get_value('display_width'),
+                'extra': extra}
+        if not id_value_re.search(extra):
+            kwargs['id'] = key
         display_maxwidth = field.get_value('display_maxwidth') or 0
         if display_maxwidth > 0:
-            return render_element("input",
-                                  type="text",
-                                  name=key,
-                                  id=key,
-                                  css_class=field.get_value('css_class'),
-                                  value=value,
-                                  size=field.get_value('display_width'),
-                                  maxlength=display_maxwidth,
-                                  extra=field.get_value('extra'))
-        else:
-            return render_element("input",
-                                  type="text",
-                                  name=key,
-                                  id=key,
-                                  css_class=field.get_value('css_class'),
-                                  value=value,
-                                  size=field.get_value('display_width'),
-                                  extra=field.get_value('extra'))
+            kwargs['maxlength'] = display_maxwidth
+        return render_element("input", **kwargs)
 
     def render_view(self, field, value):
         if value is None:
@@ -571,13 +564,15 @@ class ListWidget(SingleItemsWidget):
     def render(self, field, key, value, REQUEST):
         rendered_items = self.render_items(field, key, value, REQUEST)
 
-        return render_element('select',
-                              name=key,
-                              id=key,
-                              css_class=field.get_value('css_class'),
-                              size=field.get_value('size'),
-                              contents=string.join(rendered_items, "\n"),
-                              extra=field.get_value('extra'))
+        extra=field.get_value('extra')  
+        kw = {'name': key,
+              'css_class': field.get_value('css_class'),
+              'size': field.get_value('size'),
+              'contents': string.join(rendered_items, "\n"),
+              'extra': extra}
+        if not id_value_re.search(extra):
+            kw['id'] = key
+        return render_element('select', **kw)
 
     def render_item(self, text, value, key, css_class, extra_item):
         return render_element('option', contents=text, value=value,
