@@ -145,8 +145,9 @@ class TextWidget(Widget):
                 'css_class' : field.get_value('css_class'),
                 'value' : value,
                 'size' : field.get_value('display_width'),
-                'id' : field.generate_field_html_id(key),
                 'extra': field.get_value('extra')}
+        if not extra or not id_value_re.search(extra):
+            kw['id'] = field.generate_field_html_id(key)
         display_maxwidth = field.get_value('display_maxwidth') or 0
         if display_maxwidth > 0:
             kwargs['maxlength'] = display_maxwidth
