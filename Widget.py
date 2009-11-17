@@ -140,18 +140,19 @@ class TextWidget(Widget):
     def render(self, field, key, value, REQUEST):
         """Render text input field.
         """
-        kwargs = {'type': "text",
+        extra = field.get_value('extra')
+        kw = {'type': "text",
                 'name' : key,
                 'css_class' : field.get_value('css_class'),
                 'value' : value,
                 'size' : field.get_value('display_width'),
-                'extra': field.get_value('extra')}
+                'extra': extra}
         if not extra or not id_value_re.search(extra):
             kw['id'] = field.generate_field_html_id(key)
         display_maxwidth = field.get_value('display_maxwidth') or 0
         if display_maxwidth > 0:
-            kwargs['maxlength'] = display_maxwidth
-        return render_element("input", **kwargs)
+            kw['maxlength'] = display_maxwidth
+        return render_element("input", **kw)
 
     def render_view(self, field, value):
         if value is None:
