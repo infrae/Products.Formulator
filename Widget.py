@@ -463,7 +463,8 @@ class SingleItemsWidget(ItemsWidget):
                 item_value = item
             if value == item_value:
                 return item_text
-        raise KeyError, "Wrong item value [[%s]]" % (value,)
+        return ''
+
 
 class MultiItemsWidget(ItemsWidget):
     """A widget with a number of items that has multiple selectable
