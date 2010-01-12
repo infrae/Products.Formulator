@@ -140,17 +140,19 @@ class TextWidget(Widget):
     def render(self, field, key, value, REQUEST):
         """Render text input field.
         """
-        kwargs = {'type': "text",
+        extra = field.get_value('extra')
+        kw = {'type': "text",
                 'name' : key,
                 'css_class' : field.get_value('css_class'),
                 'value' : value,
                 'size' : field.get_value('display_width'),
-                'id' : field.generate_field_html_id(key),
-                'extra': field.get_value('extra')}
+                'extra': extra}
+        if not extra or not id_value_re.search(extra):
+            kw['id'] = field.generate_field_html_id(key)
         display_maxwidth = field.get_value('display_maxwidth') or 0
         if display_maxwidth > 0:
-            kwargs['maxlength'] = display_maxwidth
-        return render_element("input", **kwargs)
+            kw['maxlength'] = display_maxwidth
+        return render_element("input", **kw)
 
     def render_view(self, field, value):
         if value is None:
@@ -912,11 +914,17 @@ class DateTimeWidget(Widget):
                 result.append(field.render_sub_field(sub_field_name,
                                                      sub_field_value, REQUEST))
         date_result = string.join(result, field.get_value('date_separator'))
+
+        day_id = field.sub_form.get_field('day').generate_field_html_id("subfield_" + field.id + "_day")
+        month_id = field.sub_form.get_field('month').generate_field_html_id("subfield_" + field.id + "_month")
+        year_id = field.sub_form.get_field('year').generate_field_html_id("subfield_" + field.id + "_year")
+
         select_day = ''
         if hidden_day_part:
             date_result += hidden_day_part
         else:
-            select_day = 'document.getElementById("subfield_' + field.id + '_day").value = RegExp.$3;'
+            #get the proper html id
+            select_day = 'document.getElementById("'+day_id+'").value = RegExp.$3;'
         calendar_popup = ''
         html_id = field.generate_field_html_id(key)
         if calendar_picker:
@@ -946,6 +954,9 @@ setTimeout(function(){Calendar.setup({inputField : '%s_hiddeninput',
                            field.get_value('time_separator') +
                            field.render_sub_field('minute', minute, REQUEST))
 
+            hour_id = field.sub_form.get_field('hour').generate_field_html_id("subfield_" + field.id + "_hour")
+            minute_id = field.sub_form.get_field('minute').generate_field_html_id("subfield_" + field.id + "_minute")
+            ampm_id = field.sub_form.get_field('ampm').generate_field_html_id("subfield_" + field.id + "_ampm")
             if use_ampm:
                 time_result += '&nbsp;' + field.render_sub_field('ampm',
                                                             ampm, REQUEST)
@@ -953,14 +964,14 @@ setTimeout(function(){Calendar.setup({inputField : '%s_hiddeninput',
                                 'input',
                                 type='hidden',
                                 id=html_id + '_hiddeninput',
-                                onchange='var pattern = /(\d{4})\/(\d{2})\/(\d{2}) (\d{2}):(\d{2}) (am|pm)/; if (pattern.exec(this.value)) { document.getElementById("subfield_' + html_id + '_year").value = RegExp.$1; document.getElementById("subfield_' + html_id + '_month").value = RegExp.$2; ' + select_day + ' document.getElementById("subfield_' + html_id + '_hour").value = RegExp.$4; document.getElementById("subfield_' + html_id + '_minute").value = RegExp.$5; ' + str(use_ampm and 'document.getElementById("subfield_' + html_id + '_ampm").value = RegExp.$6;' or '') + ' }') or ''
+                                onchange='var pattern = /(\d{4})\/(\d{2})\/(\d{2}) (\d{2}):(\d{2}) (am|pm)/; if (pattern.exec(this.value)) { document.getElementById("' + year_id + '").value = RegExp.$1; document.getElementById("' + month_id + '").value = RegExp.$2; ' + select_day + ' document.getElementById("' + hour_id + '").value = RegExp.$4; document.getElementById("' + minute_id + '").value = RegExp.$5; ' + str(use_ampm and 'document.getElementById("' + ampm_id + '").value = RegExp.$6;' or '') + ' }') or ''
             return date_result + '&nbsp;&nbsp;&nbsp;' + time_result + calendar_popup
         else:
             calendar_popup += calendar_picker and render_element(
                                 'input',
                                 type='hidden',
                                 id=html_id + '_hiddeninput',
-                                onchange='var pattern = /(\d{4})\/(\d{2})\/(\d{2}) (\d{2}):(\d{2}) (am|pm)/; if (pattern.exec(this.value)) { document.getElementById("subfield_' + html_id + '_year").value = RegExp.$1; document.getElementById("subfield_' + html_id + '_month").value = RegExp.$2; ' + select_day + ' }') or ''
+                                onchange='var pattern = /(\d{4})\/(\d{2})\/(\d{2}) (\d{2}):(\d{2}) (am|pm)/; if (pattern.exec(this.value)) { document.getElementById("' + year_id + '").value = RegExp.$1; document.getElementById("' + month_id + '").value = RegExp.$2; ' + select_day + ' }') or ''
             return date_result + calendar_popup
 
     def render_hidden(self, field, key, value, REQUEST):
