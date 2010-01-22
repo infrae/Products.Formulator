@@ -1,7 +1,9 @@
 Changes
 =======
-1.12 (unreleased)
+
+1.12 (2010/01/22)
 -----------------
+
 - The majority of Widgets now auto-generate an html 'id' attribute for the 
   rendered widget.  This 'id' attribute is accessible in page templates via
   the field/html_id.  If the field has an id attribute set in the 'extra'
@@ -14,6 +16,7 @@ Changes
 
 1.11.6 (2009/11/11)
 -------------------
+
 - Added the option for the DateTime Widget to use a popup calendar to input
   the date and time.
 
