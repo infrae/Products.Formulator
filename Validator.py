@@ -792,7 +792,7 @@ class DateTimeValidator(Validator):
             producer.handler.characters(value_string)
 
     def deserializeValue(self, field, value):
-        return DateTime(value)
+        return DateTime(value.strip())
 
 DateTimeValidatorInstance = DateTimeValidator()
 
