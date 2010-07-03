@@ -18,32 +18,32 @@ class PatternCheckerTest(unittest.TestCase):
                           self.val.validate_value(patterns, value))
 
     def test_some_patterns(self):
-        as = self.assertValueMatches
-        asd = self.assertValueChanged
+        vOk = self.assertValueMatches
+        mOk = self.assertValueChanged
 
         # American long ZIP
-        as(['ddddd-dddd'], '34567-1298')
-        asd(['ddddd-dddd'], '  34567-1298  \t  ', '34567-1298' )
+        vOk(['ddddd-dddd'], '34567-1298')
+        mOk(['ddddd-dddd'], '  34567-1298  \t  ', '34567-1298' )
  
         # American phone number
-        as(['(ddd) ddd-dddd', 'ddd-ddd-dddd','ddd ddd-dddd'],
+        vOk(['(ddd) ddd-dddd', 'ddd-ddd-dddd','ddd ddd-dddd'],
            '(345) 678-1298')
-        asd(['(ddd) ddd-dddd', 'ddd-ddd-dddd', 'ddd ddd-dddd'],
+        mOk(['(ddd) ddd-dddd', 'ddd-ddd-dddd', 'ddd ddd-dddd'],
             '345-678-1298','(345) 678-1298')
         
         # American money
-        as(['$ d*.dd'], '$ 1345345.00')
-        #as(['$ d*.dd'], '$  1345345,00 ', '$ 1345345.00')
+        vOk(['$ d*.dd'], '$ 1345345.00')
+        #mOk(['$ d*.dd'], '$  1345345,00 ', '$ 1345345.00')
         
         # German money
-        as(['d*.dd DM'], '267.98 DM')
+        vOk(['d*.dd DM'], '267.98 DM')
 
         # German license plate
-        as(['eee ee-ddd'], 'OSL HR-683')
+        vOk(['eee ee-ddd'], 'OSL HR-683')
 
         # German phone number (international)
-        as(['+49 (d*) d*'], '+49 (3574) 7253')
-        asd(['+49 (d*) d*'], '+49  (3574)  7253', '+49 (3574) 7253')
+        vOk(['+49 (d*) d*'], '+49 (3574) 7253')
+        mOk(['+49 (d*) d*'], '+49  (3574)  7253', '+49 (3574) 7253')
 
 
     def test_multiple_ffs(self):
