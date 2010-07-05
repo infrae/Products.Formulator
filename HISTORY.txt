@@ -1,10 +1,13 @@
 Changes
-1.12 (unreleased)
------------------
-
-<<<<<<< .working
 1.13 (unreleased)
 -----------------
+
+Ported from 1.11 branch:
+- fix problem with MultiListFields not showing values from request
+  if in unicode mode, as the incoming values from the request
+  did not get converted to unicode in the Field._get_default
+- the "convert_unicode" helper now expects a separate parameter
+  "encoding" instead of assuming utf8 encoding always.
 
 - Make it compatible with Zope 2.12.
 
