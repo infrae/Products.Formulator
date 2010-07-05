@@ -685,7 +685,7 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
                                                unicode_mode)
         self.id = id
         if unicode_mode:
-            title = convert_unicode(title)
+            title = convert_unicode(title, 'UTF-8')
         self.title = title
         self.row_length = 4
 
@@ -765,7 +765,8 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
         if not title:
             title = id # title is always required, use id if not provided
         if self.get_unicode_mode():
-            title = convert_unicode(title)
+            # ZMI input is UTF-8 always (?)
+            title = convert_unicode(title, 'UTF-8')
         # get the field class we want to add
         field_class = FieldRegistry.get_field_class(fieldname)
         # create field instance

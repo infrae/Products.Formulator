@@ -3,7 +3,11 @@ Changes
 
 1.11.8 (unreleased)
 -------------------
-- ...
+- fix problem with MultiListFields not showing values from request
+  if in unicode mode, as the incoming values from the request
+  did not get converted to unicode in the Field._get_default
+- the "convert_unicode" helper now expects a separate parameter
+  "encoding" instead of assuming utf8 encoding always.
 
 1.11.7 (2009/12/04)
 ------------------
