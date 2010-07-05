@@ -7,25 +7,25 @@ seq_types = [type([]), type(())]
 def is_sequence(v):
     return type(aq_base(v)) in seq_types
 
-def convert_unicode(struct):
+def convert_unicode(struct, encoding):
     """ convert all strings of a possibly deeply nested structure
     of lists from utf-8 to unicode
     in case of a dictionary only converts the values, not the keys
     """
 
     if type(struct) == type(''):
-        return unicode(struct, 'utf-8')
+        return unicode(struct, encoding)
 
     if type(struct) == type([]):
-        return map( convert_unicode, struct )
+        return [ convert_unicode(x, encoding) for x in struct ]
 
     if type(struct) == type(()):
-        return tuple( map( convert_unicode, struct ) )
+        return tuple([ convert_unicode(x, encoding) for x in struct ])
 
     if type(struct) == type({}):
         new_dict = {}
         for k,v in struct.items():
-            new_dict[k] = convert_unicode(v)
+            new_dict[k] = convert_unicode(v, encoding)
         return new_dict
 
     # if it something else, leave it untouched

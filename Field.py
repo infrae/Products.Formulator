@@ -317,11 +317,10 @@ class Field:
         # convert to unicode first
         # this solves a problem when re-rendering a sticky form with
         # values from request
-        if (self.has_value('unicode') and self.get_value('unicode') and
-            type(value) == type('')):
-            return unicode(value, self.get_form_encoding())
-        else:
-            return value
+        if (self.has_value('unicode') and self.get_value('unicode')):
+            value = convert_unicode(value, self.get_form_encoding())
+
+        return value
 
     security.declareProtected('View', 'render')
     def render(self, value=None, REQUEST=None):
@@ -469,7 +468,7 @@ class ZMIField(
         # if we are in unicode mode, convert result to unicode
         # acquire get_unicode_mode from form..
         if self.get_unicode_mode():
-            result = convert_unicode(result)
+            result = convert_unicode(result, self.get_form_encoding())
 
         changed = []
         for key, value in result.items():

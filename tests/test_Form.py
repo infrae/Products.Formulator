@@ -137,6 +137,31 @@ class FormTestCase(ZopeTestCase.ZopeTestCase):
         self.assertEquals("foo", list_field.render_view(('foo',)) )
 
 
+    def test_items_is_sequence(self):
+        """ test that a multi list values widget renders correctly,
+            if the value from the request contains a list of non-ascii values
+        """
+        self.form.manage_addField('list_boxes', 'Test Checkboxes', 'MultiCheckBoxField')
+        self.encoding = "utf-8"
+        self.form.unicode_mode = 1 
+        list_boxes = self.form.list_boxes
+        list_boxes.values['unicode'] = 1
+        list_boxes.values['items'] = \
+                 [ (u'\xe4', u'A uml'), (u'\xfc', u'U uml') ]
+        request = FakeRequest()
+        request.form['key'] = ['\xc3\xa4','\xc3\xbc']
+        items = list_boxes._get_default(key='key', value=None,
+                                        REQUEST=request)
+        self.assertEquals([u'\xe4', u'\xfc'], items)
+
+        # same with latin-1 (we should not hardcode utf-8)
+        self.form.encoding = "latin-1"
+        request.form['key'] = ['\xe4','\xfc']
+        items = list_boxes._get_default(key='key', value=None,
+                                        REQUEST=request)
+        self.assertEquals([u'\xe4', u'\xfc'], items)
+
+
     def test_lines_field_rendering(self):
         """ line fields should both accept lists / tuples
         of strings and single strings with whitespace.
