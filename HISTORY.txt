@@ -1,17 +1,24 @@
 Changes
-1.13 (unreleased)
+=======
+
+1.13 (2010/07/15)
 -----------------
 
+- Compatibility fixes for Zope 2.12 and Python 2.6. Those are the requirements
+  now.
+
 Ported from 1.11 branch:
-- fix problem with MultiListFields not showing values from request
+
+- Fix problem with MultiListFields not showing values from request
   if in unicode mode, as the incoming values from the request
   did not get converted to unicode in the Field._get_default
-- the "convert_unicode" helper now expects a separate parameter
+
+- The "convert_unicode" helper now expects a separate parameter
   "encoding" instead of assuming utf8 encoding always.
 
-- Make it compatible with Zope 2.12.
 
 Ported from 1.12 branch:
+
 - The majority of Widgets now auto-generate an html 'id' attribute for the 
   rendered widget.  This 'id' attribute is accessible in page templates via
   the field/html_id.  If the field has an id attribute set in the 'extra'
@@ -22,8 +29,6 @@ Ported from 1.12 branch:
   have a property "has_html_id" that templates can use to determine whether
   to place a label around the field title.
 
-1.12 (unreleased)
-----------------
 
 1.11.6 (2009/11/11)
 -------------------
