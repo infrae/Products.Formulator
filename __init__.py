@@ -1,21 +1,11 @@
-from App.special_dtml import DTMLFile
+
 import Form
 import StandardFields, HelperFields
 from FieldRegistry import FieldRegistry
 import Errors
 from AccessControl import allow_module
 
-try:
-    import Products.FileSystemSite
-except ImportError:
-    try:
-        import Products.CMFCore
-    except ImportError:
-        pass
-    else:
-        import FSForm
-else:
-    import FSForm
+import FSForm
 
 # Allow Errors to be imported TTW
 allow_module('Products.Formulator.Errors')
@@ -86,7 +76,8 @@ def initialize(context):
     # register help for the product
     context.registerHelp()
     # register field help for all fields
-    FieldRegistry.registerFieldHelp(context)
+    # XXX Broken in Zope 2.13
+    # FieldRegistry.registerFieldHelp(context)
 
 # monkey patches
 import monkey

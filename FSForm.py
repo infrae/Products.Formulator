@@ -1,27 +1,11 @@
 from App.class_init import InitializeClass
 from AccessControl import ClassSecurityInfo
 
-try:
-    import Products.FileSystemSite
-except ImportError:
-    # use CMF product
-    try: 
-        from Products.CMFCore.permissions import View
-    except ImportError: # older CMF
-        from Products.CMFCore.CMFCorePermissions import View
-    from Products.CMFCore.FSObject import FSObject
-    from Products.CMFCore.DirectoryView import registerFileExtension,\
-                                               registerMetaType
-    try:
-        from Products.CMFCore.utils import expandpath
-    except ImportError:
-        from Products.CMFCore.DirectoryView import expandpath
-else:
-    # use FileSystemSite product
-    from Products.FileSystemSite.Permissions import View
-    from Products.FileSystemSite.FSObject import FSObject
-    from Products.FileSystemSite.DirectoryView import registerFileExtension,\
-                                                      registerMetaType, expandpath
+# use FileSystemSite product
+from Products.FileSystemSite.Permissions import View
+from Products.FileSystemSite.FSObject import FSObject
+from Products.FileSystemSite.DirectoryView import registerFileExtension,\
+                                                  registerMetaType, expandpath
 
 from Products.Formulator.Form import ZMIForm
 from Products.Formulator.XMLToForm import XMLToForm

@@ -58,7 +58,7 @@ class FieldRegistry:
             # if we already know the field, don't reregister
             if field_name in help.objectIds('Help Topic'):
                 continue
-            # register help topic    
+            # register help topic
             context.registerHelpTopic(field_name, ht)
 
     def initializeFields(self):
