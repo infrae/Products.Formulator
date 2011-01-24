@@ -64,7 +64,7 @@ class IBindedForm(interface.Interface):
         """Adapt a formulator form, a request and a content.
         """
 
-    def fields(ignoreContent=False, ignoreRequest=False):
+    def fields(ignore_content=False, ignore_request=False):
         """Return the fields as IBindedFields.
         """
 

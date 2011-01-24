@@ -74,11 +74,11 @@ class BindedForm(grok.MultiAdapter):
             return self.__content
         return self.context
 
-    def fields(self, ignoreContent=True, ignoreRequest=True):
+    def fields(self, ignore_content=True, ignore_request=True):
         values = {}
-        if not ignoreRequest:
+        if not ignore_request:
             values = self.extract()
-        elif not ignoreContent:
+        elif not ignore_content:
             values = self.read()
         for field in self.form.get_fields():
             yield BindedField(field, values.get(field.id, None))
