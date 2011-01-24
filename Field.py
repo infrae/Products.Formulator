@@ -4,17 +4,18 @@ from App.class_init import InitializeClass
 from App.special_dtml import DTMLFile
 from Persistence import Persistent
 from Products.PageTemplates.Expressions import SecureModuleImporter
-from Shared.DC.Scripts.Bindings import Bindings
 import Acquisition
 import OFS
 
 import zope.cachedescriptors.property
+from zope.interface import implements
 from zope.i18nmessageid import MessageFactory
 
+from Products.Formulator.interfaces import IField
 from Products.Formulator.Errors import ValidationError
 from Products.Formulator.Widget import MultiItemsWidget
 from Products.Formulator.helpers import (
-    is_sequence, convert_unicode, key_to_id_re, id_value_re)
+    convert_unicode, key_to_id_re, id_value_re)
 
 
 class Field:
@@ -22,6 +23,7 @@ class Field:
     A field is an object consisting of a widget and a validator.
     """
     security = ClassSecurityInfo()
+    implements(IField)
 
     # this is a field
     is_field = 1

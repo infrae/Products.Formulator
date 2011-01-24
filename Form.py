@@ -1,39 +1,43 @@
-import AccessControl
-import OFS
-from Acquisition import aq_base
-from App.special_dtml import DTMLFile
-from Persistence import Persistent
-from App.class_init import InitializeClass
+
+# String
+from StringIO import StringIO
+from urllib import quote
+import string
+import sys
+
+# Zope
 from AccessControl import ClassSecurityInfo
 from AccessControl.Role import RoleManager
+from Acquisition import aq_base
+from App.Dialogs import MessageDialog
+from App.class_init import InitializeClass
+from App.special_dtml import DTMLFile
+from ComputedAttribute import ComputedAttribute
+from OFS.CopySupport import CopyError, eNotSupported
 from OFS.ObjectManager import ObjectManager
 from OFS.PropertyManager import PropertyManager
 from OFS.SimpleItem import Item
+from Persistence import Persistent
 import Acquisition
-from ComputedAttribute import ComputedAttribute
-from urllib import quote
-import os
-import string
-from StringIO import StringIO
 
-from Errors import ValidationError, FormValidationError, FieldDisabledError
-from FieldRegistry import FieldRegistry
-from Widget import render_tag
-from DummyField import fields
-from FormToXML import formToXML
-from XMLToForm import XMLToForm
-from helpers import convert_unicode
+from zope.interface import implements
 
-# FIXME: manage_renameObject hack needs these imports
-from Acquisition import aq_base
-from App.Dialogs import MessageDialog
-from OFS.CopySupport import CopyError, eNotSupported
-import sys
+from Products.Formulator.interfaces import IForm
+from Products.Formulator.Errors import (
+    ValidationError, FormValidationError, FieldDisabledError)
+from Products.Formulator.FieldRegistry import FieldRegistry
+from Products.Formulator.Widget import render_tag
+from Products.Formulator.DummyField import fields
+from Products.Formulator.FormToXML import formToXML
+from Products.Formulator.XMLToForm import XMLToForm
+from Products.Formulator.helpers import convert_unicode
+
 
 class Form:
     """Form base class.
     """
     security = ClassSecurityInfo()
+    implements(IForm)
 
     # need to make settings form upgrade
     encoding = 'UTF-8'
@@ -207,7 +211,7 @@ class Form:
         self.group_list = group_list
         return 1
 
-    # ACCESSORS     
+    # ACCESSORS
     security.declareProtected('View', 'get_fields')
     def get_fields(self, include_disabled=0):
         """Get all fields for all groups (in the display order).
@@ -291,7 +295,7 @@ class Form:
         """Get i18n domain, if any.
         """
         return getattr(self, 'i18n_domain', '')
-    
+
     security.declareProtected('View', 'render')
     def render(self, dict=None, REQUEST=None):
         """Render form in a default way.
@@ -649,7 +653,7 @@ def create_settings_form():
                                     required=0,
                                     default="",
                                     description="The i18n translation domain.")
-                        
+
     form.add_fields([title, row_length, name, action, method,
                      enctype, encoding, stored_encoding, unicode_mode,
                      i18n_domain])
@@ -797,7 +801,7 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
         This is use to shut up Zope's security warnings. Hopefully it's still
         secure...
         """
-        
+
     security.declareProtected('View management screens', 'formTest')
     formTest = DTMLFile('dtml/formTest', globals())
 
