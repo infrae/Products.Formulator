@@ -98,3 +98,7 @@ class IBindedForm(interface.Interface):
         """Validate, extract and save data on the content, or raise an
         exception in case of validation error.
         """
+
+    def erase():
+        """Erase all stored values from the content.
+        """

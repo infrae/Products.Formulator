@@ -22,6 +22,10 @@ class FieldValueWriter(grok.MultiAdapter):
         self._field = field
         self._content = form.get_content()
 
+    def erase(self):
+        if self._field.id in self._content.__dict__:
+            del self._content.__dict__[self._field.id]
+
     def __call__(self, value):
         self._content.__dict__[self._field.id] = value
 
@@ -115,4 +119,10 @@ class BindedForm(grok.MultiAdapter):
                 writer = queryMultiAdapter(
                     (field, self), interfaces.IFieldValueWriter)
                 writer(value)
+
+    def erase(self):
+        for field in self.form.get_fields():
+            writer = queryMultiAdapter(
+                (field, self), interfaces.IFieldValueWriter)
+            writer.erase()
 
