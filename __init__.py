@@ -5,7 +5,11 @@ from FieldRegistry import FieldRegistry
 import Errors
 from AccessControl import allow_module
 
-import FSForm
+try:
+   import FSForm
+except ImportError:
+   # No filesystem site support
+   pass
 
 # Allow Errors to be imported TTW
 allow_module('Products.Formulator.Errors')
