@@ -788,7 +788,7 @@ class DateTimeValidator(Validator):
 
     def serializeValue(self, field, value, producer):
         if value is not None:
-            value_string = value.HTML4()
+            value_string = DateTime(value).HTML4()
             producer.handler.characters(value_string)
 
     def deserializeValue(self, field, value):
