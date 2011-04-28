@@ -7,6 +7,7 @@ from five import grok
 from zope.interface import Interface
 from zope.component import queryMultiAdapter
 
+from Acquisition import aq_base
 from Products.Formulator import interfaces
 from Products.Formulator.Errors import FormValidationError
 
@@ -64,7 +65,7 @@ class BindedForm(grok.MultiAdapter):
     grok.adapts(interfaces.IForm, Interface, Interface)
 
     def __init__(self, form, request, context):
-        self.form = form
+        self.form = aq_base(form).__of__(context)
         self.request = request
         self.context = context
         self.__content = None
