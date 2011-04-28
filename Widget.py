@@ -1,8 +1,9 @@
-import string, types
-from DummyField import fields
-from DocumentTemplate.DT_Util import html_quote
+import string
+
 from DateTime import DateTime
-from helpers import is_sequence, id_value_re
+from DocumentTemplate.DT_Util import html_quote
+from Products.Formulator.DummyField import fields
+from Products.Formulator.helpers import is_sequence, id_value_re
 
 
 class Widget:
@@ -69,7 +70,7 @@ class Widget:
         "to add an onClick attribute to use with JavaScript, for instance."),
                                default="",
                                required=0)
- 
+
     #this property is used to determine whether the widget
     # uses an html id (e.g. the widget has a single or primary
     # input), so that the presentation can wrap the field
@@ -173,7 +174,7 @@ class PasswordWidget(TextWidget):
               'value': value,
               'size': field.get_value('display_width'),
               'extra': extra}
-    
+
         if not extra or not id_vlaue_re.search(extra):
             kw['id'] = field.generate_field_html_id(key)
 
@@ -414,7 +415,7 @@ class SingleItemsWidget(ItemsWidget):
         field_html_id = None
         if not extra_item or not id_value_re.search(extra_item):
             field_html_id = field.generate_field_html_id(key)
-        
+
         # if we run into multiple items with same value, we select the
         # first one only (for now, may be able to fix this better later)
         selected_found = 0
@@ -579,7 +580,7 @@ class ListWidget(SingleItemsWidget):
     def render(self, field, key, value, REQUEST):
         rendered_items = self.render_items(field, key, value, REQUEST)
 
-        extra=field.get_value('extra')  
+        extra=field.get_value('extra')
         kw = {'name': key,
               'css_class': field.get_value('css_class'),
               'size': field.get_value('size'),
@@ -654,7 +655,7 @@ class RadioWidget(SingleItemsWidget):
                                    size=1,
                                    items=[('Vertical', 'vertical'),
                                           ('Horizontal', 'horizontal')])
-    
+
     has_html_id = False
 
     def render(self, field, key, value, REQUEST):
@@ -846,7 +847,7 @@ class DateTimeWidget(Widget):
                                       size=1)
 
     has_html_id = False
-    
+
     # FIXME: do we want to handle 'extra'?
 
     def render(self, field, key, value, REQUEST):
@@ -861,7 +862,7 @@ class DateTimeWidget(Widget):
 
         if value is None and field.get_value('default_now'):
             value = DateTime()
-            
+
         # Allow subfields to get their values even when default_now is set.
         if REQUEST is not None and \
                    REQUEST.form.has_key(field.generate_subfield_key('year')):
@@ -904,11 +905,11 @@ class DateTimeWidget(Widget):
             if hide_day and (sub_field_name == 'day'):
                 dayvalue = sub_field_value
                 if dayvalue is None:
-                    dayvalue = "01" 
+                    dayvalue = "01"
                 sub_key = field.generate_subfield_key(sub_field_name)
                 sub_field = field.sub_form.get_field(sub_field_name)
                 hidden_day_part = sub_field.widget.\
-                                  render_hidden(sub_field, sub_key,    
+                                  render_hidden(sub_field, sub_key,
                                                 dayvalue, REQUEST)
             else:
                 result.append(field.render_sub_field(sub_field_name,
