@@ -1,16 +1,10 @@
 from StringIO import StringIO
 from cgi import escape
 import types
-try:
-    from types import BooleanType
-except ImportError:
-    BooleanType = None
 
+from zope.interface.interfaces import IInterface
 from DateTime import DateTime
 
-#def write(s):
-#    if type(s) == type(u''):
-#        print "Unicode:", repr(s)
 
 def formToXML(form, prologue=1):
     """Takes a formulator form and serializes it to an XML representation.
@@ -49,7 +43,7 @@ def formToXML(form, prologue=1):
                 if value is None:
                     continue
                 # convert boolean to int
-                if type(value) == BooleanType:
+                if type(value) == types.BooleanType:
                     value = value and 1 or 0
                 if type(value) == type(1.1):
                     write('          <%s type="float">%s</%s>\n' %
@@ -60,6 +54,9 @@ def formToXML(form, prologue=1):
                 elif type(value) == types.ListType:
                     write('          <%s type="list">%s</%s>\n' %
                           (key, escape(str(value)), key))
+                elif IInterface.providedBy(value):
+                    write('          <%s type="interface">%s</%s>\n' %
+                          (key, value.__identifier__, key))
                 elif callable(value):
                     write('          <%s type="method">%s</%s>\n' %
                           (key, escape(str(value.method_name)), key))

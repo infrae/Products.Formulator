@@ -1,7 +1,10 @@
-import XMLObjects
 from DateTime import DateTime
-from Products.Formulator.TALESField import TALESMethod
+from Products.Formulator import XMLObjects
 from Products.Formulator.MethodField import Method
+from Products.Formulator.TALESField import TALESMethod
+from zope.component import getUtility
+from zope.interface.interfaces import IInterface
+
 
 def XMLToForm(s, form, override_encoding=None):
     """Takes an xml string and changes formulator form accordingly.
@@ -88,6 +91,8 @@ def XMLToForm(s, form, override_encoding=None):
                     # XXX bare eval here (this may be a security leak ?)
                     field.values[name] = eval(
                         encode(value.text, encoding))
+                elif value.attributes.get('type') == 'interface':
+                    field.values[name] = getUtility(IInterface, name=value.text)
                 elif value.attributes.get('type') == 'datetime':
                     field.values[name] = DateTime(value.text)
                 else:
