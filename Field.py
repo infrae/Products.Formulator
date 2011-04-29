@@ -1,5 +1,7 @@
+
 from AccessControl import ClassSecurityInfo
 from Acquisition.interfaces import IAcquirer
+from Acquisition import aq_parent
 from App.class_init import InitializeClass
 from App.special_dtml import DTMLFile
 from Persistence import Persistent
@@ -118,15 +120,19 @@ class Field:
             # might not have request available as self.REQUEST (if
             # your field is in a Zope utility).
 
+            form = aq_parent(self)
+            context = aq_parent(form)
             # add 'here' if not in kw
             if not kw.has_key('here'):
-                kw['here'] = self.aq_parent
+                kw['here'] = form
             if hasattr(self, 'REQUEST'):
                 kw['request'] = self.REQUEST
             kw['modules'] = SecureModuleImporter
             value = tales_expr.__of__(self)(
                 field=self,
-                form=self.aq_parent, **kw)
+                form=form,
+                context=context,
+                **kw)
         else:
             override = self.overrides.get(id, "")
             if override:

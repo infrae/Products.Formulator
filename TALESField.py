@@ -1,10 +1,11 @@
-import string
-from DummyField import fields
-import Widget, Validator
+
 from Persistence import Persistent
+from Products.Formulator import Widget, Validator
+from Products.Formulator.DummyField import fields
+from Products.Formulator.Field import ZMIField
+from Products.PageTemplates.Expressions import getEngine
 import Acquisition
-from Field import ZMIField
-from AccessControl import getSecurityManager
+
 
 class TALESWidget(Widget.TextWidget):
     default = fields.MethodField('default',
@@ -22,44 +23,23 @@ class TALESWidget(Widget.TextWidget):
                 text = ""
         return Widget.TextWidget.render(self, field, key, text, REQUEST)
 
-TALESWidgetInstance = TALESWidget()
 
-class TALESNotAvailable(Exception):
-    pass
+class TALESMethod(Persistent, Acquisition.Implicit):
+    """A method object; calls method name in acquisition context.
+    """
+    def __init__(self, text):
+        self._text = text
 
-try:
-    # try to import getEngine from TALES
-    from Products.PageTemplates.Expressions import getEngine
+    def __call__(self, **kw):
+        expr = getattr(self, '_v_expr', None)
+        if expr is None:
+            self._v_expr = expr = getEngine().compile(self._text)
+        return getEngine().getContext(kw).evaluate(expr)
 
-    class TALESMethod(Persistent, Acquisition.Implicit):
-        """A method object; calls method name in acquisition context.
-        """
-        def __init__(self, text):
-            self._text = text
+        # check if we have 'View' permission for this method
+        # (raises error if not)
+        # getSecurityManager().checkPermission('View', method)
 
-        def __call__(self, **kw):
-            expr = getattr(self, '_v_expr', None)
-            if expr is None:
-                self._v_expr = expr = getEngine().compile(self._text)
-            return getEngine().getContext(kw).evaluate(expr)
-
-            # check if we have 'View' permission for this method
-            # (raises error if not)
-            # getSecurityManager().checkPermission('View', method)
-
-    TALES_AVAILABLE = 1
-
-except ImportError:
-    # cannot import TALES, so supply dummy TALESMethod
-    class TALESMethod(Persistent, Acquisition.Implicit):
-        """A dummy method in case TALES is not available.
-        """
-        def __init__(self, text):
-            self._text = text
-
-        def __call__(self, **kw):
-            raise TALESNotAvailable
-    TALES_AVAILABLE = 0
 
 class TALESValidator(Validator.StringBaseValidator):
 
@@ -72,7 +52,10 @@ class TALESValidator(Validator.StringBaseValidator):
 
         return TALESMethod(value)
 
+
+TALESWidgetInstance = TALESWidget()
 TALESValidatorInstance = TALESValidator()
+
 
 class TALESField(ZMIField):
     meta_type = 'TALESField'
