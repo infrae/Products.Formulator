@@ -53,7 +53,9 @@ class BindedField(object):
         self.id = field.generate_field_html_id()
         self.title = field.get_value('title')
         self.description = field.get_value('description')
-        self.required = field.get_value('required') and True
+        self.required = False
+        if 'required' in field.values:
+            self.required = field.get_value('required') and True
 
     def __call__(self):
         return self._field.render(self._value)
