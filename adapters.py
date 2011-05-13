@@ -57,6 +57,15 @@ class BindedField(object):
         if 'required' in field.values:
             self.required = field.get_value('required') and True
 
+    def serialize(self, producer):
+        self._field.validator.serializeValue(
+            self._field, self._value, producer)
+
+    def deserialize(self, serialized_value):
+        value = self._field.validator.deserializeValue(
+            self._field, serialized_value)
+        return value
+
     def __call__(self):
         return self._field.render(self._value)
 

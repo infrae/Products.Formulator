@@ -11,6 +11,14 @@ class IField(interface.Interface):
     """
     id = interface.Attribute(u"Field identifier")
 
+    def serialize(producer):
+        """ serialize field value and push it to the producer
+        """
+
+    def deserialize(value):
+        """ deserialize the value
+        """
+
 
 class IForm(interface.Interface):
     """A formulator form.
