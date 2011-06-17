@@ -44,8 +44,7 @@ class TALESMethod(Persistent, Acquisition.Implicit):
 class TALESValidator(Validator.StringBaseValidator):
 
     def validate(self, field, key, REQUEST):
-        value = Validator.StringBaseValidator.validate(self, field, key,
-                                                       REQUEST)
+        value = Validator.StringBaseValidator.validate(self, field, key, REQUEST)
 
         if value == "" and not field.get_value('required'):
             return value

@@ -1,16 +1,18 @@
 import re
-import PatternChecker
-from ZPublisher.TaintedString import TaintedString
-from DummyField import fields
-from DateTime import DateTime
 from threading import Thread
 from urllib import urlopen
 from urlparse import urljoin
-from Errors import ValidationError
-from helpers import is_sequence
+from types import UnicodeType, StringTypes
+
+from ZPublisher.TaintedString import TaintedString
+from DateTime import DateTime
+
+from Products.Formulator import PatternChecker
+from Products.Formulator.DummyField import fields
+from Products.Formulator.Errors import ValidationError
+from Products.Formulator.helpers import is_sequence
 from Products.Formulator.i18n import translate as _
-from types import UnicodeType,StringTypes
-from xml.sax.saxutils import escape
+
 
 try:
     from DateTime.DateTime import DateError, TimeError
@@ -18,9 +20,11 @@ try:
 except ImportError:
     # uh, a host of string based exceptions
     # for DateTime errors, if Zope 2.x, x<7
-    date_time_format_exceptions = ('DateTimeError', 
+    date_time_format_exceptions = ('DateTimeError',
                                    'Invalid Date Components',
                                    'TimeError')
+
+NS_FORMULATOR = 'http://infrae.com/namespace/formulator'
 
 class ValidatorBase:
     """Even more minimalistic base class for validators.
@@ -46,14 +50,27 @@ class ValidatorBase:
     def validate(self, field, key, REQUEST):
         pass # override in subclass
 
-    def serializeValue(self, field, value, sax_producer):
+    def serializeValue(self, field, value, producer):
         """Given a field, a value and a sax_producer, this method sends
         sax events to the sax producer that represent the XMLified value.
         """
         pass # override in subclass
 
-    def deserializeValue(self, field, value):
-        REQUEST = {'key': value}
+    def deserializeValue(self, field, value, context=None):
+        if isinstance(value, basestring):
+            data = value
+        else:
+            # We have an lxml node
+            data = value.text
+            if data is None:
+                # Try for subvalues
+                data = []
+                for entry in value.xpath('form:value', namespaces={'form': NS_FORMULATOR}):
+                    data.append(entry.text)
+                if not data:
+                    # Let's put an empty string it is safe.
+                    data = ''
+        REQUEST = {'key': data}
         return self.validate(field, 'key', REQUEST)
 
     def need_validate(self, field, key, REQUEST):
@@ -119,7 +136,7 @@ class StringBaseValidator(Validator):
         # therefore convert to string first
         if type(value) not in (str, unicode):
             value = str(value)
-        producer.handler.characters(value)
+        producer.characters(value)
 
 class StringValidator(StringBaseValidator):
     property_names = StringBaseValidator.property_names +\
@@ -243,9 +260,11 @@ class BooleanValidator(Validator):
             value_string = 'True'
         else:
             value_string = 'False'
-        producer.handler.characters(value_string)
+        producer.characters(value_string)
 
-    def deserializeValue(self, field, value):
+    def deserializeValue(self, field, value, context=None):
+        if not isinstance(value, basestring):
+            value = value.text
         if value == 'True':
             return True
         return False
@@ -299,7 +318,7 @@ class IntegerValidator(StringBaseValidator):
 
     def serializeValue(self, field, value, producer):
         value_string = str(value)
-        producer.handler.characters(value_string)
+        producer.characters(value_string)
 
 IntegerValidatorInstance = IntegerValidator()
 
@@ -321,7 +340,7 @@ class FloatValidator(StringBaseValidator):
 
     def serializeValue(self, field, value, producer):
         value_string = str(value)
-        producer.handler.characters(value_string)
+        producer.characters(value_string)
 
 FloatValidatorInstance = FloatValidator()
 
@@ -405,7 +424,7 @@ class LinesValidator(StringBaseValidator):
 
     def serializeValue(self, field, value, producer):
         value_string = '\n'.join(value)
-        producer.handler.characters(value_string)
+        producer.characters(value_string)
 
 LinesValidatorInstance = LinesValidator()
 
@@ -420,7 +439,7 @@ class TextValidator(LinesValidator):
         return "\n".join(value)
 
     def serializeValue(self, field, value, producer):
-        producer.handler.characters(value)
+        producer.characters(value)
 
 TextValidatorInstance = TextValidator()
 
@@ -521,7 +540,6 @@ class MultiSelectionValidator(Validator):
             if is_sequence(item):
                 item_text, item_value = item
             else:
-                item_text = item
                 item_value = item
             value_dict[item_value] = 0
 
@@ -531,7 +549,7 @@ class MultiSelectionValidator(Validator):
             # FIXME: hack to accept int values as well
             try:
                 int_value = int(value)
-            except ValueError:
+            except (ValueError, TypeError):
                 int_value = None
             if int_value is not None and value_dict.has_key(int_value):
                 result.append(int_value)
@@ -544,11 +562,13 @@ class MultiSelectionValidator(Validator):
         return result
 
     def serializeValue(self, field, values, producer):
+        producer.startPrefixMapping(None, NS_FORMULATOR)
         for value in values:
             # XXX How should I handle integer types here?
             producer.startElement('value')
-            producer.handler.characters(value)
+            producer.characters(value)
             producer.endElement('value')
+        producer.endPrefixMapping(None)
 
 MultiSelectionValidatorInstance = MultiSelectionValidator()
 
@@ -789,10 +809,15 @@ class DateTimeValidator(Validator):
     def serializeValue(self, field, value, producer):
         if value is not None:
             value_string = DateTime(value).HTML4()
-            producer.handler.characters(value_string)
+            producer.characters(value_string)
 
-    def deserializeValue(self, field, value):
-        value = value.strip()
+    def deserializeValue(self, field, value, context=None):
+        if isinstance(value, basestring):
+            value = value.strip()
+        else:
+            value = value.text
+            if value:
+                value.strip()
         if value:
             return DateTime(value)
         return None

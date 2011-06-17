@@ -44,8 +44,8 @@ class FieldValueReader(grok.MultiAdapter):
         return self._content.__dict__.get(self._field.id, _marker)
 
 
-class BindedField(object):
-    grok.implements(interfaces.IBindedField)
+class BoundField(object):
+    grok.implements(interfaces.IBoundField)
 
     def __init__(self, field, value):
         self._field = field
@@ -61,18 +61,17 @@ class BindedField(object):
         self._field.validator.serializeValue(
             self._field, self._value, producer)
 
-    def deserialize(self, serialized_value):
-        value = self._field.validator.deserializeValue(
-            self._field, serialized_value)
-        return value
+    def deserialize(self, data, context=None):
+        return self._field.validator.deserializeValue(
+            self._field, data, context=context)
 
     def __call__(self):
         return self._field.render(self._value)
 
 
-class BindedForm(grok.MultiAdapter):
-    grok.implements(interfaces.IBindedForm)
-    grok.provides(interfaces.IBindedForm)
+class BoundForm(grok.MultiAdapter):
+    grok.implements(interfaces.IBoundForm)
+    grok.provides(interfaces.IBoundForm)
     grok.adapts(interfaces.IForm, Interface, Interface)
 
     def __init__(self, form, request, context):
@@ -97,7 +96,7 @@ class BindedForm(grok.MultiAdapter):
         elif not ignore_content:
             values = self.read()
         for field in self.form.get_fields():
-            yield BindedField(field, values.get(field.id, None))
+            yield BoundField(field, values.get(field.id, None))
 
     def validate(self):
         try:

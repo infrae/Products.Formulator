@@ -51,7 +51,7 @@ class IFieldValueReader(interface.Interface):
         """
 
 
-class IBindedField(interface.Interface):
+class IBoundField(interface.Interface):
     """Return field information.
     """
     id = interface.Attribute("HTML ID")
@@ -64,7 +64,7 @@ class IBindedField(interface.Interface):
         """
 
 
-class IBindedForm(interface.Interface):
+class IBoundForm(interface.Interface):
     """Manage access to a formulator.
     """
 
@@ -73,7 +73,7 @@ class IBindedForm(interface.Interface):
         """
 
     def fields(ignore_content=False, ignore_request=False):
-        """Return the fields as IBindedFields.
+        """Return the fields as IBoundFields.
         """
 
     def validate():

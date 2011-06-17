@@ -175,7 +175,7 @@ class PasswordWidget(TextWidget):
               'size': field.get_value('display_width'),
               'extra': extra}
 
-        if not extra or not id_vlaue_re.search(extra):
+        if not extra or not id_value_re.search(extra):
             kw['id'] = field.generate_field_html_id(key)
 
         display_maxwidth = field.get_value('display_maxwidth') or 0
