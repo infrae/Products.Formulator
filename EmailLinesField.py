@@ -14,11 +14,11 @@ import re
 pattern = re.compile('^[0-9a-zA-Z_&.%+-]+@([0-9a-zA-Z]([0-9a-zA-Z-]*[0-9a-zA-Z])?\.)+[a-zA-Z]{2,6}$')
 
 class EmailLinesValidator(LinesValidator):
-    
+
     message_names = LinesValidator.message_names + ['not_email']
 
     not_email = 'You did not enter valid email addresses.'
-    
+
     def validate(self, field, key, REQUEST):
         value = LinesValidator.validate(self, field, key, REQUEST)
         for address in value:
@@ -31,5 +31,5 @@ EmailLinesValidatorInstance = EmailLinesValidator()
 class EmailLinesField(LinesField):
     meta_type = 'EmailLinesField'
     validator = EmailLinesValidatorInstance
-    
-FieldRegistry.registerField(EmailLinesField, 'www/EmailField.gif')    
+
+FieldRegistry.registerField(EmailLinesField, 'www/EmailField.gif')

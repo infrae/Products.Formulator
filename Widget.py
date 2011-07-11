@@ -142,9 +142,10 @@ class TextWidget(Widget):
         """Render text input field.
         """
         extra = field.get_value('extra')
+        css_class = field.get_value('css_class')
         kw = {'type': "text",
                 'name' : key,
-                'css_class' : field.get_value('css_class'),
+                'css_class' : css_class,
                 'value' : value,
                 'size' : field.get_value('display_width'),
                 'extra': extra}
@@ -153,7 +154,8 @@ class TextWidget(Widget):
         display_maxwidth = field.get_value('display_maxwidth') or 0
         if display_maxwidth > 0:
             kw['maxlength'] = display_maxwidth
-        return render_element("input", **kw)
+        contents = render_element("input", **kw)
+        return render_element("div", contents=contents, css_class=css_class)
 
     def render_view(self, field, value):
         if value is None:
@@ -168,9 +170,10 @@ class PasswordWidget(TextWidget):
         """Render password input field.
         """
         extra = field.get_value('extra')
+        css_class = field.get_value('css_class')
         kw = {'type': "password",
               'name': key,
-              'css_class': field.get_value('css_class'),
+              'css_class': css_class,
               'value': value,
               'size': field.get_value('display_width'),
               'extra': extra}
@@ -181,7 +184,8 @@ class PasswordWidget(TextWidget):
         display_maxwidth = field.get_value('display_maxwidth') or 0
         if display_maxwidth > 0:
             kw['maxlength'] = display_maxwidth
-        return render_element("input", **kw)
+        contents = render_element("input", **kw)
+        return render_element("div", contents=contents, css_class=css_class)
 
     def render_view(self, field, value):
         return "[password]"
@@ -211,8 +215,7 @@ class CheckBoxWidget(Widget):
             kw['id'] = field.generate_field_html_id(key)
         if value:
             kw['checked']=None
-        contents = render_element("input", **kw)
-        return render_element('label', contents=contents)
+        return render_element("input", **kw)
 
     def render_view(self, field, value):
         if value:
@@ -254,14 +257,16 @@ class TextAreaWidget(Widget):
         width = field.get_value('width')
         height = field.get_value('height')
         extra=field.get_value('extra')
+        css_class = field.get_value('css_class')
         kw = {'name': key,
-              'css_class': field.get_value('css_class'),
+              'css_class': css_class,
               'cols': width,
               'rows': height,
               'contents': html_quote(value)}
         if not extra or not id_value_re.search(extra):
             kw['id'] = field.generate_field_html_id(key)
-        return render_element("textarea", **kw)
+        contents = render_element("textarea", **kw)
+        return render_element("div", contents=contents, css_class=css_class)
 
     def render_view(self, field, value):
         if value is None:

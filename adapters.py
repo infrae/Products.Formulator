@@ -7,14 +7,39 @@ from five import grok
 from zope.interface import Interface
 from zope.component import queryMultiAdapter
 
-from Acquisition import aq_base
+from Acquisition import aq_base, Explicit
 from Products.Formulator import interfaces
 from Products.Formulator.Errors import FormValidationError
 
 _marker = object()
 
 
+class CustomizedField(Explicit):
+    """Proxy around a native Formulator field to be able to
+    programmatically change values retrieved with get_value.
+    """
+
+    def __new__(cls, field, defaults):
+        if field.meta_type not in defaults:
+            return field
+        return Explicit.__new__(cls, field, defaults)
+
+    def __init__(self, field, defaults):
+        self._field = field
+        self._defaults = defaults[field.meta_type]
+
+    def __getattr__(self, key):
+        return getattr(self._field, key)
+
+    def get_value(self, id, **kw):
+        if id in self._defaults:
+            return self._defaults[id]
+        return self._field.get_value(id, **kw)
+
+
 class FieldValueWriter(grok.MultiAdapter):
+    """Write a Formulator field data on an object.
+    """
     grok.provides(interfaces.IFieldValueWriter)
     grok.implements(interfaces.IFieldValueWriter)
     grok.adapts(interfaces.IField, Interface)
@@ -32,6 +57,8 @@ class FieldValueWriter(grok.MultiAdapter):
 
 
 class FieldValueReader(grok.MultiAdapter):
+    """Read a Formulator field data from an object.
+    """
     grok.provides(interfaces.IFieldValueReader)
     grok.implements(interfaces.IFieldValueReader)
     grok.adapts(interfaces.IField, Interface)
@@ -45,6 +72,8 @@ class FieldValueReader(grok.MultiAdapter):
 
 
 class BoundField(object):
+    """Bind a Formulator field to a data.
+    """
     grok.implements(interfaces.IBoundField)
 
     def __init__(self, field, value):
@@ -66,10 +95,20 @@ class BoundField(object):
             self._field, data, context=context)
 
     def __call__(self):
-        return self._field.render(self._value)
+        field = self._field
+        # We duplicate the code of field.render to be sure to pass our
+        # proxy object to the widget while rendering it.
+        key = field.generate_field_key()
+        value = field._get_default(key, self._value, None)
+        if field.get_value('hidden'):
+            return field.widget.render_hidden(field, key, value, None)
+        return field.widget.render(field, key, value, None)
 
 
 class BoundForm(grok.MultiAdapter):
+    """Bind a Formulator field to a content. The Formulator field is
+    able to edit content values.
+    """
     grok.implements(interfaces.IBoundForm)
     grok.provides(interfaces.IBoundForm)
     grok.adapts(interfaces.IForm, Interface, Interface)
@@ -89,13 +128,13 @@ class BoundForm(grok.MultiAdapter):
             return self.__content
         return self.context
 
-    def fields(self, ignore_content=True, ignore_request=True):
+    def fields(self, ignore_content=True, ignore_request=True, customizations={}):
         values = {}
         if not ignore_request:
             values = self.extract()
         elif not ignore_content:
             values = self.read()
-        for field in self.form.get_fields():
+        for field in (CustomizedField(f, customizations) for f in self.form.get_fields()):
             yield BoundField(field, values.get(field.id, None))
 
     def validate(self):
