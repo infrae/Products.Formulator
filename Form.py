@@ -63,6 +63,27 @@ class Form:
         self.stored_encoding = stored_encoding
         self.unicode_mode = unicode_mode
 
+    security.declareProtected('View', 'test_form')
+    def test_form(self):
+        try:
+            form_fields = self.get_fields()
+        except AttributeError:
+            raise ValueError(u"Form contains broken fields.")
+        errors = []
+        for field in form_fields:
+            for identifier, expression in field.tales.items():
+                if not expression:
+                    continue
+                try:
+                    field.get_value(identifier)
+                except Exception as error:
+                    errors.append(
+                        u"Form field '%s' contains a broken TALES expression for option '%s': %s: %s." % (
+                            field.id, identifier, error.__class__.__name__, str(error)))
+        if errors:
+            raise ValueError(*errors)
+        return True
+
     # MANIPULATORS
     security.declareProtected('Change Formulator Forms', 'field_added')
     def field_added(self, field_id, group=None):

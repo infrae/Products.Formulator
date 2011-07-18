@@ -134,7 +134,8 @@ class BoundForm(grok.MultiAdapter):
             values = self.extract()
         elif not ignore_content:
             values = self.read()
-        for field in (CustomizedField(f, customizations) for f in self.form.get_fields()):
+        for field in (CustomizedField(f, customizations) for f in
+                      self.form.get_fields()):
             yield BoundField(field, values.get(field.id, None))
 
     def validate(self):
