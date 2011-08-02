@@ -18,7 +18,7 @@ allow_class(FormValidationError)
 class ValidationError(Exception):
 
     def __init__(self, error_key, field):
-        Exception.__init__(self, error_key)
+        Exception.__init__(self, error_key, field.id)
         self.error_key = error_key
         self.field_id = field.id
         self.field = field
