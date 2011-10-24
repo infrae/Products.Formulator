@@ -881,6 +881,8 @@ class DateTimeWidget(Widget):
             minute = None
             ampm = None
         else:
+            if not isinstance(value, DateTime):
+                value = DateTime(value)
             year = "%04d" % value.year()
             month = "%02d" % value.month()
             day = "%02d" % value.day()
@@ -987,6 +989,8 @@ setTimeout(function(){Calendar.setup({inputField : '%s_hiddeninput',
         sub_values = {}
         subfields = ['year','month','day']
         if value is not None:
+            if not isinstance(value, DateTime):
+                value = DateTime(value)
             sub_values['year']  = '%04d' % value.year()
             sub_values['month'] = "%02d" % value.month()
             sub_values['day']   = "%02d" % value.day()
@@ -1016,6 +1020,8 @@ setTimeout(function(){Calendar.setup({inputField : '%s_hiddeninput',
 
         use_ampm = field.get_value('ampm_time_style')
 
+        if not isinstance(value, DateTime):
+            value = DateTime(value)
         year = "%04d" % value.year()
         month = "%02d" % value.month()
         day = "%02d" % value.day()
