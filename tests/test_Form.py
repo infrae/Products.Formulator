@@ -4,19 +4,15 @@
     maybe could be moved to a "test_widgets" test case partially
 """
 
-from Testing import ZopeTestCase
-
-ZopeTestCase.installProduct('Formulator')
-
 import unittest, re
 from xml.dom.minidom import parseString
+
 from DateTime import DateTime
+from Testing import ZopeTestCase
+from Products.PythonScripts.PythonScript import PythonScript
 
 from Products.Formulator.MethodField import Method
 from Products.Formulator.TALESField import TALESMethod
-
-from Products.PythonScripts.PythonScript import PythonScript
-
 from Products.Formulator.tests.test_serialize import FakeRequest
 from Products.Formulator.tests.layer import FormulatorZCMLLayer
 
@@ -535,6 +531,3 @@ def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(FormTestCase))
     return suite
-
-if __name__ == '__main__':
-    framework()

@@ -1,27 +1,18 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os, sys
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
-
-from Testing import ZopeTestCase
-
-ZopeTestCase.installProduct('Formulator')
-
+import re
 import unittest
-from Testing import makerequest
+
 from DateTime import DateTime
+from Testing import ZopeTestCase
 
 from Products.Formulator.Form import ZMIForm
 from Products.Formulator.XMLToForm import XMLToForm
 from Products.Formulator.FormToXML import formToXML
 from Products.Formulator.MethodField import Method
-
 from Products.Formulator.Errors import ValidationError, FormValidationError
+from Products.Formulator.tests.layer import FormulatorZCMLLayer
 
-import re
-from layer import FormulatorZCMLLayer
 
 class FakeRequest:
     """ a fake request for testing.
@@ -602,6 +593,3 @@ def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(SerializeTestCase, 'test'))
     return suite
-
-if __name__ == '__main__':
-    framework()

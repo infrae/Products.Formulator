@@ -1,7 +1,3 @@
-import os, sys
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
-
 
 """ random assembly testing some reported bugs.
     This is _not_ a structured or even complete test suite.
@@ -9,24 +5,14 @@ if __name__ == '__main__':
     maybe could be moved to a "test_widgets" test case partially
 """
 
+from Products.Formulator.tests.layer import FormulatorZCMLLayer
 from Testing import ZopeTestCase
+import unittest
 
-ZopeTestCase.installProduct('Formulator')
-
-import unittest, re
-from xml.dom.minidom import parseString
-from DateTime import DateTime
-
-from Products.Formulator.Form import ZMIForm
-
-from Products.PythonScripts.PythonScript import PythonScript
-
-from test_serialize import FakeRequest
-from layer import FormulatorZCMLLayer
 
 class FieldIdsTestCase(ZopeTestCase.ZopeTestCase):
     layer = FormulatorZCMLLayer
-    
+
     def afterSetUp(self):
         self.root = self.folder
         self.root.manage_addProduct['Formulator'] \
@@ -50,7 +36,7 @@ class FieldIdsTestCase(ZopeTestCase.ZopeTestCase):
         sf.field_record = 'silva-extra'
         self.assertEquals('silva-extra-text-record',
                           sf.generate_field_html_id())
-        
+
         sf.field_record = None
 
     def test_html_id_with_field_record(self):
@@ -82,6 +68,3 @@ def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(FieldIdsTestCase))
     return suite
-
-if __name__ == '__main__':
-    framework()

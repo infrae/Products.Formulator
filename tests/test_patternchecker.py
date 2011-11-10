@@ -1,9 +1,9 @@
-try:
-    from Products.Formulator.PatternChecker import PatternChecker
-except ImportError:
-    from PatternChecker import PatternChecker
+
 
 import unittest
+
+from Products.Formulator.PatternChecker import PatternChecker
+
 
 class PatternCheckerTest(unittest.TestCase):
 
@@ -24,17 +24,17 @@ class PatternCheckerTest(unittest.TestCase):
         # American long ZIP
         vOk(['ddddd-dddd'], '34567-1298')
         mOk(['ddddd-dddd'], '  34567-1298  \t  ', '34567-1298' )
- 
+
         # American phone number
         vOk(['(ddd) ddd-dddd', 'ddd-ddd-dddd','ddd ddd-dddd'],
            '(345) 678-1298')
         mOk(['(ddd) ddd-dddd', 'ddd-ddd-dddd', 'ddd ddd-dddd'],
             '345-678-1298','(345) 678-1298')
-        
+
         # American money
         vOk(['$ d*.dd'], '$ 1345345.00')
         #mOk(['$ d*.dd'], '$  1345345,00 ', '$ 1345345.00')
-        
+
         # German money
         vOk(['d*.dd DM'], '267.98 DM')
 
@@ -55,7 +55,4 @@ def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(PatternCheckerTest, 'test'))
     return suite
-
-if __name__ == '__main__':
-    unittest.TextTestRunner().run(test_suite())
 

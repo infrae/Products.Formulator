@@ -1,13 +1,14 @@
 
-from Testing import ZopeTestCase
-
-ZopeTestCase.installProduct('Formulator')
-
 import unittest
+
+from DateTime import DateTime
+from Testing import ZopeTestCase
 from ZPublisher.TaintedString import TaintedString
+
 from Products.Formulator import Validator
 from Products.Formulator.StandardFields import DateTimeField
-from DateTime import DateTime
+from Products.Formulator.tests.layer import FormulatorZCMLLayer
+
 
 class TestField:
     def __init__(self, id, **kw):
@@ -41,7 +42,10 @@ class FakeSaxHandler:
     def getXml(self):
         return self._xml
 
+
 class ValidatorTestCase(ZopeTestCase.ZopeTestCase):
+    layer = FormulatorZCMLLayer
+
     def assertValidatorRaises(self, exception, error_key, f, *args, **kw):
         try:
             apply(f, args, kw)
@@ -53,7 +57,9 @@ class ValidatorTestCase(ZopeTestCase.ZopeTestCase):
                 return
         self.fail('Expected error %s but no error received.' % error_key)
 
+
 class StringValidatorTestCase(ValidatorTestCase):
+
     def setUp(self):
         self.v = Validator.StringValidatorInstance
 
@@ -722,17 +728,14 @@ class DateTimeValidatorTestCase(ValidatorTestCase):
 def test_suite():
     suite = unittest.TestSuite()
 
-    suite.addTest(unittest.makeSuite(StringValidatorTestCase, 'test'))
-    suite.addTest(unittest.makeSuite(LinesValidatorTestVase, 'test'))
-    suite.addTest(unittest.makeSuite(SelectionValidatorTestCase, 'test'))
-    suite.addTest(unittest.makeSuite(EmailValidatorTestCase, 'test'))
-    suite.addTest(unittest.makeSuite(PatternValidatorTestCase, 'test'))
-    suite.addTest(unittest.makeSuite(BooleanValidatorTestCase, 'test'))
-    suite.addTest(unittest.makeSuite(IntegerValidatorTestCase, 'test'))
-    suite.addTest(unittest.makeSuite(FloatValidatorTestCase, 'test'))
-    suite.addTest(unittest.makeSuite(DateTimeValidatorTestCase, 'test'))
+    suite.addTest(unittest.makeSuite(StringValidatorTestCase))
+    suite.addTest(unittest.makeSuite(LinesValidatorTestVase))
+    suite.addTest(unittest.makeSuite(SelectionValidatorTestCase))
+    suite.addTest(unittest.makeSuite(EmailValidatorTestCase))
+    suite.addTest(unittest.makeSuite(PatternValidatorTestCase))
+    suite.addTest(unittest.makeSuite(BooleanValidatorTestCase))
+    suite.addTest(unittest.makeSuite(IntegerValidatorTestCase))
+    suite.addTest(unittest.makeSuite(FloatValidatorTestCase))
+    suite.addTest(unittest.makeSuite(DateTimeValidatorTestCase))
 
     return suite
-
-if __name__ == '__main__':
-    framework()
