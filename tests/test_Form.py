@@ -1,8 +1,3 @@
-import os, sys
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
-
-
 """ random assembly testing some reported bugs.
     This is _not_ a structured or even complete test suite.
     Most tests test the "render" method of fields, thus they
@@ -17,25 +12,24 @@ import unittest, re
 from xml.dom.minidom import parseString
 from DateTime import DateTime
 
-from Products.Formulator.Form import ZMIForm
-from Products.Formulator.Errors import ValidationError, FormValidationError
 from Products.Formulator.MethodField import Method
 from Products.Formulator.TALESField import TALESMethod
 
 from Products.PythonScripts.PythonScript import PythonScript
 
-from test_serialize import FakeRequest
-from layer import FormulatorZCMLLayer
+from Products.Formulator.tests.test_serialize import FakeRequest
+from Products.Formulator.tests.layer import FormulatorZCMLLayer
+
 
 class FormTestCase(ZopeTestCase.ZopeTestCase):
     layer = FormulatorZCMLLayer
-    
+
     def afterSetUp(self):
         self.root = self.folder
         self.root.manage_addProduct['Formulator'] \
                  .manage_add('form', 'Test Form')
         self.form = self.root.form
-        
+
     def test_has_field(self):
         """ test if has_field works, if one asks for a non-field attribute.
             this has raised AttributeError "aq_explicit" in previous versions
@@ -54,7 +48,7 @@ class FormTestCase(ZopeTestCase.ZopeTestCase):
 
     #def test_multi_list_items(self):
     #    self._test_list_items('MultiCheckBoxField')
-        
+
     def _test_list_items(self, list_field_type):
         """ test if a list of values returned by TALES (override) expressions
         is interpreted properly.
@@ -87,7 +81,7 @@ class FormTestCase(ZopeTestCase.ZopeTestCase):
         self.assertEquals('ok', list_field.render_view('ok') )
         # test validation ... fake request with a dictionary ...
         list_field.validate({'field_list_field':'ok'})
-        
+
         # test override (most probably superfluous)
         del list_field.tales['items']
         list_field.overrides['items'] = Method('override_test')
@@ -101,12 +95,12 @@ class FormTestCase(ZopeTestCase.ZopeTestCase):
         del list_field.overrides['items']
         # test when TALES returns a list of e.g. int
         list_field.values['items'] = [ ('42', '42'), ('88', '88') ]
-        
+
         items1 = list_field.render()
-        
+
         list_field.tales['items'] = TALESMethod("python:[42, 88]")
         items2 = list_field.render()
-        
+
         self.assertEquals(items1, items2)
 
         list_field.validate({'field_list_field':'42'})
@@ -119,16 +113,16 @@ class FormTestCase(ZopeTestCase.ZopeTestCase):
         """
         # use a MultiCheckBoxField instead of a MultiListField just for variance
         self.form.manage_addField('list_field', 'Test List Field', 'MultiCheckBoxField')
-        
+
         list_field = self.form.list_field
         list_field.values['items'] = [ ('foo', 'foo'), ('bar', 'bar') ]
 
         items1 = list_field.render( ('foo',) )
 
         list_field.tales['items'] = TALESMethod("python:('foo', 'bar')")
-        
+
         self.assertEquals(('foo', 'bar'), list_field.get_value('items'))
-        
+
         items2 = list_field.render( ('foo',) )
 
         # test render
@@ -143,7 +137,7 @@ class FormTestCase(ZopeTestCase.ZopeTestCase):
         """
         self.form.manage_addField('list_boxes', 'Test Checkboxes', 'MultiCheckBoxField')
         self.encoding = "utf-8"
-        self.form.unicode_mode = 1 
+        self.form.unicode_mode = 1
         list_boxes = self.form.list_boxes
         list_boxes.values['unicode'] = 1
         list_boxes.values['items'] = \
@@ -175,25 +169,26 @@ class FormTestCase(ZopeTestCase.ZopeTestCase):
 
         request = FakeRequest()
         request.form['field_lines_field'] = 'Text'
-        
+
         rendered = field.render(REQUEST=request)
 
-        # strip <textarea ...> </texarea> manually :-/
-        m = re.match(r'<textarea[^>]*>(.*)</textarea>', rendered, re.M | re.S)
-        self.assert_("output of linesfield not parseable :"+rendered,
-                     m is not None)
-        self.assertEquals('Text', m.group(1))
+        dom = parseString('<dummy>%s</dummy>' % rendered)
+        divs = [ child for child in dom.documentElement.childNodes \
+                     if child.nodeType == child.ELEMENT_NODE ]
+        self.assertEqual(len(divs), 1)
+        self.assertEqual(divs[0].nodeName, 'div')
+        textareas = [ child for child in divs[0].childNodes \
+                     if child.nodeType == child.ELEMENT_NODE ]
+        self.assertEqual(len(textareas), 1)
+        self.assertEqual(textareas[0].nodeName, 'textarea')
+        text = [ child for child in textareas[0].childNodes \
+                     if child.nodeType == child.TEXT_NODE ]
+
+        self.assertEquals('Text', ''.join(map(lambda n:n.nodeValue, text)))
 
         field.values['hidden']='checked'
         rendered = field.render(REQUEST=request)
 
-        # strip <input value="" ... /> manually :-/
-        m = re.match(r'<input.* value="([^"]*)".*/>', rendered, re.M | re.I | re.S)
-        self.assert_("output of linesfield not parseable :"+rendered,
-                     m is not None)
-        self.assertEquals('Text', m.group(1))
-        
-    
     def test_labels(self):
         """ test that labels do not influence validation """
         self.form.manage_addField(
@@ -235,7 +230,7 @@ class FormTestCase(ZopeTestCase.ZopeTestCase):
 
         # now we should have five matches for the five subfields ...
         css_matches = css_matcher.findall(field.render())
-        self.assertEquals(5, len(css_matches))
+        self.assertEquals(10, len(css_matches))
         # ... and all have the given value:
         for m in css_matches:
             self.assertEquals('some_class',m)
@@ -248,14 +243,14 @@ class FormTestCase(ZopeTestCase.ZopeTestCase):
 
         # still the css classes should remain the same
         css_matches = css_matcher.findall(field.render())
-        self.assertEquals(5, len(css_matches))
+        self.assertEquals(7, len(css_matches))
         for m in css_matches:
             self.assertEquals('some_class',m)
 
         # now just change to another value:
         field._edit({'css_class':'other_class'})
         css_matches = css_matcher.findall(field.render())
-        self.assertEquals(5, len(css_matches))
+        self.assertEquals(7, len(css_matches))
         for m in css_matches:
             self.assertEquals('other_class',m)
 
@@ -264,20 +259,29 @@ class FormTestCase(ZopeTestCase.ZopeTestCase):
         css_matches = css_matcher.findall(field.render())
         self.assertEquals(0, len(css_matches))
 
-
     def _helper_render_datetime(self,expected_values,rendered, type='hidden'):
         # heper to check if the generated HTML from render or render_hidden
         # meets the expectations
         dom = parseString('<dummy>%s</dummy>' % rendered)
         elements = [ child for child in dom.documentElement.childNodes \
                      if child.nodeType == child.ELEMENT_NODE ]
-        self.assertEquals(len(expected_values.keys()), len(elements))
+        if type != 'hidden':
+            # They are wrapped in divs if not hidden
+            self.assertEquals(len(elements), len(expected_values))
+            inputs = []
+            for element in elements:
+                inputs.extend([child for child in element.childNodes \
+                                   if child.nodeType == child.ELEMENT_NODE ])
+        else:
+            inputs = elements
+
+        self.assertEquals(len(expected_values.keys()), len(inputs))
         values={}
-        for child in elements:
-            self.assertEquals('input', child.nodeName)
-            self.assertEquals(type, child.getAttribute('type'))
-            self.failIf(child.childNodes)
-            values[child.getAttribute('name')] = child.getAttribute('value')
+        for input in inputs:
+            self.assertEquals('input', input.nodeName)
+            self.assertEquals(type, input.getAttribute('type'))
+            self.failIf(input.childNodes)
+            values[input.getAttribute('name')] = input.getAttribute('value')
         self.assertEquals(expected_values, values)
 
     def _helper_render_hidden_list(self,expected_name, expected_values,
@@ -428,7 +432,7 @@ class FormTestCase(ZopeTestCase.ZopeTestCase):
 
 
     def test_checkbox_default_overwrites_submitted_values(self):
-        
+
         self.form.manage_addField('checkbox_field','Test Checkbox','CheckBoxField')
         checkbox_field = self.form.checkbox_field
 
@@ -519,7 +523,7 @@ class FormTestCase(ZopeTestCase.ZopeTestCase):
                  .manage_add('form2', 'Test Form b\xef\xbf\xbdr', unicode_mode=1)
         form2 = self.root.form2
         self.assertEquals(1, form2.get_unicode_mode())
-        
+
         form2.manage_addField('testfield', 'Test field b\xef\xbf\xbdr', \
                               'StringField')
         self.assertEquals(type(u' '), type(form2.testfield.title()))

@@ -1,16 +1,37 @@
 Changes
 =======
 
-1.14 (unreleased)
+1.14 (2011/11/10)
 -----------------
 
-- ...
+- Compatibility fixes for Zope 2.13 and Python 2.7.
+
+- DateTime widget now support datetime values.
+
+- Add a method ``test_form`` on a Form to know if it is broken (have
+  ZODB broken fields, or other problems).
+
+- Add a way to programmatically change all fields options for a form.
+
+- Add support to serialize/deserialize form values on a content
+  object (see the adapters code).
+
+- TAL expressions in fields now have access to a context value: the
+  acquisition parent of the form.
+
+- Add some fields that where somewhere else in the past,
+  EmailLinesField and an InterfaceField.
+
+- Add support for interfaces in XML import/export, for an interface
+  field.
+
+- Support for FileSystemSite is optional.
 
 1.13 (2010/07/15)
 -----------------
 
-- Compatibility fixes for Zope 2.12 and Python 2.6. Those are the requirements
-  now.
+- Compatibility fixes for Zope 2.12 and Python 2.6. Those are the
+  requirements now.
 
 Ported from 1.11 branch:
 
@@ -24,10 +45,10 @@ Ported from 1.11 branch:
 
 Ported from 1.12 branch:
 
-- The majority of Widgets now auto-generate an html 'id' attribute for the 
+- The majority of Widgets now auto-generate an html 'id' attribute for the
   rendered widget.  This 'id' attribute is accessible in page templates via
   the field/html_id.  If the field has an id attribute set in the 'extra'
-  parameter, the value of this attribute is returned, rather than the 
+  parameter, the value of this attribute is returned, rather than the
   auto-generated id.  The html id and name attributes are now visible
   in the ZMI edit screen for the fields.  The widgets which do not have
   html_ids are: RadioWidget, MultiCheckBoxWidget, DateTimeWidget.  The widgets
@@ -49,10 +70,10 @@ Ported from 1.12 branch:
 
 - Fixed field events: copy of forms containing fields and folders
   containing forms was broken.
-  
+
 - Added a 'required' validator property to FileFields
 
-- Added a validator for FileFields to check whether the value is a 
+- Added a validator for FileFields to check whether the value is a
   StringType, which is an indicator that the form encoding is set
   incorrectly.  The error message informs the user the form
   encoding should be set to multipart/form-data.
@@ -164,7 +185,7 @@ Bugs fixed:
 
 Features Added:
 
-- Allow to group fields of the ZMI form for each field 
+- Allow to group fields of the ZMI form for each field
   into more groups than the default "widget" and "validator"
   (Patch from Mikael Barbero)
 
@@ -190,7 +211,7 @@ Features Added:
   values. These methods are not used within formulator itself, and
   introduce no new dependencies.
 
-- A new flag to the DateTimeField widget allows to hide the day, 
+- A new flag to the DateTimeField widget allows to hide the day,
   allowing to specify month and year only. The day defaults to the
   first day of the month in this case.
   (Patch from Ian Duggan)
@@ -204,11 +225,11 @@ Bugs Fixed:
   created form or field if the unicode property has been set
   (Patch from Bertrand Croq)
 
-- Calling "validate" on LabelField directly failed with a 
+- Calling "validate" on LabelField directly failed with a
   KeyError: 'external_validator' (Patch from Reinout van Rees)
 
 - A PatternField may have returned garbled results if the pattern
-  has several 'e' or 'f' in the pattern and 'd', 'e' of 'f' in the 
+  has several 'e' or 'f' in the pattern and 'd', 'e' of 'f' in the
   field value
 
 1.8.0
@@ -552,7 +573,7 @@ Bugs Fixed:
 
 1.1.0 (2001/10/26)
 ------------------
- 
+
 Bugs Fixed:
 
 - Fixed bug in form settings tab.

@@ -1,8 +1,9 @@
 
-import Form
-import StandardFields, HelperFields
-from FieldRegistry import FieldRegistry
-import Errors
+from Products.Formulator import Form
+from Products.Formulator import StandardFields, HelperFields
+from Products.Formulator.FieldRegistry import FieldRegistry
+from Products.Formulator import Errors
+from Products.Formulator import EmailLinesField, InterfaceField
 from AccessControl import allow_module
 
 try:
@@ -60,9 +61,15 @@ def initialize(context):
     FieldRegistry.registerField(HelperFields.MethodField)
     FieldRegistry.registerField(HelperFields.TALESField)
 
+    # some other fields
+    FieldRegistry.registerField(
+       EmailLinesField.EmailLinesField, 'www/EmailField.gif')
+    FieldRegistry.registerField(
+       InterfaceField.InterfaceField, 'www/BasicField.gif')
+
     # obsolete field (same as helper; useable but not addable)
-    FieldRegistry.registerField(StandardFields.RangedIntegerField,
-                                'www/RangedIntegerField.gif')
+    FieldRegistry.registerField(
+       StandardFields.RangedIntegerField, 'www/RangedIntegerField.gif')
 
     # register the form itself
     context.registerClass(
@@ -79,9 +86,6 @@ def initialize(context):
 
     # register help for the product
     context.registerHelp()
-    # register field help for all fields
-    # XXX Broken in Zope 2.13
-    # FieldRegistry.registerFieldHelp(context)
 
 # monkey patches
 import monkey
