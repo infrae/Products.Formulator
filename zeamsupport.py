@@ -110,9 +110,8 @@ class FormulatorWidget(object):
     def computeValue(self):
         field = self._field
         if not getValue(self.component, 'ignoreRequest', self.form):
-            value = field._get_default(self._key, None, self.request)
-            if value is not NO_VALUE:
-                return value
+            if self._key in self.request:
+                return field._get_default(self._key, None, self.request)
         if not getValue(self.component, 'ignoreContent', self.form):
             if self.form.getContent() is not None:
                 data = self.form.getContentData()
