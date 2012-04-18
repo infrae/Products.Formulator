@@ -110,7 +110,7 @@ class FormulatorWidget(object):
     def computeValue(self):
         field = self._field
         if not getValue(self.component, 'ignoreRequest', self.form):
-            if self._key in self.request:
+            if 'marker_' + self._key in self.request:
                 return field._get_default(self._key, None, self.request)
         if not getValue(self.component, 'ignoreContent', self.form):
             if self.form.getContent() is not None:
@@ -127,10 +127,12 @@ class FormulatorWidget(object):
 
     def render(self):
         field = self._field
+        renderer = field.widget.render
         if field.get_value('hidden'):
-            return field.widget.render_hidden(
-                field, self._key, self.value, None)
-        return field.widget.render(field, self._key, self.value, None)
+            renderer = field.widget.render_hidden
+        return (renderer(field, self._key, self.value, None) +
+                ' <input type="hidden" value="1" name="%s" />' % (
+                'marker_' + self._key))
 
 
 grok.global_adapter(
