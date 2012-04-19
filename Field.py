@@ -1,7 +1,7 @@
 
 from AccessControl import ClassSecurityInfo
 from Acquisition.interfaces import IAcquirer
-from Acquisition import aq_parent
+from Acquisition import aq_parent, aq_inner
 from App.class_init import InitializeClass
 from App.special_dtml import DTMLFile
 from Persistence import Persistent
@@ -115,16 +115,16 @@ class Field:
         if tales_expr:
             # kw are the expression namespace. Fill in it correctly.
 
-            form = aq_parent(self)
-            context = aq_parent(form)
+            field = aq_inner(self)
+            context = aq_parent(self)
             if 'here' not in kw:
-                kw['here'] = form
+                kw['here'] = field
             if 'request' not in kw and hasattr(self, 'REQUEST'):
                 kw['request'] = self.REQUEST
             kw['modules'] = SecureModuleImporter
             value = tales_expr.__of__(self)(
-                field=self,
-                form=form,
+                field=field,
+                form=aq_parent(field),
                 context=context,
                 **kw)
         else:

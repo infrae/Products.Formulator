@@ -1,7 +1,4 @@
 
-from Acquisition import Explicit
-from Acquisition import aq_base
-
 from Products.Formulator.Errors import ValidationError
 from Products.Formulator.interfaces import IForm
 from five import grok
@@ -12,7 +9,7 @@ from zope.interface import Interface, Attribute, providedBy, implementedBy
 from zope.interface.interface import Specification
 
 
-class CustomizedField(Explicit):
+class CustomizedField(object):
     """Proxy around a native Formulator field to be able to
     programmatically change values retrieved with get_value.
     """
@@ -50,14 +47,27 @@ class FormulatorField(Field):
         self._form = form
         self._field = field
         self._customizations = {}
+        self.required = self._getValue('required', False)
+        self.readonly = self._getValue('readonly', False)
+        css_class = ['field']
+        if self.required:
+            css_class.append('field-required')
+        self._customizations['css_class'] = ' '.join(css_class)
         super(FormulatorField, self).__init__(None, field.id)
+
+    def _getValue(self, identifier, default=NO_VALUE):
+        if identifier in self._customizations:
+            return self._customizations[identifier]
+        if identifier in self._field.values:
+            return self._field.get_value(identifier)
+        return default
+
+    def getDefaultValue(self, form):
+        self._getValue('default')
 
     @property
     def meta_type(self):
         return self._field.meta_type
-
-    def getDefaultValue(self, form):
-        self._field.get_value('default')
 
     @property
     def __providedBy__(self):
@@ -75,21 +85,18 @@ class FormulatorWidget(object):
     order = 0
 
     def __init__(self, component, form, request):
-        field = aq_base(component._form).__of__(
-            form.context).get_field(component.identifier)
+        field = component._field.__of__(form.context)
         if component._customizations:
             field = CustomizedField(field, component._customizations)
         self._field = field
         self.component = component
         self.form = form
         self.request = request
-        self.identifier = field.generate_field_html_id()
-        self.title = field.get_value('title')
-        self.description = field.get_value('description')
-        self.readonly = False
-        self.required = False
-        if 'required' in field.values:
-            self.required = field.get_value('required') and True
+        self.identifier = self._field.generate_field_html_id()
+        self.title = self._field.get_value('title')
+        self.description = self._field.get_value('description')
+        self.readonly = component.readonly
+        self.required = component.required
 
     @property
     def error(self):
