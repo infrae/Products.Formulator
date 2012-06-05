@@ -142,6 +142,14 @@ class FormulatorWidget(object):
                 'marker_' + self._key))
 
 
+class FormulatorDisplayWidget(FormulatorWidget):
+
+    def render(self):
+        field = self._field
+        renderer = field.widget.render_view
+        return renderer(field, self.value)
+
+
 grok.global_adapter(
     FormulatorWidget,
     (IFormulatorField, interfaces.IFormData, Interface),
@@ -152,6 +160,11 @@ grok.global_adapter(
     (IFormulatorField, interfaces.IFormData, Interface),
     interfaces.IWidget,
     name=u"hidden")
+grok.global_adapter(
+    FormulatorDisplayWidget,
+    (IFormulatorField, interfaces.IFormData, Interface),
+    interfaces.IWidget,
+    name=u"display")
 
 
 class FormulatorExtractor(grok.MultiAdapter):

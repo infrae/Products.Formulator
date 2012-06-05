@@ -219,9 +219,8 @@ class CheckBoxWidget(Widget):
 
     def render_view(self, field, value):
         if value:
-            return 1
-        else:
-            return 0
+            return "Yes"
+        return "No"
 
 CheckBoxWidgetInstance = CheckBoxWidget()
 
