@@ -488,8 +488,9 @@ class SelectionValidator(StringBaseValidator):
             if str_value == value:
                 return item_value
 
-        # if we didn't find the value, return error
-        self.raise_error('unknown_selection', field)
+        if key + '_novalidate' not in REQUEST:
+            # if we didn't find the value, return error
+            self.raise_error('unknown_selection', field)
 
 SelectionValidatorInstance = SelectionValidator()
 
@@ -543,6 +544,8 @@ class MultiSelectionValidator(Validator):
                 item_value = item
             value_dict[item_value] = 0
 
+        if key + '_novalidate' in REQUEST:
+            return values
         # check whether all values are in dictionary
         result = []
         for value in values:
