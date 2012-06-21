@@ -622,20 +622,16 @@ class ZMIField(
 InitializeClass(ZMIField)
 PythonField = ZMIField # NOTE: for backwards compatibility
 
-class ZClassField(Field):
-    """Base class for a field implemented as a ZClass.
-    """
-    pass
 
-
-def field_added(the_object, event):
+def field_added(field, event):
     # update group info in form
-    if the_object != event.object:
+    if field != event.object:
         return
-    event.newParent.field_added(the_object.id)
+    event.newParent.field_added(field.id)
 
-def field_removed(the_object, event):
+def field_removed(field, event):
      # update group info in form
-    if the_object != event.object:
+    if field != event.object:
         return
-    event.oldParent.field_removed(the_object.id)
+    event.oldParent.field_removed(field.id)
+

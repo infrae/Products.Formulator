@@ -1,10 +1,11 @@
-from Form import BasicForm
-from Field import ZMIField
-from DummyField import fields
-from MethodField import BoundMethod
+
 from DateTime import DateTime
-import Validator, Widget
-import OFS
+
+from Products.Formulator import Validator, Widget
+from Products.Formulator.Field import ZMIField
+from Products.Formulator.Form import BasicForm
+from Products.Formulator.MethodField import BoundMethod
+
 
 class StringField(ZMIField):
     meta_type = "StringField"

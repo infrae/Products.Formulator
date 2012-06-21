@@ -13,13 +13,13 @@
 
   <!-- event handlers -->
   <subscriber
-     for=".Field.ZMIField
-         zope.lifecycleevent.interfaces.IObjectAddedEvent"
+     for=".interfaces.IField
+          zope.lifecycleevent.interfaces.IObjectAddedEvent"
      handler=".Field.field_added"
      />
 
   <subscriber
-     for=".Field.ZMIField
+     for=".interfaces.IField
           OFS.interfaces.IObjectWillBeRemovedEvent"
      handler=".Field.field_removed"
      />

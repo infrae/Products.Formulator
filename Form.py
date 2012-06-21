@@ -94,12 +94,13 @@ class Form:
         # add it to the indicated group (create group if nonexistent)
         groups = self.groups
         field_list = groups.get(group, [])
-        field_list.append(field_id)
+        if field_id not in field_list:
+            field_list.append(field_id)
+            self._p_changed = True
         groups[group] = field_list
         if group not in self.group_list:
             self.group_list.append(group)
-            self.group_list = self.group_list
-        self.groups = groups
+            self._p_changed = True
 
     security.declareProtected('Change Formulator Forms', 'field_removed')
     def field_removed(self, field_id):
@@ -108,8 +109,8 @@ class Form:
         for field_list in self.groups.values():
             if field_id in field_list:
                 field_list.remove(field_id)
+                self._p_changed = True
                 break # should be done as soon as we found it once
-        self.groups = self.groups
 
     security.declareProtected('Change Formulator Forms', 'move_field_up')
     def move_field_up(self, field_id, group):
@@ -120,7 +121,7 @@ class Form:
             return 0 # can't move further up, so we're done
         # swap fields, moving i up
         field_list[i], field_list[i - 1] = field_list[i - 1], field_list[i]
-        self.groups = groups
+        self._p_changed = True
         return 1
 
     security.declareProtected('Change Formulator Forms', 'move_field_down')
@@ -132,7 +133,7 @@ class Form:
             return 0 # can't move further down, so we're done
         # swap fields, moving i down
         field_list[i], field_list[i + 1] = field_list[i + 1], field_list[i]
-        self.groups = groups
+        self._p_changed = True
         return 1
 
     security.declareProtected('Change Formulator Forms', 'move_field_group')
@@ -150,7 +151,7 @@ class Form:
             if field.id in field_ids:
                 from_list.remove(field.id)
                 to_list.append(field.id)
-        self.groups = groups
+        self._p_changed = True
         return 1
 
     security.declareProtected('Change Formulator Forms', 'add_group')
@@ -163,9 +164,7 @@ class Form:
         groups[group] = []
         # add the group to the bottom of the list of groups
         self.group_list.append(group)
-
-        self.group_list = self.group_list
-        self.groups = groups
+        self._p_changed = True
         return 1
 
     security.declareProtected('Change Formulator Forms', 'remove_group')
@@ -183,9 +182,7 @@ class Form:
         del groups[group]
         # remove it from the group order list as well
         self.group_list.remove(group)
-
-        self.group_list = self.group_list
-        self.groups = groups
+        self._p_changed = True
         return 1
 
     security.declareProtected('Change Formulator Forms', 'rename_group')
@@ -202,8 +199,7 @@ class Form:
         group_list[i] = name
         groups[name] = groups[group]
         del groups[group]
-        self.group_list = group_list
-        self.groups = groups
+        self._p_changed = True
         return 1
 
     security.declareProtected('Change Formulator Forms', 'move_group_up')
@@ -229,7 +225,7 @@ class Form:
             return 0 # can't move further up, so we're done
         # swap groups, moving i down
         group_list[i], group_list[i + 1] = group_list[i + 1], group_list[i]
-        self.group_list = group_list
+        self._p_changed = True
         return 1
 
     # ACCESSORS
