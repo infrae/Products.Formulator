@@ -78,6 +78,12 @@ class FormulatorField(Field):
         self._customizations.update(customizations)
 
 
+def decode(string):
+    if not isinstance(string, unicode):
+        return string.decode('utf-8')
+    return string
+
+
 class FormulatorWidget(object):
     """Bind a Formulator field to a data.
     """
@@ -137,7 +143,7 @@ class FormulatorWidget(object):
         renderer = field.widget.render
         if field.get_value('hidden'):
             renderer = field.widget.render_hidden
-        return (renderer(field, self._key, self.value, None).decode('utf-8') +
+        return (decode(renderer(field, self._key, self.value, None))+
                 u' <input type="hidden" value="1" name="%s" />' % (
                 'marker_' + self._key))
 
@@ -147,7 +153,7 @@ class FormulatorDisplayWidget(FormulatorWidget):
     def render(self):
         field = self._field
         renderer = field.widget.render_view
-        return renderer(field, self.value).decode('utf-8')
+        return decode(renderer(field, self.value))
 
 
 grok.global_adapter(
