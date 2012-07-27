@@ -1,4 +1,5 @@
 
+
 from Products.Formulator.Errors import ValidationError
 from Products.Formulator.interfaces import IForm
 from five import grok
@@ -78,10 +79,12 @@ class FormulatorField(Field):
         self._customizations.update(customizations)
 
 
-def decode(string):
-    if not isinstance(string, unicode):
-        return string.decode('utf-8')
-    return string
+def decode(value):
+    if not isinstance(value, unicode):
+        if isinstance(value, str):
+            return value.decode('utf-8')
+        return unicode(value)
+    return value
 
 
 class FormulatorWidget(object):
