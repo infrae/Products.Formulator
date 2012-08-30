@@ -5,21 +5,21 @@
     maybe could be moved to a "test_widgets" test case partially
 """
 
-from Products.Formulator.tests.layer import FormulatorZCMLLayer
-from Testing import ZopeTestCase
+from Products.Formulator.testing import FunctionalLayer
 import unittest
 
 
-class FieldIdsTestCase(ZopeTestCase.ZopeTestCase):
-    layer = FormulatorZCMLLayer
+class FieldIdsTestCase(unittest.TestCase):
+    layer = FunctionalLayer
 
-    def afterSetUp(self):
-        self.root = self.folder
-        self.root.manage_addProduct['Formulator'] \
-                 .manage_add('form', 'Test Form')
+    def setUp(self):
+        self.layer.login('manager')
+        self.root = self.layer.get_application()
+        factory = self.root.manage_addProduct['Formulator']
+        factory.manage_add('form', 'Test Form')
         self.form = self.root.form
-        self.form.manage_addProduct['Formulator']\
-            .manage_addField('text','Text Field','StringField')
+        factory = self.form.manage_addProduct['Formulator']
+        factory.manage_addField('text','Text Field','StringField')
 
     def test_field_html_id(self):
         #test standard use-case
@@ -39,7 +39,7 @@ class FieldIdsTestCase(ZopeTestCase.ZopeTestCase):
 
         sf.field_record = None
 
-    def test_html_id_with_field_record(self):
+    def test_html_id_with_field_record_bis(self):
         #the form name can be used to add uniqueness as well
         # to the field key, so test that as well
         sf = self.form.text
@@ -63,6 +63,7 @@ class FieldIdsTestCase(ZopeTestCase.ZopeTestCase):
         self.assertEquals('HTML',sf.generate_field_html_id())
         sf.values['extra'] = 'id="HTML" formid="asdf"'
         self.assertEquals('HTML',sf.generate_field_html_id())
+
 
 def test_suite():
     suite = unittest.TestSuite()

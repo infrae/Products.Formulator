@@ -4,50 +4,21 @@ import re
 import unittest
 
 from DateTime import DateTime
-from Testing import ZopeTestCase
 
 from Products.Formulator.Form import ZMIForm
 from Products.Formulator.XMLToForm import XMLToForm
 from Products.Formulator.FormToXML import formToXML
 from Products.Formulator.MethodField import Method
 from Products.Formulator.Errors import ValidationError, FormValidationError
-from Products.Formulator.tests.layer import FormulatorZCMLLayer
+from Products.Formulator.testing import FunctionalLayer, TestRequest
 
 
-class FakeRequest:
-    """ a fake request for testing.
-    Actually we need this only for item acces,
-    and for evaluating to false always, for
-    the manage_XXX methods to not try to render
-    a response.
-    """
+class SerializeTestCase(unittest.TestCase):
+    layer = FunctionalLayer
 
-    def __init__(self):
-        self.form = {}
-
-    def __getitem__(self, key):
-        return self.form[key]
-
-    def __setitem__(self, key, value):
-        self.form[key] = value
-
-    def get(self, key, default_value):
-        return self.form.get(key, default_value)
-
-    def update(self, other_dict):
-        self.form.update(other_dict)
-
-    def clear(self):
-        self.form.clear()
-
-    def __nonzero__(self):
-        return 0
-
-class SerializeTestCase(ZopeTestCase.ZopeTestCase):
-    layer = FormulatorZCMLLayer
-
-    def afterSetUp(self):
-        self.root = self.folder
+    def setUp(self):
+        self.layer.login('manager')
+        self.root = self.layer.get_application()
 
     def test_simpleSerialize(self):
         form = ZMIForm('test', 'My test')
@@ -212,27 +183,25 @@ class SerializeTestCase(ZopeTestCase.ZopeTestCase):
 
         self.assertEqualForms(form, form2)
 
-
     def test_messages(self):
         """ test if the error messages are exported
         """
-        form = ZMIForm('test', '<EncodingTest>')
+        factory = self.root.manage_addProduct['Formulator']
+        factory.manage_add('form', 'Test Form')
+        form = self.root.form
         form.manage_addField('int_field', 'int Field', 'IntegerField')
 
         form2 = ZMIForm('test2', 'ValueTest')
-        request = FakeRequest()
+        request = TestRequest()
         for message_key in form.int_field.get_error_names():
-            request[message_key] = 'test message for error key <%s>' % message_key
+            request.form[message_key] = 'test message for error key <%s>' % message_key
         form.int_field.manage_messages(REQUEST=request)
-
 
         xml = formToXML(form)
         XMLToForm(xml, form2)
         # print xml
 
-        request.clear()
-        request['field_int_field'] = 'not a number'
-
+        request = TestRequest(form={'field_int_field': 'not a number'})
         try:
             form.validate_all(request)
             self.fail('form should fail in validation')
@@ -246,7 +215,7 @@ class SerializeTestCase(ZopeTestCase.ZopeTestCase):
         except FormValidationError, e:
             self.assertEquals(1, len(e.errors))
             text2 = e.errors[0].error_text
-        # XXX compare original message ids..
+
         self.assertEquals(unicode(text1), unicode(text2))
 
 
@@ -261,7 +230,10 @@ class SerializeTestCase(ZopeTestCase.ZopeTestCase):
         # tests for "method" and "datetime" values follow later on ...
         # booleans are not tested yet
 
-        form = ZMIForm('test', 'ValueTest')
+        factory = self.root.manage_addProduct['Formulator']
+        factory.manage_add('form', 'ValueTest')
+        factory.manage_add('form2', 'ValueTest')
+        form = self.root.form
         form.manage_addField('int_field', 'Test Integer Field', 'IntegerField')
         form.manage_addField('float_field', 'Test Float Field', 'FloatField')
         form.manage_addField('date_field', 'Test Date Field', 'DateTimeField')
@@ -287,65 +259,58 @@ class SerializeTestCase(ZopeTestCase.ZopeTestCase):
                           'field_enabled':'checked',
                           }
         try:
-            request = FakeRequest()
-            request.update(default_values)
-            request.update( {'field_default':'42',
-                             'field_enabled':'checked'})
-            int_field.manage_edit(REQUEST=request)
+            form_values = default_values.copy()
+            form_values.update({'field_default':'None',
+                                'field_required':'',
+                                })
+            empty_field.manage_edit(REQUEST=TestRequest(form=form_values))
 
-            request.clear()
-            request.update(default_values)
-            request.update( {'field_default':'1.7'})
-            float_field.manage_edit(REQUEST=request)
+            form_values = default_values.copy()
+            form_values.update({'field_default':'42',
+                                'field_enabled':'checked'})
+            int_field.manage_edit(REQUEST=TestRequest(form=form_values))
+
+            form_values = default_values.copy()
+            form_values.update( {'field_default':'1.7'})
+            float_field.manage_edit(REQUEST=TestRequest(form=form_values))
 
             # XXX cannot test "defaults to now", as this may fail randomly
-            request.clear()
-            request.update(default_values)
-            request.update( {'field_input_style':'list',
-                             'field_input_order':'mdy',
-                             'field_date_only':'',
-                             'field_css_class':'test_css',
-                             'field_time_separator':'$'})
-            date_field.manage_edit(REQUEST=request)
+            form_values = default_values.copy()
+            form_values.update( {'field_input_style':'list',
+                                 'field_input_order':'mdy',
+                                 'field_date_only':'',
+                                 'field_css_class':'test_css',
+                                 'field_time_separator':'$'})
+            date_field.manage_edit(REQUEST=TestRequest(form=form_values))
 
-            request.clear()
-            request.update(default_values)
-            request.update( {'field_default':'foo',
-                             'field_size':'1',
-                             'field_items':'Foo | foo\n Bar | bar'})
-            list_field.manage_edit(REQUEST=request)
+            form_values = default_values.copy()
+            form_values.update({'field_default':'foo',
+                                'field_size':'1',
+                                'field_items':'Foo | foo\n Bar | bar'})
+            list_field.manage_edit(REQUEST=TestRequest(form=form_values))
 
-            request.clear()
-            request.update(default_values)
-            request.update( {'field_default':'foo',
-                             'field_size':'3',
-                             'field_items':'Foo | foo\n Bar | bar\nBaz | baz',
-                             'field_orientation':'horizontal',
-                             'field_view_separator':'<br />\n',
-                             })
-            multi_field.manage_edit(REQUEST=request)
+            form_values = default_values.copy()
+            form_values.update({'field_default':'foo',
+                                'field_size':'3',
+                                'field_items':'Foo | foo\n Bar | bar\nBaz | baz',
+                                'field_orientation':'horizontal',
+                                'field_view_separator':'<br />\n',
+                                })
+            multi_field.manage_edit(REQUEST=TestRequest(form=form_values))
 
-            request.clear()
-            request.update(default_values)
-            request.update( {'field_default':'http://www.absurd.org',
-                             'field_required':'1',
-                             'field_check_timeout':'5.0',
-                             'field_link_type':'external',
-                             })
-            link_field.manage_edit(REQUEST=request)
-
-            request.clear()
-            request.update(default_values)
-            request.update( {'field_default':'None',
-                             'field_required':'',
-                             })
-            empty_field.manage_edit(REQUEST=request)
+            form_values = default_values.copy()
+            form_values.update({'field_default':'http://www.absurd.org',
+                                'field_required':'1',
+                                'field_check_timeout':'5.0',
+                                'field_link_type':'external',
+                                })
+            link_field.manage_edit(REQUEST=TestRequest(form=form_values))
 
         except ValidationError, e:
             self.fail('error when editing field %s; error message: %s' %
                       (e.field_id, e.error_text) )
 
-        form2 = ZMIForm('test2', 'ValueTest')
+        form2 = self.root.form2
 
         xml = formToXML(form)
         XMLToForm(xml, form2)
@@ -353,17 +318,17 @@ class SerializeTestCase(ZopeTestCase.ZopeTestCase):
 
         self.assertEqualForms(form, form2)
 
-        request.clear()
-        request['field_int_field'] = '42'
-        request['field_float_field'] = '2.71828'
-        request['subfield_date_field_month'] = '11'
-        request['subfield_date_field_day'] = '11'
-        request['subfield_date_field_year'] = '2011'
-        request['subfield_date_field_hour'] = '09'
-        request['subfield_date_field_minute'] = '59'
-        request['field_list_field'] = 'bar'
-        request['field_multi_field'] = ['bar', 'baz']
-        request['field_link_field'] = 'http://www.zope.org'
+        request = TestRequest()
+        request.form['field_int_field'] = '42'
+        request.form['field_float_field'] = '2.71828'
+        request.form['subfield_date_field_month'] = '11'
+        request.form['subfield_date_field_day'] = '11'
+        request.form['subfield_date_field_year'] = '2022'
+        request.form['subfield_date_field_hour'] = '09'
+        request.form['subfield_date_field_minute'] = '59'
+        request.form['field_list_field'] = 'bar'
+        request.form['field_multi_field'] = ['bar', 'baz']
+        request.form['field_link_field'] = 'http://www.zope.org'
         try:
             result1 = form.validate_all(request)
         except FormValidationError, e:

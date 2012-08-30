@@ -2,12 +2,11 @@
 import unittest
 
 from DateTime import DateTime
-from Testing import ZopeTestCase
 from ZPublisher.TaintedString import TaintedString
 
 from Products.Formulator import Validator
 from Products.Formulator.StandardFields import DateTimeField
-from Products.Formulator.tests.layer import FormulatorZCMLLayer
+from Products.Formulator.testing import FunctionalLayer
 
 
 class TestField:
@@ -43,8 +42,8 @@ class FakeSaxHandler:
         return self._xml
 
 
-class ValidatorTestCase(ZopeTestCase.ZopeTestCase):
-    layer = FormulatorZCMLLayer
+class ValidatorTestCase(unittest.TestCase):
+    layer = FunctionalLayer
 
     def assertValidatorRaises(self, exception, error_key, f, *args, **kw):
         try:

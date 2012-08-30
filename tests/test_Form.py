@@ -8,22 +8,22 @@ import unittest, re
 from xml.dom.minidom import parseString
 
 from DateTime import DateTime
-from Testing import ZopeTestCase
 from Products.PythonScripts.PythonScript import PythonScript
 
 from Products.Formulator.MethodField import Method
 from Products.Formulator.TALESField import TALESMethod
-from Products.Formulator.tests.test_serialize import FakeRequest
-from Products.Formulator.tests.layer import FormulatorZCMLLayer
+
+from Products.Formulator.testing import FunctionalLayer, TestRequest
 
 
-class FormTestCase(ZopeTestCase.ZopeTestCase):
-    layer = FormulatorZCMLLayer
+class FormTestCase(unittest.TestCase):
+    layer = FunctionalLayer
 
-    def afterSetUp(self):
-        self.root = self.folder
-        self.root.manage_addProduct['Formulator'] \
-                 .manage_add('form', 'Test Form')
+    def setUp(self):
+        self.layer.login('manager')
+        self.root = self.layer.get_application()
+        factory = self.root.manage_addProduct['Formulator']
+        factory.manage_add('form', 'Test Form')
         self.form = self.root.form
 
     def test_has_field(self):
@@ -126,8 +126,7 @@ class FormTestCase(ZopeTestCase.ZopeTestCase):
         # test render_view
         self.assertEquals("foo", list_field.render_view(('foo',)) )
 
-
-    def test_items_is_sequence(self):
+    def test_items_is_sequence_bis(self):
         """ test that a multi list values widget renders correctly,
             if the value from the request contains a list of non-ascii values
         """
@@ -138,7 +137,7 @@ class FormTestCase(ZopeTestCase.ZopeTestCase):
         list_boxes.values['unicode'] = 1
         list_boxes.values['items'] = \
                  [ (u'\xe4', u'A uml'), (u'\xfc', u'U uml') ]
-        request = FakeRequest()
+        request = TestRequest()
         request.form['key'] = ['\xc3\xa4','\xc3\xbc']
         items = list_boxes._get_default(key='key', value=None,
                                         REQUEST=request)
@@ -163,7 +162,7 @@ class FormTestCase(ZopeTestCase.ZopeTestCase):
 
         field = self.form.lines_field
 
-        request = FakeRequest()
+        request = TestRequest()
         request.form['field_lines_field'] = 'Text'
 
         rendered = field.render(REQUEST=request)
@@ -206,7 +205,7 @@ class FormTestCase(ZopeTestCase.ZopeTestCase):
         """
         self.form.manage_addField(
             'label_field', 'Test Label Field', 'LabelField')
-        self.form['label_field'].validate(REQUEST=FakeRequest())
+        self.form['label_field'].validate(REQUEST=TestRequest())
 
     def test_datetime_css_class_rendering(self):
         # test that a bug is fixed, which causing the css_class value
@@ -414,16 +413,14 @@ class FormTestCase(ZopeTestCase.ZopeTestCase):
                         'subfield_date_field_month':'01',
                         'subfield_date_field_day' : '01'}
 
-        request = FakeRequest()
-        request.update(expected_values)
-
+        request = TestRequest(form=expected_values)
         rendered = date_field.render_from_request(request)
         self._helper_render_datetime(expected_values, rendered, type='text')
 
         # as we are already here, check yet another thing:
         # test that default is honored if no value given
         expected_values['subfield_date_field_year'] = '1971'
-        rendered = date_field.render_from_request( FakeRequest() )
+        rendered = date_field.render_from_request(TestRequest())
         self._helper_render_datetime(expected_values, rendered, type='text')
 
 
@@ -437,8 +434,7 @@ class FormTestCase(ZopeTestCase.ZopeTestCase):
         rendered = checkbox_field.render()
         self.assert_(-1 != rendered.find('checked="checked"'))
 
-        request = FakeRequest()
-
+        request = TestRequest()
         rendered = checkbox_field.render_from_request(request)
         self.assert_(-1 != rendered.find('checked="checked"'))
 
@@ -462,13 +458,12 @@ class FormTestCase(ZopeTestCase.ZopeTestCase):
 
         # the list field has the most complicated setting:
         # a list of 2-tuples for the 'items'
-        request = FakeRequest()
-        values = {'field_title' : 'Title\xc3\xbc' ,
-                  'field_default' : 'item\xc3\xbc',
-                  'field_items': 'item\xc3\xbc | item_ue\nitem2 | item2',
-                  'field_size': '7',
-                  }
-        request.update(values)
+        request = TestRequest(form={
+                'field_title' : 'Title\xc3\xbc' ,
+                'field_default' : 'item\xc3\xbc',
+                'field_items': 'item\xc3\xbc | item_ue\nitem2 | item2',
+                'field_size': '7',
+                })
         list_field.manage_edit(request)
         self.assertEquals(u'item\xfc',
                           list_field.get_value('default') )
@@ -479,14 +474,13 @@ class FormTestCase(ZopeTestCase.ZopeTestCase):
         self.assertEquals(7, list_field.get_value('size'))
 
         # the lines field has a plain list of string as 'default'
-        request = FakeRequest()
-        values = {'field_title' : 'Title\xc3\xbc' ,
-                  'field_default' : 'item\xc3\xbc\nitem2',
-                  'field_width': '40',
-                  'field_height': '5',
-                  'field_view_separator': 'sep \xc3\xbc',
-                  }
-        request.update(values)
+        request = TestRequest(form={
+                'field_title' : 'Title\xc3\xbc' ,
+                'field_default' : 'item\xc3\xbc\nitem2',
+                'field_width': '40',
+                'field_height': '5',
+                'field_view_separator': 'sep \xc3\xbc',
+                })
         lines_field.manage_edit(request)
         self.assertEquals(u'Title\xfc',
                           lines_field.get_value('title') )
