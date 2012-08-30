@@ -20,14 +20,15 @@ class EmailLinesValidator(LinesValidator):
 
     not_email = 'You did not enter valid email addresses.'
 
-    def validate(self, field, key, REQUEST):
-        value = LinesValidator.validate(self, field, key, REQUEST)
-        for address in value:
-            if pattern.search(address.lower()) == None:
-                self.raise_error('not_email', field)
-        return value
+    def check(self, field, value, failover):
+        if not failover:
+            for line in value:
+                if pattern.search(line.lower()) is None:
+                    self.raise_error('not_email', field)
+
 
 EmailLinesValidatorInstance = EmailLinesValidator()
+
 
 class EmailLinesField(LinesField):
     meta_type = 'EmailLinesField'

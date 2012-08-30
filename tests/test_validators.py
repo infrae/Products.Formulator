@@ -25,6 +25,7 @@ class TestField:
         # XXX fake ... what if installed python does not support utf-8?
         return "utf-8"
 
+
 class FakeSaxHandler:
     def __init__(self):
         self._xml = ''
@@ -61,9 +62,6 @@ class StringValidatorTestCase(ValidatorTestCase):
 
     def setUp(self):
         self.v = Validator.StringValidatorInstance
-
-    def tearDown(self):
-        pass
 
     def test_basic(self):
         result = self.v.validate(
@@ -161,12 +159,10 @@ class StringValidatorTestCase(ValidatorTestCase):
         self.assertEquals('This is the string value', handler.getXml())
 
     def test_deserializeValue(self):
-        string = 'This is the string value'
         field = TestField('f', max_length=0, truncate=0, required=0, unicode=1)
         self.assertEquals(
             'This is the string value',
-            self.v.deserializeValue(field, string)
-            )
+            self.v.deserializeValue(field, 'This is the string value'))
 
     def test_serializeNonStringValues(self):
         not_a_string = 0
@@ -194,8 +190,9 @@ class LinesValidatorTestVase(ValidatorTestCase):
         self.assertEquals(['Two Lines ',' of Text'], result)
 
     def test_maxlength(self):
-        # currently the validator checks the max lenght before stripping whitespace
-        # from each line (and includes the linebreaks)
+        # currently the validator checks the max lenght before
+        # stripping whitespace from each line (and includes the
+        # linebreaks)
         self.assertValidatorRaises(
             Validator.ValidationError, 'too_long',
             self.v.validate,
@@ -217,7 +214,7 @@ class LinesValidatorTestVase(ValidatorTestCase):
             self.v.validate,
             TestField('f', max_lines=2, whitespace_preserve=1,
                       truncate=0, required=1, unicode=0),
-            'f', {'f': '\nToo long\n text'} )
+            'f', {'f': 'A really\ntoo long\n text'} )
         # check max_linelength works
         self.assertValidatorRaises(
             Validator.ValidationError, 'line_too_long',
@@ -229,41 +226,107 @@ class LinesValidatorTestVase(ValidatorTestCase):
     def test_serializeValue(self):
         handler = FakeSaxHandler()
         value = ['Two Lines ',' of Text']
-        field = TestField('f', max_length=0, truncate=0, required=1, unicode=0)
+        field = TestField(
+            'f', max_length=0, truncate=0, required=1, unicode=0)
         self.v.serializeValue(field, value, handler)
         self.assertEqual('Two Lines \n of Text', handler.getXml())
 
     def test_deserializeValue(self):
         string = 'Two Lines \n of Text'
-        field = TestField('f', max_length=0, truncate=0, whitespace_preserve=1, required=0, unicode=1)
+        field = TestField(
+            'f', max_length=0, truncate=0, whitespace_preserve=1, required=0, unicode=1)
         self.assertEquals(
             ['Two Lines ', ' of Text'],
-            self.v.deserializeValue(field, string)
-            )
+            self.v.deserializeValue(field, string))
+
 
 class SelectionValidatorTestCase(ValidatorTestCase):
 
     def setUp(self):
         self.v = Validator.SelectionValidatorInstance
 
-    def test_basic(self):
+    def test_items(self):
         result = self.v.validate(
-            TestField('f', required=1, unicode=True, items=[('Some A here','a'),('Some B then','b')]),
+            TestField(
+                'f', required=1, unicode=True, items=[
+                    ('Some A here','a'), ('Some B then','b')]),
             'f', {'f': 'b'})
         self.assertEquals('b', result)
-        # with single items
+        # With single items
         result = self.v.validate(
-            TestField('f', required=1, unicode=True, items=[('ab','bb')]),
+            TestField('f', required=1, unicode=True, items=[('ab', 'bb')]),
             'f', {'f': 'bb'})
         self.assertEquals('bb', result)
+        # Empty
+        result = self.v.validate(
+            TestField(
+                'f', required=0, unicode=True, items=[
+                    ('Some A here','a'), ('Some B then','b')]),
+            'f', {})
+        self.assertEquals(u'', result)
+
+    def test_integer_items(self):
+        result = self.v.validate(
+            TestField(
+                'f', required=1, unicode=True, items=[
+                    ('Un', 1), ('Deux', 2)]),
+            'f', {'f': '1'})
+        self.assertEquals(1, result)
 
     def test_unicode_items(self):
-        aUmlPlain='\xc3\xa4'
-        aUmlUnicode=u'\xe4'
         result = self.v.validate(
-            TestField('f', required=1, unicode=True, items=[(u'Some \xc3\x84 here',aUmlUnicode),(u'Some B then',u'b')]),
-            'f', {'f': aUmlPlain})
-        self.assertEquals(aUmlUnicode, result)
+            TestField(
+                'f', required=1, unicode=True, items=[
+                    (u'Some \xc3\x84 here', u'\xe4'),(u'Some B then',u'b')]),
+            'f', {'f': '\xc3\xa4'})
+        self.assertEquals(u'\xe4', result)
+
+    def test_invalid_items(self):
+        with self.assertRaises(Validator.ValidationError) as error:
+            self.v.validate(
+                TestField(
+                    'f', required=1, unicode=True, items=[
+                        ('Some A here','a'), ('Some B then','b')]),
+                'f', {'f': 'c'})
+        self.assertEquals('unknown_selection', error.exception.error_key)
+
+
+class MultiSelectionValidatorTestCase(ValidatorTestCase):
+
+    def setUp(self):
+        self.v = Validator.MultiSelectionValidatorInstance
+
+    def test_items(self):
+        result = self.v.validate(
+            TestField(
+                'f', required=1, unicode=True, items=[
+                    ('Some A here','a'), ('Some B then','b')]),
+            'f', {'f': 'b'})
+        self.assertEquals(['b'], result)
+        # Empty
+        result = self.v.validate(
+            TestField(
+                'f', required=0, unicode=True, items=[
+                    ('Some A here','a'), ('Some B then','b')]),
+            'f', {})
+        self.assertEquals([], result)
+
+    def test_unicode_items(self):
+        result = self.v.validate(
+            TestField(
+                'f', required=1, unicode=True, items=[
+                    (u'Some \xc3\x84 here', u'\xe4'),(u'Some B then',u'b')]),
+            'f', {'f': '\xc3\xa4'})
+        self.assertEquals([u'\xe4'], result)
+
+    def test_invalid_items(self):
+        with self.assertRaises(Validator.ValidationError) as error:
+            self.v.validate(
+                TestField(
+                    'f', required=1, unicode=True, items=[
+                        ('Some A here','a'), ('Some B then','b')]),
+                'f', {'f': ['a', 'c']})
+        self.assertEquals('unknown_selection', error.exception.error_key)
 
 
 class EmailValidatorTestCase(ValidatorTestCase):
@@ -306,19 +369,19 @@ class EmailValidatorTestCase(ValidatorTestCase):
         handler = FakeSaxHandler()
         string = 'eric@infrae.com'
         field = TestField('f', max_length=0, truncate=0, required=0, unicode=1)
-        self.v.serializeValue(TestField, string, handler)
+        self.v.serializeValue(field, string, handler)
         self.assertEqual('eric@infrae.com', handler.getXml())
 
     def test_deserializeValue(self):
-        string = 'eric@infrae.com'
         field = TestField('f', max_length=0, truncate=0, required=0, unicode=1)
         self.assertEquals(
             'eric@infrae.com',
-            self.v.deserializeValue(field, string)
-            )
+            self.v.deserializeValue(field, 'eric@infrae.com'))
 
-# not much for PatternValidator for now
+
+
 class PatternValidatorTestCase(ValidatorTestCase):
+
     def setUp(self):
         self.v = Validator.PatternValidatorInstance
 
@@ -336,11 +399,9 @@ class PatternValidatorTestCase(ValidatorTestCase):
 
 
 class BooleanValidatorTestCase(ValidatorTestCase):
+
     def setUp(self):
         self.v = Validator.BooleanValidatorInstance
-
-    def tearDown(self):
-        pass
 
     def test_basic(self):
         result = self.v.validate(
@@ -372,17 +433,14 @@ class BooleanValidatorTestCase(ValidatorTestCase):
         self.assertEqual('True', handler2.getXml())
 
     def test_deserializeValue(self):
-        string = 'False'
         field = TestField('f', max_length=0, truncate=0, required=0, unicode=1)
         self.assertEquals(
             False,
-            self.v.deserializeValue(field, string)
-            )
-        string = 'True'
+            self.v.deserializeValue(field, 'False'))
         self.assertEquals(
             True,
-            self.v.deserializeValue(field, string)
-            )
+            self.v.deserializeValue(field, 'True'))
+
 
 class IntegerValidatorTestCase(ValidatorTestCase):
     def setUp(self):
@@ -516,12 +574,12 @@ class IntegerValidatorTestCase(ValidatorTestCase):
         self.assertEqual('1337', handler.getXml())
 
     def test_deserializeValue(self):
-        string = '1337'
-        field = TestField('f', max_length=0, truncate=0, required=0, unicode=1, start=0, end=2000)
+        field = TestField(
+            'f', max_length=0, truncate=0, required=0, unicode=1, start=0, end=2000)
         self.assertEquals(
             1337,
-            self.v.deserializeValue(field, string)
-            )
+            self.v.deserializeValue(field, '1337'))
+
 
 class FloatValidatorTestCase(ValidatorTestCase):
     def setUp(self):
@@ -562,11 +620,12 @@ class FloatValidatorTestCase(ValidatorTestCase):
 
     def test_deserializeValue(self):
         string = '1.00001'
-        field = TestField('f', max_length=0, truncate=0, required=0, unicode=1, start=0, end=2000)
+        field = TestField(
+            'f', max_length=0, truncate=0, required=0, unicode=1, start=0, end=2000)
         self.assertEquals(
             1.00001,
-            self.v.deserializeValue(field, string)
-            )
+            self.v.deserializeValue(field, string))
+
 
 class DateTimeValidatorTestCase(ValidatorTestCase):
     def setUp(self):
@@ -680,7 +739,6 @@ class DateTimeValidatorTestCase(ValidatorTestCase):
             DateTimeField('f', allow_empty_time=1, required=0), 'f', {})
         self.assertEquals(None, result)
 
-
     def test_date_failure(self):
         self.assertValidatorRaises(
             Validator.ValidationError, 'not_datetime',
@@ -713,28 +771,26 @@ class DateTimeValidatorTestCase(ValidatorTestCase):
                   'subfield_f_minute': '30'})
         field = DateTimeField('f')
         self.v.serializeValue(field, value, handler)
-        date = DateTime(2002,12,01,10,30,00)
-        self.assertEqual(date.HTML4(), handler.getXml())
+        self.assertEqual('2002-12-01T09:30:00Z', handler.getXml())
 
     def test_deserializeValue(self):
         string = '2004-04-23T16:13:40Z'
         field = TestField('f', max_length=0, truncate=0, required=0, unicode=1)
         self.assertEquals(
             DateTime('2004-04-23T16:13:40Z'),
-            self.v.deserializeValue(field, string)
-            )
+            self.v.deserializeValue(field, string))
+
 
 def test_suite():
     suite = unittest.TestSuite()
-
-    suite.addTest(unittest.makeSuite(StringValidatorTestCase))
-    suite.addTest(unittest.makeSuite(LinesValidatorTestVase))
-    suite.addTest(unittest.makeSuite(SelectionValidatorTestCase))
-    suite.addTest(unittest.makeSuite(EmailValidatorTestCase))
-    suite.addTest(unittest.makeSuite(PatternValidatorTestCase))
     suite.addTest(unittest.makeSuite(BooleanValidatorTestCase))
-    suite.addTest(unittest.makeSuite(IntegerValidatorTestCase))
-    suite.addTest(unittest.makeSuite(FloatValidatorTestCase))
     suite.addTest(unittest.makeSuite(DateTimeValidatorTestCase))
-
+    suite.addTest(unittest.makeSuite(EmailValidatorTestCase))
+    suite.addTest(unittest.makeSuite(FloatValidatorTestCase))
+    suite.addTest(unittest.makeSuite(IntegerValidatorTestCase))
+    suite.addTest(unittest.makeSuite(LinesValidatorTestVase))
+    suite.addTest(unittest.makeSuite(PatternValidatorTestCase))
+    suite.addTest(unittest.makeSuite(SelectionValidatorTestCase))
+    suite.addTest(unittest.makeSuite(MultiSelectionValidatorTestCase))
+    suite.addTest(unittest.makeSuite(StringValidatorTestCase))
     return suite

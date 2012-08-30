@@ -4,6 +4,19 @@ from Acquisition import aq_base
 
 seq_types = [type([]), type(())]
 
+def ensure_unicode(value, convert=True, encoding='utf-8'):
+    if convert:
+        if not isinstance(value, unicode):
+            if not isinstance(value, str):
+                value = str(value)
+            value = unicode(value, encoding)
+    elif isinstance(value, unicode):
+        value = value.encode(encoding)
+    elif not isinstance(value, basestring):
+        value = str(value)
+    return value
+
+
 def is_sequence(v):
     return type(aq_base(v)) in seq_types
 

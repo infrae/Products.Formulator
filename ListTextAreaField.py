@@ -1,7 +1,9 @@
 import string
-from DummyField import fields
-import Widget, Validator
-from Field import ZMIField
+
+from Products.Formulator import Widget, Validator
+from Products.Formulator.DummyField import fields
+from Products.Formulator.Field import ZMIField
+
 
 class ListTextAreaWidget(Widget.TextAreaWidget):
     default = fields.ListTextAreaField('default',
@@ -21,10 +23,12 @@ class ListTextAreaWidget(Widget.TextAreaWidget):
 
 ListTextAreaWidgetInstance = ListTextAreaWidget()
 
+
 class ListLinesValidator(Validator.LinesValidator):
     """A validator that can deal with lines that have a | separator
     in them to split between text and value of list items.
     """
+
     def validate(self, field, key, REQUEST):
         value = Validator.LinesValidator.validate(self, field, key, REQUEST)
         result = []
@@ -41,6 +45,7 @@ class ListLinesValidator(Validator.LinesValidator):
         return result
 
 ListLinesValidatorInstance = ListLinesValidator()
+
 
 class ListTextAreaField(ZMIField):
     meta_type = "ListTextAreaField"

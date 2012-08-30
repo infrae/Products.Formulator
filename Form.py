@@ -30,7 +30,7 @@ from Products.Formulator.Widget import render_tag
 from Products.Formulator.DummyField import fields
 from Products.Formulator.FormToXML import formToXML
 from Products.Formulator.XMLToForm import XMLToForm
-from Products.Formulator.helpers import convert_unicode
+from Products.Formulator.helpers import ensure_unicode
 
 
 class Form:
@@ -591,7 +591,7 @@ class BasicForm(Persistent, Acquisition.Implicit, Form):
         """get a field of a certain id."""
         field = self.fields[id]
         if include_disabled or field.get_value('enabled'):
-            return field
+            return field.__of__(self)
         raise FieldDisabledError("Field %s is disabled" % id, field)
 
     def _realize_fields(self):
@@ -717,7 +717,7 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
                                                unicode_mode)
         self.id = id
         if unicode_mode:
-            title = convert_unicode(title, 'UTF-8')
+            title = ensure_unicode(title)
         self.title = title
         self.row_length = 4
 
@@ -798,7 +798,7 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
             title = id # title is always required, use id if not provided
         if self.get_unicode_mode():
             # ZMI input is UTF-8 always (?)
-            title = convert_unicode(title, 'UTF-8')
+            title = ensure_unicode(title)
         # get the field class we want to add
         field_class = FieldRegistry.get_field_class(fieldname)
         # create field instance

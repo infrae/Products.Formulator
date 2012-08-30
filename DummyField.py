@@ -9,15 +9,18 @@ can be used on FieldProperty objects to get an
 actual field object.
 """
 
+from Acquisition import Implicit
 from FieldRegistry import FieldRegistry
 
 class DummyFieldFactory:
+
     def __getattr__(self, name):
         return DummyField(name)
 
 fields = DummyFieldFactory()
 
-class DummyField:
+
+class DummyField(Implicit):
     def __init__(self, desired_meta_class):
         self.desired_meta_class = desired_meta_class
 

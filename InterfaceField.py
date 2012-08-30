@@ -11,8 +11,7 @@ from zope.interface.interfaces import IInterface
 class InterfaceValidator(Validator):
     """Formulator validator for an interface.
     """
-    property_names = Validator.property_names + [
-        'required']
+    property_names = Validator.property_names + ['required']
     message_names = Validator.message_names + [
         'required_not_found', 'invalid_interface']
 

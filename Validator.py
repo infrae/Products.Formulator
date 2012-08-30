@@ -2,7 +2,7 @@ import re
 from threading import Thread
 from urllib import urlopen
 from urlparse import urljoin
-from types import UnicodeType, StringTypes
+from types import StringTypes
 
 from ZPublisher.TaintedString import TaintedString
 from DateTime import DateTime
@@ -10,7 +10,7 @@ from DateTime import DateTime
 from Products.Formulator import PatternChecker
 from Products.Formulator.DummyField import fields
 from Products.Formulator.Errors import ValidationError
-from Products.Formulator.helpers import is_sequence
+from Products.Formulator.helpers import ensure_unicode
 from Products.Formulator.i18n import translate as _
 
 
@@ -46,6 +46,9 @@ class ValidatorBase:
 
     def raise_error(self, error_key, field):
         raise ValidationError(error_key, field)
+
+    def check(self, field, value, failover=False):
+        return value
 
     def validate(self, field, key, REQUEST):
         pass # override in subclass
@@ -126,13 +129,19 @@ class StringBaseValidator(Validator):
 
     required_not_found = _('Input is required but no input given.')
 
-    def validate(self, field, key, REQUEST):
-        value = REQUEST.get(key, "")
+    def check(self, field, value, failover=False):
         if not field.get_value('whitespace_preserve'):
             value = value.strip()
-        if field.get_value('required') and value == "":
-            self.raise_error('required_not_found', field)
+        if not failover:
+            if not value and field.get_value('required'):
+                self.raise_error('required_not_found', field)
         return value
+
+    def validate(self, field, key, REQUEST):
+        return self.check(
+            field=field,
+            value=REQUEST.get(key, ""),
+            failover=key + '_novalidate' in REQUEST)
 
     def serializeValue(self, field, value, producer):
         # if our value is not a string type, the SAX lib won't eat it,
@@ -169,27 +178,29 @@ class StringValidator(StringBaseValidator):
         title='Truncate',
         description=(
             "If checked, truncate the field if it receives more input than is "
-            "allowed. The normal behavior in this case is to raise a validation "
+            "allowed. The behavior in this case is to raise a validation "
             "error, but the text can be silently truncated instead."),
         default=0)
 
-
     too_long = _('Too much input was given.')
 
-    def validate(self, field, key, REQUEST):
-        value = StringBaseValidator.validate(self, field, key, REQUEST)
-        if field.get_value('unicode') and not isinstance(value,UnicodeType):
-            # use acquisition to get encoding of form
-            value = unicode(value, field.get_form_encoding())
+    def check(self, field, value, failover=False):
+        value = StringBaseValidator.check(self, field, value, failover)
 
-        max_length = field.get_value('max_length') or 0
-        truncate = field.get_value('truncate')
+        # Verify encoding (using form setting)
+        value = ensure_unicode(
+            value,
+            convert=field.get_value('unicode'),
+            encoding=field.get_form_encoding())
 
-        if max_length > 0 and len(value) > max_length:
-            if truncate:
-                value = value[:max_length]
-            else:
-                self.raise_error('too_long', field)
+        if not failover:
+            max_length = field.get_value('max_length') or 0
+            if max_length > 0 and len(value) > max_length:
+                if field.get_value('truncate'):
+                    value = value[:max_length]
+                else:
+                    self.raise_error('too_long', field)
+
         return value
 
 StringValidatorInstance = StringValidator()
@@ -209,13 +220,11 @@ class EmailValidator(StringValidator):
     # don't belong in an e-mail address.
     pattern = re.compile('^[0-9a-zA-Z_&.%+-]+@([0-9a-zA-Z]([0-9a-zA-Z-]*[0-9a-zA-Z])?\.)+[a-zA-Z]{2,6}$')
 
-    def validate(self, field, key, REQUEST):
-        value = StringValidator.validate(self, field, key, REQUEST)
-        if value == "" and not field.get_value('required'):
-            return value
-
-        if self.pattern.search(value.lower()) == None:
-            self.raise_error('not_email', field)
+    def check(self, field, value, failover=False):
+        value = StringValidator.check(self, field, value, failover)
+        if not failover and value:
+            if self.pattern.search(value.lower()) is None:
+                self.raise_error('not_email', field)
         return value
 
 EmailValidatorInstance = EmailValidator()
@@ -225,10 +234,8 @@ class PatternValidator(StringValidator):
     # does the real work
     checker = PatternChecker.PatternChecker()
 
-    property_names = StringValidator.property_names +\
-                   ['pattern']
-    message_names = StringValidator.message_names +\
-                  ['pattern_not_matched']
+    property_names = StringValidator.property_names + ['pattern']
+    message_names = StringValidator.message_names + ['pattern_not_matched']
 
     pattern = fields.StringField(
         'pattern',
@@ -247,20 +254,28 @@ class PatternValidator(StringValidator):
 
     pattern_not_matched = _("The entered value did not match the pattern.")
 
-    def validate(self, field, key, REQUEST):
-        value = StringValidator.validate(self, field, key, REQUEST)
-        if value == "" and not field.get_value('required'):
-            return value
-        value = self.checker.validate_value(
-            [field.get_value('pattern')], value)
-        if value is None:
-            self.raise_error('pattern_not_matched', field)
+    def check(self, field, value, failover=False):
+        value = StringValidator.check(self, field, value, failover)
+        if not failover and value:
+            result = self.checker.validate_value(
+                [field.get_value('pattern')], value)
+            if result is None:
+                self.raise_error('pattern_not_matched', field)
+            return result
         return value
 
 PatternValidatorInstance = PatternValidator()
 
 
 class BooleanValidator(Validator):
+    message_names = Validator.message_names + ['not_boolean']
+
+    not_boolean = _('You did not enter an boolean.')
+
+    def check(self, field, value, failover=False):
+        if not isinstance(value, bool):
+            self.raise_error('not_boolean', field)
+        return value
 
     def validate(self, field, key, REQUEST):
         return not not REQUEST.get(key, 0)
@@ -308,24 +323,33 @@ class IntegerValidator(StringBaseValidator):
     not_integer = _('You did not enter an integer.')
     integer_out_of_range = _('The integer you entered was out of range.')
 
-    def validate(self, field, key, REQUEST):
-        value = StringBaseValidator.validate(self, field, key, REQUEST)
-        # we need to add this check again
-        if value == "" and not field.get_value('required'):
-            return value
+    def check(self, field, value, failover=False):
+        if value == "":
+            if not failover and field.get_value('required'):
+                self.raise_error('required_not_found', field)
+            return ""
 
-        try:
-            value = int(value)
-        except ValueError:
+        if not isinstance(value, int):
             self.raise_error('not_integer', field)
 
-        start = field.get_value('start')
-        end = field.get_value('end')
-        if start != "" and value < start:
-            self.raise_error('integer_out_of_range', field)
-        if end != "" and value >= end:
-            self.raise_error('integer_out_of_range', field)
+        if not failover:
+            start = field.get_value('start')
+            end = field.get_value('end')
+            if start != "" and value < start:
+                self.raise_error('integer_out_of_range', field)
+            if end != "" and value >= end:
+                self.raise_error('integer_out_of_range', field)
         return value
+
+    def validate(self, field, key, REQUEST):
+        value = REQUEST.get(key, "").strip()
+        if value:
+            try:
+                value = int(value)
+            except ValueError:
+                self.raise_error('not_integer', field)
+
+        return self.check(field, value, key + '_novalidate' in REQUEST)
 
     def serializeValue(self, field, value, producer):
         value_string = str(value)
@@ -339,16 +363,25 @@ class FloatValidator(StringBaseValidator):
 
     not_float = _("You did not enter a floating point number.")
 
-    def validate(self, field, key, REQUEST):
-        value = StringBaseValidator.validate(self, field, key, REQUEST)
-        if value == "" and not field.get_value('required'):
-            return value
+    def check(self, field, value, failover=False):
+        if value == "":
+            if not failover and field.get_value('required'):
+                self.raise_error('required_not_found', field)
+            return ""
 
-        try:
-            value = float(value)
-        except ValueError:
+        if not isinstance(value, float):
             self.raise_error('not_float', field)
         return value
+
+    def validate(self, field, key, REQUEST):
+        value = REQUEST.get(key, "").strip()
+        if value:
+            try:
+                value = float(value)
+            except ValueError:
+                self.raise_error('not_float', field)
+
+        return self.check(field, value, key + '_novalidate' in REQUEST)
 
     def serializeValue(self, field, value, producer):
         value_string = str(value)
@@ -399,41 +432,50 @@ class LinesValidator(StringBaseValidator):
     line_too_long = _('A line was too long.')
     too_long = _('You entered too many characters.')
 
-    def validate(self, field, key, REQUEST):
-        value = StringBaseValidator.validate(self, field, key, REQUEST)
+    def check(self, field, value, failover=False):
+        if not isinstance(value, (list, tuple)):
+            self.raise_error('not_a_list', field)
 
-        # we need to add this check again
-        if value == "" and not field.get_value('required'):
-            return []
+        result = []
+        encoding = field.get_form_encoding()
+        convert = field.get_value('unicode')
+        whitespace_preserve = field.get_value('whitespace_preserve')
+        if not failover:
+            max_line_length = field.get_value('max_linelength') or 0
+        else:
+            max_line_length = 0
+        for line in value:
+            # Check each line
+            if not whitespace_preserve:
+                line = line.strip()
+            if max_line_length and len(line) > max_line_length:
+                self.raise_error('line_too_long', field)
+            result.append(ensure_unicode(line, convert, encoding))
+
+        # Check for input size
+        if not failover:
+            if not result and field.get_value('required'):
+                self.raise_error('required_no_found', field)
+            max_lines = field.get_value('max_lines') or 0
+            if max_lines and len(result) > max_lines:
+                self.raise_error('too_many_lines', field)
+        return result
+
+    def validate(self, field, key, REQUEST):
+        value = REQUEST.get(key, "").strip()
         if isinstance(value, TaintedString):
             value = str(value)
-        if field.get_value('unicode') and not isinstance(value, UnicodeType):
-            value = unicode(value, field.get_form_encoding())
-        # check whether the entire input is too long
+        if not field.get_value('whitespace_preserve'):
+            value = value.strip()
+
+        # Check whether the entire input is too long
         max_length = field.get_value('max_length') or 0
         if max_length and len(value) > max_length:
             self.raise_error('too_long', field)
+
         # split input into separate lines
-        lines = value.split("\n")
-
-        # check whether we have too many lines
-        max_lines = field.get_value('max_lines') or 0
-        if max_lines and len(lines) > max_lines:
-            self.raise_error('too_many_lines', field)
-
-        # strip extraneous data from lines and check whether each line is
-        # short enough
-        max_linelength = field.get_value('max_linelength') or 0
-        result = []
-        whitespace_preserve = field.get_value('whitespace_preserve')
-        for line in lines:
-            if not whitespace_preserve:
-                line = line.strip()
-            if max_linelength and len(line) > max_linelength:
-                self.raise_error('line_too_long', field)
-            result.append(line)
-
-        return result
+        value = value.split("\n")
+        return self.check(field, value, key + '_novalidate' in REQUEST)
 
     def serializeValue(self, field, value, producer):
         value_string = '\n'.join(value)
@@ -443,14 +485,30 @@ LinesValidatorInstance = LinesValidator()
 
 
 class TextValidator(LinesValidator):
-    def validate(self, field, key, REQUEST):
-        value = LinesValidator.validate(self, field, key, REQUEST)
-        # we need to add this check again
-        if value == [] and not field.get_value('required'):
-            return ""
 
-        # join everything into string again with \n and return
-        return "\n".join(value)
+    def check(self, field, value, failover=False):
+        whitespace_preserve = field.get_value('whitespace_preserve')
+        if not whitespace_preserve:
+            value = value.strip()
+
+        # Check for input size
+        if not failover:
+            if not value and field.get_value('required'):
+                self.raise_error('required_not_found', field)
+            max_length = field.get_value('max_length') or 0
+            if max_length and len(value) > max_length:
+                self.raise_error('too_long', field)
+
+        encoding = field.get_form_encoding()
+        convert = field.get_value('unicode')
+        return ensure_unicode(value, convert, encoding)
+
+    def validate(self, field, key, REQUEST):
+        value = REQUEST.get(key, "").strip()
+        if isinstance(value, TaintedString):
+            value = str(value)
+
+        return self.check(field, value, key + '_novalidate' in REQUEST)
 
     def serializeValue(self, field, value, producer):
         producer.characters(value)
@@ -459,126 +517,106 @@ TextValidatorInstance = TextValidator()
 
 
 class SelectionValidator(StringBaseValidator):
+    property_names = StringBaseValidator.property_names + ['unicode']
+    message_names = StringBaseValidator.message_names + ['unknown_selection']
 
-    property_names = StringBaseValidator.property_names +\
-                   ['unicode']
-
-    unicode = fields.CheckBoxField('unicode',
-                                   title='Unicode',
-                                   description=(
-                                       "Checked if the field delivers a unicode string instead of an "
-                                       "8-bit string."),
-                                   default=0)
-
-    message_names = StringBaseValidator.message_names +\
-                  ['unknown_selection']
+    unicode = fields.CheckBoxField(
+        'unicode',
+        title='Unicode',
+        description=(
+            "Checked if the field delivers a unicode string instead of an "
+            "8-bit string."),
+        default=0)
 
     unknown_selection = _('You selected an item that was not in the list.')
 
-    def validate(self, field, key, REQUEST):
-        value = StringBaseValidator.validate(self, field, key, REQUEST)
+    def check(self, field, value, failover=False):
+        value = StringBaseValidator.check(self, field, value, failover)
+        convert = field.get_value('unicode')
+        encoding = field.get_form_encoding()
+        value = ensure_unicode(value, convert, encoding)
 
-        if value == "" and not field.get_value('required'):
-            return value
-
-        # get the text and the value from the list of items
-        for item in field.get_value('items'):
-            if is_sequence(item):
-                item_text, item_value = item
+        if not failover and value:
+            for item in field.get_value('items'):
+                if isinstance(item, (list, tuple)):
+                    _, candidate = item
+                else:
+                    candidate = item
+                if ensure_unicode(candidate, convert, encoding) == value:
+                    break
             else:
-                item_text = item
-                item_value = item
+                self.raise_error('unknown_selection', field)
+            value  = candidate
+        return value
 
-            # check if the value is equal to the string/unicode version of
-            # item_value; if that's the case, we can return the *original*
-            # value in the list (not the submitted value). This way, integers
-            # will remain integers.
-            # XXX it is impossible with the UI currently to fill in unicode
-            # items, but it's possible to do it with the TALES tab
-            if field.get_value('unicode') and isinstance(item_value,UnicodeType):
-                str_value = item_value.encode(field.get_form_encoding())
-            else:
-                str_value = str(item_value)
-
-            if str_value == value:
-                return item_value
-
-        if key + '_novalidate' not in REQUEST:
-            # if we didn't find the value, return error
-            self.raise_error('unknown_selection', field)
 
 SelectionValidatorInstance = SelectionValidator()
 
 
 class MultiSelectionValidator(Validator):
     property_names = Validator.property_names + ['required', 'unicode']
+    message_names = Validator.message_names + [
+        'required_not_found', 'unknown_selection']
 
-    required = fields.CheckBoxField('required',
-                                    title='Required',
-                                    description=(
-                                        "Checked if the field is required; the user has to fill in some "
-                                        "data."),
-                                    default=1)
-
-    unicode = fields.CheckBoxField('unicode',
-                                   title='Unicode',
-                                   description=(
-                                       "Checked if the field delivers a unicode string instead of an "
-                                       "8-bit string."),
-                                   default=0)
-
-    message_names = Validator.message_names + ['required_not_found',
-                                               'unknown_selection']
+    required = fields.CheckBoxField(
+        'required',
+        title='Required',
+        description=(
+            "Checked if the field is required; the user has to fill in some "
+            "data."),
+        default=1)
+    unicode = fields.CheckBoxField(
+        'unicode',
+        title='Unicode',
+        description=(
+            "Checked if the field delivers a unicode string instead of an "
+            "8-bit string."),
+        default=0)
 
     required_not_found = _('Input is required but no input given.')
     unknown_selection = _('You selected an item that was not in the list.')
 
-    def validate(self, field, key, REQUEST):
-        values = REQUEST.get(key, [])
-        # NOTE: a hack to deal with single item selections
-        if not is_sequence(values):
-            # put whatever we got in a list
-            values = [values]
-        # if we selected nothing and entry is required, give error, otherwise
+    def check(self, field, value, failover=False):
+        if not isinstance(value, (list, tuple)):
+            self.raise_error('not_a_list', field)
+
+        # If we selected nothing and entry is required, give error, otherwise
         # give entry list
-        if len(values) == 0:
-            if field.get_value('required'):
+        if len(value) == 0:
+            if not failover and field.get_value('required'):
                 self.raise_error('required_not_found', field)
-            else:
-                return values
-        # convert everything to unicode if necessary
-        if field.get_value('unicode'):
-            values = [not isinstance(value,UnicodeType) and unicode(value, field.get_form_encoding()) or value
-                      for value in values]
+            return []
 
-        # create a dictionary of possible values
-        value_dict = {}
-        for item in field.get_value('items'):
-            if is_sequence(item):
-                item_text, item_value = item
-            else:
-                item_value = item
-            value_dict[item_value] = 0
+        convert = field.get_value('unicode')
+        encoding = field.get_form_encoding()
 
-        if key + '_novalidate' in REQUEST:
-            return values
-        # check whether all values are in dictionary
-        result = []
-        for value in values:
-            # FIXME: hack to accept int values as well
-            try:
-                int_value = int(value)
-            except (ValueError, TypeError):
-                int_value = None
-            if int_value is not None and value_dict.has_key(int_value):
-                result.append(int_value)
-                continue
-            if value_dict.has_key(value):
-                result.append(value)
-                continue
-            self.raise_error('unknown_selection', field)
-        # everything checks out
-        return result
+        # Convert everything to unicode if necessary
+        value = map(lambda v: ensure_unicode(v, convert, encoding), value)
+
+        if not failover:
+            # Possible values
+            items = set()
+            for item in field.get_value('items'):
+                if isinstance(item, (tuple, list)):
+                    _, candidate = item
+                else:
+                    candidate = item
+                items.add(ensure_unicode(candidate, convert, encoding))
+
+            if set(value).difference(items):
+                # Some values are not valid items
+                self.raise_error('unknown_selection', field)
+
+        return value
+
+    def validate(self, field, key, REQUEST):
+        value = REQUEST.get(key, [])
+
+        # Ensure to have a list
+        if not isinstance(value, (list, tuple)):
+            value = [value]
+
+        return self.check(field, value, key + '_novalidate' in REQUEST)
 
     def serializeValue(self, field, values, producer):
         producer.startPrefixMapping(None, NS_FORMULATOR)
@@ -594,16 +632,18 @@ MultiSelectionValidatorInstance = MultiSelectionValidator()
 
 class FileValidator(Validator):
     property_names = Validator.property_names + ['required']
-    message_names = Validator.message_names + ['required_not_found','incorrect_enctype']
+    message_names = Validator.message_names + [
+        'required_not_found','incorrect_enctype']
 
     required_not_found = _('Input is required but no input given.')
     incorrect_enctype = _('Form enctype appears to be either unset or set to application/x-www-form-urlencoded.  For FileUpload types this needs to be set to "multipart/form-data"')
 
-    required = fields.CheckBoxField('required',
-                                    title='Required',
-                                    description=(
-                                        "Checked if the field is required; the user has to supply a file."),
-                                    default=0)
+    required = fields.CheckBoxField(
+        'required',
+        title='Required',
+        description=(
+            "Checked if the field is required; the user has to supply a file."),
+        default=0)
 
     def validate(self, field, key, REQUEST):
         f = REQUEST.get(key,None)
@@ -641,34 +681,34 @@ class LinkHelper:
 
 
 class LinkValidator(StringValidator):
-    property_names = StringValidator.property_names +\
-                   ['check_link', 'check_timeout', 'link_type']
-
-    check_link = fields.CheckBoxField('check_link',
-                                      title='Check Link',
-                                      description=(
-                                          "Check whether the link is not broken."),
-                                      default=0)
-
-    check_timeout = fields.FloatField('check_timeout',
-                                      title='Check Timeout',
-                                      description=(
-                                          "Maximum amount of seconds to check link. Required"),
-                                      default=7.0,
-                                      required=1)
-
-    link_type = fields.ListField('link_type',
-                                 title='Type of Link',
-                                 default="external",
-                                 size=1,
-                                 items=[('External Link', 'external'),
-                                        ('Internal Link', 'internal'),
-                                        ('Relative Link', 'relative')],
-                                 description=(
-                                     "Define the type of the link. Required."),
-                                 required=1)
-
+    property_names = StringValidator.property_names + [
+        'check_link', 'check_timeout', 'link_type']
     message_names = StringValidator.message_names + ['not_link']
+
+    check_link = fields.CheckBoxField(
+        'check_link',
+        title='Check Link',
+        description=(
+            "Check whether the link is not broken."),
+        default=0)
+    check_timeout = fields.FloatField(
+        'check_timeout',
+        title='Check Timeout',
+        description=(
+            "Maximum amount of seconds to check link. Required"),
+        default=7.0,
+        required=1)
+    link_type = fields.ListField(
+        'link_type',
+        title='Type of Link',
+        default="external",
+        size=1,
+        items=[('External Link', 'external'),
+               ('Internal Link', 'internal'),
+               ('Relative Link', 'relative')],
+        description=(
+            "Define the type of the link. Required."),
+        required=1)
 
     not_link = _('The specified link is broken.')
 
@@ -712,13 +752,10 @@ LinkValidatorInstance = LinkValidator()
 
 
 class DateTimeValidator(Validator):
-    property_names = Validator.property_names + ['required',
-                                                 'start_datetime',
-                                                 'end_datetime',
-                                                 'allow_empty_time']
-    message_names = Validator.message_names + ['required_not_found',
-                                               'not_datetime',
-                                               'datetime_out_of_range']
+    property_names = Validator.property_names + [
+        'required', 'start_datetime', 'end_datetime', 'allow_empty_time']
+    message_names = Validator.message_names + [
+        'required_not_found', 'not_datetime', 'datetime_out_of_range']
 
     required = fields.CheckBoxField(
         'required',
@@ -757,6 +794,20 @@ class DateTimeValidator(Validator):
     required_not_found = _('Input is required but no input given.')
     not_datetime = _('You did not enter a valid date and time.')
     datetime_out_of_range = _('The date and time you entered were out of range.')
+
+    def check(self, field, value, failover=False):
+        if not isinstance(value, DateTime):
+            self.raise_error('not_datetime', field)
+
+        if not failover:
+            # check if things are within range
+            start_datetime = field.get_value('start_datetime')
+            if (start_datetime is not None and value < start_datetime):
+                self.raise_error('datetime_out_of_range', field)
+            end_datetime = field.get_value('end_datetime')
+            if (end_datetime is not None and value >= end_datetime):
+                self.raise_error('datetime_out_of_range', field)
+        return value
 
     def validate(self, field, key, REQUEST):
         try:
@@ -817,17 +868,7 @@ class DateTimeValidator(Validator):
         except date_time_format_exceptions:
             self.raise_error('not_datetime', field)
 
-        # check if things are within range
-        start_datetime = field.get_value('start_datetime')
-        if (start_datetime is not None and
-            result < start_datetime):
-            self.raise_error('datetime_out_of_range', field)
-        end_datetime = field.get_value('end_datetime')
-        if (end_datetime is not None and
-            result >= end_datetime):
-            self.raise_error('datetime_out_of_range', field)
-
-        return result
+        return self.check(field, result, key + '_novalidate' in REQUEST)
 
     def serializeValue(self, field, value, producer):
         if value is not None:
