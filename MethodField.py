@@ -1,10 +1,13 @@
-import string
-from DummyField import fields
-import Widget, Validator
+
+
+from AccessControl import getSecurityManager
 from Persistence import Persistent
 import Acquisition
-from Field import ZMIField
-from AccessControl import getSecurityManager
+
+from Products.Formulator import Widget, Validator
+from Products.Formulator.DummyField import fields
+from Products.Formulator.Field import ZMIField
+
 
 class MethodWidget(Widget.TextWidget):
     default = fields.MethodField('default',

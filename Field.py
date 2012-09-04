@@ -557,7 +557,7 @@ class ZMIField(
         """Change TALES expressions through XMLRPC.
         """
         # BEWARE: there is no validation on the values passed through the map
-        from TALESField import TALESMethod
+        from Products.Formulator.TALESField import TALESMethod
         result = {}
         for key, value in map.items():
             result[key] = TALESMethod(value)

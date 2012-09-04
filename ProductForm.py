@@ -6,8 +6,6 @@ It provides a wrapping around Formulator.BasicForm, allowing it
 to be created inside a product but used outside it.
 """
 
-import string
-
 from AccessControl import ClassSecurityInfo
 
 try:
@@ -15,8 +13,9 @@ try:
 except ImportError:
     from Globals import InitializeClass # Zope < 2.12
 
-import FormValidationError, BasicForm
-import StandardFields
+from Products.Formulator.Form import FormValidationError, BasicForm
+from Products.Formulator import StandardFields
+
 
 class ProductForm(BasicForm):
     """Wraps Formulator.BasicForm and provides some convenience methods that

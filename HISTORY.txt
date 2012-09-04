@@ -1,10 +1,18 @@
 Changes
 =======
 
-1.15 (unreleased)
+1.15 (2012/09/04)
 -----------------
 
-- ...
+- Add support to integrate with ``zeam.form``.
+
+- Add support for validators to validate already extracted values from
+  the request.
+
+- Some level of validation can be disabled when extracting values from
+  the request, if a value with the id ``field.id_novalidate`` is
+  present as well in the request. This is usefull to extract form
+  values from a request intended for an older version of your form.
 
 1.14 (2011/11/10)
 -----------------

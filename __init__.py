@@ -7,7 +7,7 @@ from Products.Formulator import EmailLinesField, InterfaceField
 from AccessControl import allow_module
 
 try:
-   import FSForm
+   import Products.Formulator.FSForm
 except ImportError:
    # No filesystem site support
    pass
@@ -88,5 +88,5 @@ def initialize(context):
     context.registerHelp()
 
 # monkey patches
-import monkey
+from Products.Formulator import monkey
 monkey.patch_all()

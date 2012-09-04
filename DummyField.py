@@ -10,7 +10,7 @@ actual field object.
 """
 
 from Acquisition import Implicit
-from FieldRegistry import FieldRegistry
+from Products.Formulator.FieldRegistry import FieldRegistry
 
 class DummyFieldFactory:
 
