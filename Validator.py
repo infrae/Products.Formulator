@@ -73,7 +73,7 @@ class ValidatorBase:
                 if not data:
                     # Let's put an empty string it is safe.
                     data = ''
-        REQUEST = {'key': data}
+        REQUEST = {'key': data, 'key_novalidate': '1'}
         return self.validate(field, 'key', REQUEST)
 
     def need_validate(self, field, key, REQUEST):
