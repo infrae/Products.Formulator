@@ -92,6 +92,7 @@ class FormulatorWidget(object):
     """
     grok.implements(IFormulatorWidget)
     order = 0
+    alternateLayout = False
 
     def __init__(self, component, form, request):
         field = component._field.__of__(form.context)
