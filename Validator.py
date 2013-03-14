@@ -48,18 +48,26 @@ class ValidatorBase:
         raise ValidationError(error_key, field)
 
     def check(self, field, value, failover=False):
+        """Method used to validate the value for a field, either
+        coming from the request, when called by validate, or from XML,
+        when called by deserializeValue. If failover is True, don't
+        raise an error unless it is critical.
+        """
         return value
 
     def validate(self, field, key, REQUEST):
         pass # override in subclass
 
     def serializeValue(self, field, value, producer):
-        """Given a field, a value and a sax_producer, this method sends
-        sax events to the sax producer that represent the XMLified value.
+        """Given a field, a value and a sax_producer, serialize in XML
+        the value of the field.
         """
         pass # override in subclass
 
     def deserializeValue(self, field, value, context=None):
+        """Given a field, a value and a context, unserialize the XML
+        value for the field.
+        """
         if isinstance(value, basestring):
             data = value
         else:

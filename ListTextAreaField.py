@@ -1,8 +1,22 @@
-import string
 
 from Products.Formulator import Widget, Validator
 from Products.Formulator.DummyField import fields
 from Products.Formulator.Field import ZMIField
+
+
+def split_value(value):
+    result = []
+    for line in value:
+        elements = line.split("|")
+        if len(elements) >= 2:
+            text, value = elements[:2]
+        else:
+            text = line
+            value = line
+        text = text.strip()
+        value = value.strip()
+        result.append((text, value))
+    return result
 
 
 class ListTextAreaWidget(Widget.TextAreaWidget):
@@ -14,12 +28,15 @@ class ListTextAreaWidget(Widget.TextAreaWidget):
     def render(self, field, key, value, REQUEST):
         if value is None:
             value = field.get_value('default')
+        if isinstance(value, basestring):
+            # This happens while redisplaying a value from the request
+            # i.e. _get_default(field, None, request)
+            value = split_value(value.splitlines())
         lines = []
         for element_text, element_value in value:
             lines.append("%s | %s" % (element_text, element_value))
-        return Widget.TextAreaWidget.render(self, field, key,
-                                            string.join(lines, '\n'),
-                                            REQUEST)
+        lines = '\n'.join(lines)
+        return Widget.TextAreaWidget.render(self, field, key, lines, REQUEST)
 
 ListTextAreaWidgetInstance = ListTextAreaWidget()
 
@@ -31,18 +48,7 @@ class ListLinesValidator(Validator.LinesValidator):
 
     def validate(self, field, key, REQUEST):
         value = Validator.LinesValidator.validate(self, field, key, REQUEST)
-        result = []
-        for line in value:
-            elements = string.split(line, "|")
-            if len(elements) >= 2:
-                text, value = elements[:2]
-            else:
-                text = line
-                value = line
-            text = string.strip(text)
-            value = string.strip(value)
-            result.append((text, value))
-        return result
+        return split_value(value)
 
 ListLinesValidatorInstance = ListLinesValidator()
 

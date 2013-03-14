@@ -10,6 +10,17 @@ from zope.interface import Interface, Attribute, providedBy, implementedBy
 from zope.interface.interface import Specification
 
 
+def decode(value):
+    """Helper to ensure we have unicode everywhere, as Formulator use
+    it in an optional fashion.
+    """
+    if not isinstance(value, unicode):
+        if isinstance(value, str):
+            return value.decode('utf-8')
+        return unicode(value)
+    return value
+
+
 class CustomizedField(object):
     """Proxy around a native Formulator field to be able to
     programmatically change values retrieved with get_value.
@@ -29,7 +40,6 @@ class CustomizedField(object):
 
 
 class IFormulatorField(interfaces.IField):
-
     meta_type = Attribute(u"Field meta type")
 
     def customize(customizations):
@@ -48,13 +58,15 @@ class FormulatorField(Field):
         self._form = form
         self._field = field
         self._customizations = {}
-        self.required = self._getValue('required', False)
-        self.readonly = self._getValue('readonly', False)
+        required = bool(self._getValue('required', False))
+        readonly = bool(self._getValue('readonly', False))
         css_class = ['field']
-        if self.required:
+        if required:
             css_class.append('field-required')
         self._customizations['css_class'] = ' '.join(css_class)
-        super(FormulatorField, self).__init__(None, field.id)
+        super(FormulatorField, self).__init__(identifier=field.id,
+                                              required=required,
+                                              readonly=readonly)
 
     def _getValue(self, identifier, default=NO_VALUE):
         if identifier in self._customizations:
@@ -64,27 +76,21 @@ class FormulatorField(Field):
         return default
 
     def getDefaultValue(self, form):
-        self._getValue('default')
+        return self._getValue('default')
 
     @property
     def meta_type(self):
+        # Hack for widget.
         return self._field.meta_type
 
     @property
     def __providedBy__(self):
+        # Hack to bind different widgets.
         return Specification(
             (implementedBy(self.__class__), providedBy(self._field)))
 
     def customize(self, customizations):
         self._customizations.update(customizations)
-
-
-def decode(value):
-    if not isinstance(value, unicode):
-        if isinstance(value, str):
-            return value.decode('utf-8')
-        return unicode(value)
-    return value
 
 
 class FormulatorWidget(object):
@@ -103,8 +109,8 @@ class FormulatorWidget(object):
         self.form = form
         self.request = request
         self.identifier = self._field.generate_field_html_id()
-        self.title = self._field.get_value('title')
-        self.description = self._field.get_value('description')
+        self.title = decode(self._field.get_value('title'))
+        self.description = decode(self._field.get_value('description'))
         self.readonly = component.readonly
         self.required = component.required
 
