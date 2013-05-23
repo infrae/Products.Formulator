@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2013  Infrae. All rights reserved.
+# See also LICENSE.txt
 class Form:
     """A Formulator Form; this is the base class of all forms.
     """

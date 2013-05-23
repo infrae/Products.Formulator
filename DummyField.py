@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2013  Infrae. All rights reserved.
+# See also LICENSE.txt
 """
 This module contains some magic glue to make it seem as if we
 can refer to field classes before they've been defined, through the

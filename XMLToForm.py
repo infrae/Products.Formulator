@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2013  Infrae. All rights reserved.
+# See also LICENSE.txt
 from DateTime import DateTime
 from Products.Formulator import XMLObjects
 from Products.Formulator.MethodField import Method

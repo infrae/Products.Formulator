@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2013  Infrae. All rights reserved.
+# See also LICENSE.txt
 class Field:
     """Formulator field base class; shared functionality of all
     fields.

@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2013  Infrae. All rights reserved.
+# See also LICENSE.txt
 """Exception Classes for Formulator"""
 
 # These classes are placed here so that they can be imported into TTW Python

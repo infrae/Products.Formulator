@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2013  Infrae. All rights reserved.
+# See also LICENSE.txt
 from App.special_dtml import DTMLFile
 from HelpSys import HelpTopic
 

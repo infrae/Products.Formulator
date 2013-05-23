@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2013  Infrae. All rights reserved.
+# See also LICENSE.txt
 from AccessControl import allow_class, allow_module
 
 def monkey_zope3_message_id():

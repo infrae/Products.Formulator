@@ -1,10 +1,15 @@
 Changes
 =======
 
-1.16 (unreleased)
------------------
+1.15.3 (2013/05/23)
+-------------------
 
-- ...
+- Fix unicode issues with the integration of ``zeam.form``.
+
+- Fix required and readonly attributes with the interface of
+  ``zeam.form``.
+
+- Fix ListTextAreaField so it properly works with request values.
 
 1.15.2 (2013/03/05)
 -------------------
