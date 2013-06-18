@@ -67,7 +67,7 @@ class Form:
         self.unicode_mode = unicode_mode
 
     security.declareProtected('View', 'test_form')
-    def test_form(self):
+    def test_form(self, context=None):
         try:
             form_fields = self.get_fields()
         except AttributeError:
@@ -78,6 +78,8 @@ class Form:
                 if not expression:
                     continue
                 try:
+                    if context is not None:
+                        field = field.__of__(context)
                     field.get_value(identifier)
                 except Exception as error:
                     errors.append(
