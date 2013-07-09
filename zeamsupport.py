@@ -195,7 +195,7 @@ class FormulatorExtractor(grok.MultiAdapter):
         Interface)
 
     def __init__(self, component, form, request):
-        self._field = component._field
+        self._field = component._field.__of__(form.context)
         self.identifier = self._field.generate_field_html_id()
         self.request = request
 
