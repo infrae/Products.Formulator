@@ -67,13 +67,19 @@ class Form:
         self.unicode_mode = unicode_mode
 
     security.declareProtected('View', 'test_form')
-    def test_form(self, context=None):
+    def test_form(self, context=None, bad_fields=[]):
+        all_invalid_fields = set(['name', 'action'])
+        all_invalid_fields.update(bad_fields)
         try:
             form_fields = self.get_fields()
         except AttributeError:
             raise ValueError(u"Form contains broken fields.")
         errors = []
         for field in form_fields:
+            if field.id in all_invalid_fields:
+                errors.append(
+                    (u"Form field '%s' have an identifier that will conflict "
+                     u"with the behavior of the form.") % (field.id))
             for identifier, expression in field.tales.items():
                 if not expression:
                     continue
@@ -83,8 +89,10 @@ class Form:
                     field.get_value(identifier)
                 except Exception as error:
                     errors.append(
-                        u"Form field '%s' contains a broken TALES expression for option '%s': %s: %s." % (
-                            field.id, identifier, error.__class__.__name__, str(error)))
+                        (u"Form field '%s' contains a broken TALES "
+                         u"expression for option '%s': %s: %s.") % (
+                            field.id, identifier,
+                            error.__class__.__name__, str(error)))
         if errors:
             raise ValueError(*errors)
         return True
