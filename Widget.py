@@ -2,6 +2,7 @@
 # Copyright (c) 2013  Infrae. All rights reserved.
 # See also LICENSE.txt
 import string
+import cgi
 
 from DateTime import DateTime
 from DocumentTemplate.DT_Util import html_quote
@@ -107,7 +108,7 @@ class Widget:
         # default implementation
         if value is None:
             return ''
-        return value
+        return cgi.escape(value)
 
 
 class TextWidget(Widget):
@@ -163,7 +164,7 @@ class TextWidget(Widget):
     def render_view(self, field, value):
         if value is None:
             return ''
-        return value
+        return cgi.escape(value)
 
 TextWidgetInstance = TextWidget()
 
@@ -273,7 +274,7 @@ class TextAreaWidget(Widget):
     def render_view(self, field, value):
         if value is None:
             return ''
-        return value
+        return cgi.escape(value)
 
 TextAreaWidgetInstance = TextAreaWidget()
 
@@ -307,7 +308,7 @@ class LinesTextAreaWidget(TextAreaWidget):
     def render_view(self, field, value):
         if value is None:
             return ''
-        return string.join(value, field.get_value('view_separator'))
+        return cgi.escape(string.join(value, field.get_value('view_separator')))
 
     def render_hidden(self, field, key, value, REQUEST):
         if value is None:
@@ -470,7 +471,7 @@ class SingleItemsWidget(ItemsWidget):
                 item_text = item
                 item_value = item
             if value == item_value:
-                return item_text
+                return cgi.escape(item_text)
         raise KeyError, "Wrong item value [[%s]]" % (value,)
 
 class MultiItemsWidget(ItemsWidget):
@@ -556,8 +557,8 @@ class MultiItemsWidget(ItemsWidget):
     def render_view(self, field, value):
         if value is None:
             return ''
-        return string.join(self.render_items_view(field, value),
-                           field.get_value('view_separator'))
+        return cgi.escape(string.join(self.render_items_view(field, value),
+                                      field.get_value('view_separator')))
 
     def render_hidden(self, field, key, value, REQUEST):
         if value is not None and not is_sequence(value):
