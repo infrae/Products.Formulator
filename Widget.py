@@ -164,7 +164,7 @@ class TextWidget(Widget):
     def render_view(self, field, value):
         if value is None:
             return ''
-        return cgi.escape(value)
+        return cgi.escape(str(value))
 
 TextWidgetInstance = TextWidget()
 
