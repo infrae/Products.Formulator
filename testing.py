@@ -8,6 +8,8 @@ import Products.Formulator
 
 
 class FormulatorLayer(BrowserLayer):
+    default_packages = BrowserLayer.default_packages + [
+        'zeam.form.base']
     default_products = BrowserLayer.default_products + [
         'Formulator']
     default_users = {
@@ -15,7 +17,6 @@ class FormulatorLayer(BrowserLayer):
         }
 
 
-FunctionalLayer = FormulatorLayer(
-    Products.Formulator, zcml_file='configure.zcml')
+FunctionalLayer = FormulatorLayer(Products.Formulator)
 
 __all__ = ['FunctionalLayer', 'TestRequest']

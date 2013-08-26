@@ -798,7 +798,7 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
         raise FieldDisabledError("Field %s disabled" % id, field)
 
     security.declareProtected('Change Formulator Forms', 'manage_addField')
-    def manage_addField(self, id, title, fieldname, REQUEST=None):
+    def manage_addField(self, id, title, fieldname, REQUEST=None, **options):
         """Add a new field to the form.
         id        -- the id of the field to add
         title     -- the title of the field to add; this will be used in
@@ -815,7 +815,7 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
         # get the field class we want to add
         field_class = FieldRegistry.get_field_class(fieldname)
         # create field instance
-        field = field_class(id, title=title, description="")
+        field = field_class(id, title=title, **options)
         # add the field to the form
         id = self._setObject(id, field)
         # respond to add_and_edit button if necessary

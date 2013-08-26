@@ -67,9 +67,11 @@ class FormulatorField(Field):
         if required:
             css_class.append('field-required')
         self._customizations['css_class'] = ' '.join(css_class)
-        super(FormulatorField, self).__init__(identifier=field.id,
-                                              required=required,
-                                              readonly=readonly)
+        super(FormulatorField, self).__init__(
+            identifier=field.id,
+            title=decode(field.get_value('title')),
+            required=required,
+            readonly=readonly)
 
     def _getValue(self, identifier, default=NO_VALUE):
         if identifier in self._customizations:
@@ -102,6 +104,8 @@ class FormulatorWidget(object):
     grok.implements(IFormulatorWidget)
     order = 0
     alternateLayout = False
+    defaultHtmlAttributes = set([])
+    defaultHtmlClass = ['field']
 
     def __init__(self, component, form, request):
         field = component._field.__of__(form.context)
@@ -116,19 +120,29 @@ class FormulatorWidget(object):
         self.description = decode(self._field.get_value('description'))
         self.readonly = component.readonly
         self.required = component.required
+        self.defaultHtmlClass = [self._field.get_value('css_class')]
+
+    def htmlAttribute(self, name):
+        raise NotImplementedError
+
+    def htmlAttributes(self):
+        raise NotImplementedError
+
+    def clone(self, new_identifier=None):
+        raise NotImplementedError
 
     @property
     def error(self):
         return self.form.errors.get(self.identifier, None)
 
-    def clone(new_identifier=None):
-        raise NotImplementedError
-
     def htmlId(self):
         return self.identifier
 
     def htmlClass(self):
-        return self._field.get_value('css_class')
+        result = self.defaultHtmlClass
+        if self.required:
+            result = result + ['field-required',]
+        return ' '.join(result)
 
     def isVisible(self):
         return not self._field.get_value('hidden')
