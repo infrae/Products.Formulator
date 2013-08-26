@@ -1,10 +1,22 @@
 Changes
 =======
 
-1.15.4 (unreleased)
+1.15.4 (2013/08/26)
 -------------------
 
-- ...
+- ``test_form`` now except a list of bad identifiers for fields as a
+  parameter. An error will be returned if one of those identifier is
+  used by a field.
+
+- HTML entities are now escaped by default inside field values.
+
+- Formulator Widgets will now return unicode when it is possible.
+
+- ``zeam.form`` extrators have been updated to have the same Acquisition
+  wrapping than the ``zeam.form`` widgets.
+
+- Dependencies got properly defined in ``setup.py`` to facilate the
+  installation of the product.
 
 1.15.3 (2013/05/23)
 -------------------
@@ -14,7 +26,7 @@ Changes
 - Fix required and readonly attributes with the interface of
   ``zeam.form``.
 
-- Fix ListTextAreaField so it properly works with request values.
+- Fix ListTextAreaField so it properly works with values from the request.
 
 1.15.2 (2013/03/05)
 -------------------
