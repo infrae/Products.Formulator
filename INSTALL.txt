@@ -6,6 +6,9 @@ Installing Formulator
 
       http://www.zope.org/Products/Zope
 
+    We recommand to install Formulator with Buildout, easy_install or
+    PIP so that dependencies get installed as well.
+
   Upgrading
 
     to 1.11 from earlier versions
@@ -24,7 +27,7 @@ Installing Formulator
       have been cut down a little; if You have relied on
       Formulator to do the translations automagically in 1.7
       You might need to add a few i18n-statements to Your
-      form rendering template to get the translations working with 1.8 
+      form rendering template to get the translations working with 1.8
 
     to 1.6.x from earlier versions
 
@@ -152,6 +155,3 @@ Installing Formulator
     Products screen ('/Control_Panel/Products'). In a Zope folder, you
     should now see a 'Formulator Form' in your 'Add' list. You should
     be able to add a form to a folder now.
-
-
-
