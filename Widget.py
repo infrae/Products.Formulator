@@ -3,9 +3,9 @@
 # See also LICENSE.txt
 import string
 import cgi
+import operator
 
 from DateTime import DateTime
-from DocumentTemplate.DT_Util import html_quote
 from Products.Formulator.DummyField import fields
 from Products.Formulator.helpers import is_sequence, id_value_re
 
@@ -105,10 +105,7 @@ class Widget:
     def render_view(self, field, value):
         """Renders this widget for public viewing.
         """
-        # default implementation
-        if value is None:
-            return ''
-        return cgi.escape(value)
+        return render_value(value)
 
 
 class TextWidget(Widget):
@@ -162,9 +159,8 @@ class TextWidget(Widget):
         return render_element("div", contents=contents, css_class=css_class)
 
     def render_view(self, field, value):
-        if value is None:
-            return ''
-        return cgi.escape(str(value))
+        return render_value(value)
+
 
 TextWidgetInstance = TextWidget()
 
@@ -265,18 +261,18 @@ class TextAreaWidget(Widget):
               'css_class': css_class,
               'cols': width,
               'rows': height,
-              'contents': html_quote(value)}
+              'contents': cgi.escape(value)}
         if not extra or not id_value_re.search(extra):
             kw['id'] = field.generate_field_html_id(key)
         contents = render_element("textarea", **kw)
         return render_element("div", contents=contents, css_class=css_class)
 
     def render_view(self, field, value):
-        if value is None:
-            return ''
-        return cgi.escape(value)
+        return render_value(value)
+
 
 TextAreaWidgetInstance = TextAreaWidget()
+
 
 class LinesTextAreaWidget(TextAreaWidget):
     property_names = Widget.property_names +\
@@ -306,9 +302,7 @@ class LinesTextAreaWidget(TextAreaWidget):
         return TextAreaWidget.render(self, field, key, value, REQUEST)
 
     def render_view(self, field, value):
-        if value is None:
-            return ''
-        return cgi.escape(string.join(value, field.get_value('view_separator')))
+        return render_value(value, field.get_value('view_separator'))
 
     def render_hidden(self, field, key, value, REQUEST):
         if value is None:
@@ -471,8 +465,8 @@ class SingleItemsWidget(ItemsWidget):
                 item_text = item
                 item_value = item
             if value == item_value:
-                return cgi.escape(item_text)
-        raise KeyError, "Wrong item value [[%s]]" % (value,)
+                return render_value(item_text)
+        raise KeyError("Wrong item value [[%s]]" % (value,))
 
 class MultiItemsWidget(ItemsWidget):
     """A widget with a number of items that has multiple selectable
@@ -557,8 +551,9 @@ class MultiItemsWidget(ItemsWidget):
     def render_view(self, field, value):
         if value is None:
             return ''
-        return cgi.escape(string.join(self.render_items_view(field, value),
-                                      field.get_value('view_separator')))
+        return render_value(
+            self.render_items_view(field, value),
+            field.get_value('view_separator'))
 
     def render_hidden(self, field, key, value, REQUEST):
         if value is not None and not is_sequence(value):
@@ -1054,6 +1049,7 @@ setTimeout(function(){Calendar.setup({inputField : '%s_hiddeninput',
 
 DateTimeWidgetInstance = DateTimeWidget()
 
+
 class LabelWidget(Widget):
     """Widget that is a label only. It simply returns its default value.
     """
@@ -1077,42 +1073,50 @@ class LabelWidget(Widget):
     def render_view(self, field, value):
         return field.get_value('default')
 
+
 LabelWidgetInstance = LabelWidget()
 
-def render_tag(tag, **kw):
-    """Render the tag. Well, not all of it, as we may want to / it.
-    """
-    attr_list = []
+def render_tag(tag, css_class=None, extra=None, **attributes):
+    result = [tag]
 
     # special case handling for css_class
-    if kw.has_key('css_class'):
-        if kw['css_class'] != "":
-            attr_list.append('class="%s"' % kw['css_class'])
-        del kw['css_class']
-
-    # special case handling for extra 'raw' code
-    if kw.has_key('extra'):
-        extra = kw['extra'] # could be empty string but we don't care
-        del kw['extra']
-    else:
-        extra = ""
+    if css_class:
+        result.append('class="%s"' % css_class)
 
     # handle other attributes
-    for key, value in kw.items():
+    for key, value in sorted(attributes.items(), key=operator.itemgetter(0)):
         if value is None:
             if key == 'value':
                 value = ''
             else:
                 value = key
-        attr_list.append('%s="%s"' % (key, html_quote(value)))
+        result.append('%s="%s"' % (key, render_value(value)))
 
-    attr_str = string.join(attr_list, " ")
-    return "<%s %s %s" % (tag, attr_str, extra)
+    if extra:
+        result.append(extra)
+    return "<" + " ".join(result)
 
-def render_element(tag, **kw):
-    if kw.has_key('contents'):
-        contents = kw['contents']
-        del kw['contents']
-        return "%s>%s</%s>" % (apply(render_tag, (tag, ), kw), contents, tag)
-    else:
-        return apply(render_tag, (tag, ), kw) + " />"
+def render_element(tag, **kwargs):
+    """Render a tag.
+    """
+
+    if 'contents' in kwargs:
+        contents = kwargs.pop('contents')
+        return "%s>%s</%s>" % (render_tag(tag, **kwargs), contents, tag)
+    return render_tag(tag, **kwargs) + " />"
+
+def render_value(value, separator=None):
+    """Default helper to render a value, paying attention to unicode.
+    """
+    if value is None:
+        return u''
+    if separator is not None and isinstance(value, (list, tuple)):
+        if not isinstance(separator, unicode):
+            separator = unicode(separator, 'utf-8')
+        value = separator.join(value)
+    if not isinstance(value, unicode):
+        if isinstance(value, str):
+            value = value.decode('utf-8', 'replace')
+        else:
+            value = unicode(value)
+    return cgi.escape(value)

@@ -33,20 +33,13 @@ class FormTestCase(unittest.TestCase):
         """ test if has_field works, if one asks for a non-field attribute.
             this has raised AttributeError "aq_explicit" in previous versions
         """
-        self.failIf(self.form.has_field('title'))
+        self.assertFalse(self.form.has_field('title'))
 
     def test_list_items(self):
         self._test_list_items('ListField')
 
     def test_multi_list_items(self):
         self._test_list_items('MultiListField')
-
-    # the following two tests fail as their widgets do not support ints, etc
-    #def test_list_items(self):
-    #    self._test_list_items('RadioField')
-
-    #def test_multi_list_items(self):
-    #    self._test_list_items('MultiCheckBoxField')
 
     def _test_list_items(self, list_field_type):
         """ test if a list of values returned by TALES (override) expressions
@@ -104,7 +97,6 @@ class FormTestCase(unittest.TestCase):
 
         list_field.validate({'field_list_field':'42'})
 
-
     def test_items_is_sequence(self):
         """ test that a multi list widget renders correctly,
         even if the items consist out of a tuple.
@@ -152,7 +144,6 @@ class FormTestCase(unittest.TestCase):
         items = list_boxes._get_default(key='key', value=None,
                                         REQUEST=request)
         self.assertEquals([u'\xe4', u'\xfc'], items)
-
 
     def test_lines_field_rendering(self):
         """ line fields should both accept lists / tuples
@@ -278,7 +269,7 @@ class FormTestCase(unittest.TestCase):
         for input in inputs:
             self.assertEquals('input', input.nodeName)
             self.assertEquals(type, input.getAttribute('type'))
-            self.failIf(input.childNodes)
+            self.assertFalse(input.childNodes)
             values[input.getAttribute('name')] = input.getAttribute('value')
         self.assertEquals(expected_values, values)
 
@@ -290,15 +281,13 @@ class FormTestCase(unittest.TestCase):
         elements = [ child for child in dom.documentElement.childNodes \
                      if child.nodeType == child.ELEMENT_NODE ]
         self.assertEquals(len(expected_values), len(elements))
-        values={}
         for child in elements:
             self.assertEquals('input',child.nodeName)
             self.assertEquals('hidden',child.getAttribute('type'))
             self.assertEquals(expected_name,child.getAttribute('name'))
             self.assertEquals(expected_values.pop(0),
                               child.getAttribute('value'))
-            self.failIf(child.childNodes)
-
+            self.assertFalse(child.childNodes)
 
 
     def test_render_hidden(self):
@@ -368,7 +357,6 @@ class FormTestCase(unittest.TestCase):
         self._helper_render_hidden_list('field_lines',[expect_str],
                                         rendered)
 
-
     def test_render_view_items(self):
         # test that the render_view is correct for fields
         # for which the values internally handled by Formulator
@@ -426,9 +414,7 @@ class FormTestCase(unittest.TestCase):
         rendered = date_field.render_from_request(TestRequest())
         self._helper_render_datetime(expected_values, rendered, type='text')
 
-
     def test_checkbox_default_overwrites_submitted_values(self):
-
         self.form.manage_addField('checkbox_field','Test Checkbox','CheckBoxField')
         checkbox_field = self.form.checkbox_field
 
@@ -444,7 +430,6 @@ class FormTestCase(unittest.TestCase):
         request.form['formulator_submission']='1'
         rendered = checkbox_field.render_from_request(request)
         self.assertEquals(-1, rendered.find('checked="checked"'))
-
 
     def test_edit_listitem(self):
         """ if eding a list item via ZMI (or xml rpc) in unicode mode
