@@ -1102,7 +1102,12 @@ def render_element(tag, **kwargs):
 
     if 'contents' in kwargs:
         contents = kwargs.pop('contents')
-        return "%s>%s</%s>" % (render_tag(tag, **kwargs), contents, tag)
+        if not isinstance(contents, unicode):
+            if isinstance(contents, str):
+                contents = contents.decode('utf-8', 'replace')
+            else:
+                contents = unicode(contents)
+        return u"%s>%s</%s>" % (render_tag(tag, **kwargs), contents, tag)
     return render_tag(tag, **kwargs) + " />"
 
 def render_value(value, separator=None):
