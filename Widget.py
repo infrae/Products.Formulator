@@ -729,7 +729,7 @@ class MultiCheckBoxWidget(MultiItemsWidget):
               'extra': extra_item}
         if html_id:
             kw['id'] = html_id
-        contents = render_element('input', **kw) + text
+        contents = render_element('input', **kw) + render_unicode(text)
         return render_element('label', contents=contents)
 
     def render_selected_item(self, text, value, key, css_class, extra_item, html_id):
@@ -1076,6 +1076,13 @@ class LabelWidget(Widget):
 
 LabelWidgetInstance = LabelWidget()
 
+def render_unicode(value):
+    if not isinstance(value, unicode):
+        if isinstance(value, str):
+            return value.decode('utf-8', 'replace')
+        return unicode(value)
+    return value
+
 def render_tag(tag, css_class=None, extra=None, **attributes):
     result = [tag]
 
@@ -1101,12 +1108,7 @@ def render_element(tag, **kwargs):
     """
 
     if 'contents' in kwargs:
-        contents = kwargs.pop('contents')
-        if not isinstance(contents, unicode):
-            if isinstance(contents, str):
-                contents = contents.decode('utf-8', 'replace')
-            else:
-                contents = unicode(contents)
+        contents = render_unicode(kwargs.pop('contents'))
         return u"%s>%s</%s>" % (render_tag(tag, **kwargs), contents, tag)
     return render_tag(tag, **kwargs) + " />"
 
@@ -1119,9 +1121,4 @@ def render_value(value, separator=None):
         if not isinstance(separator, unicode):
             separator = unicode(separator, 'utf-8')
         value = separator.join(value)
-    if not isinstance(value, unicode):
-        if isinstance(value, str):
-            value = value.decode('utf-8', 'replace')
-        else:
-            value = unicode(value)
-    return cgi.escape(value)
+    return cgi.escape(render_unicode(value))
