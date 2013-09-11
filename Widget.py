@@ -677,7 +677,7 @@ class RadioWidget(SingleItemsWidget):
               'extra': extra_item}
         if html_id:
             kw['id'] = html_id
-        contents = render_element('input', **kw) + text
+        contents = render_element('input', **kw) + render_unicode(text)
         return render_element('label', contents=contents)
 
     def render_selected_item(self, text, value, key, css_class, extra_item, html_id):
@@ -689,7 +689,7 @@ class RadioWidget(SingleItemsWidget):
               'extra': extra_item}
         if html_id:
             kw['id'] = html_id
-        contents = render_element('input', **kw) + text
+        contents = render_element('input', **kw) + render_unicode(text)
         return render_element('label', contents=contents)
 
 RadioWidgetInstance = RadioWidget()
@@ -741,7 +741,7 @@ class MultiCheckBoxWidget(MultiItemsWidget):
               'extra': extra_item}
         if html_id:
             kw['id'] = html_id
-        contents = render_element('input', **kw) + text
+        contents = render_element('input', **kw) + render_unicode(text)
         return render_element('label', contents=contents)
 
 MultiCheckBoxWidgetInstance = MultiCheckBoxWidget()
