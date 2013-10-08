@@ -30,7 +30,8 @@ Features
 Dependencies
 ------------
 
-You need to install either *CMFCore* or *FileSystemSite*.
+You need to install either zeam.form. The best to install this product
+is to use buildout and let it resolves the dependencies.
 
 Information
 -----------
