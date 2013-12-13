@@ -33,20 +33,9 @@ Dependencies
 You need to install either zeam.form. The best to install this product
 is to use buildout and let it resolves the dependencies.
 
-Information
------------
 
-Formulator comes with online help, so click on *Help!* in the Zope
-management screens. If you want your brain to explode, read the
-*How Formulator Eats its Own Dogfood* help topic.
+Code repository
+---------------
 
-Information is also available at the Formulator web site::
-
-   http://www.infrae.com/products/formulator
-
-There are also instructions to join the Formulator mailing list there.
-Discussion about Formulator should preferably happen on the mailing list
-first, though you can always mail me as well. But please consider the
-list if you have questions or suggestions.
-
-Even more info can be found by reading the source. :)
+You can find the code of this extension in Git:
+https://github.com/infrae/Products.Formulator
