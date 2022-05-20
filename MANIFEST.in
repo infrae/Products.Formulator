@@ -1,9 +1,10 @@
 # Generated from:
 # https://github.com/zopefoundation/meta/tree/master/config/zope-product
-include *.md
 include *.rst
 include *.txt
 include buildout.cfg
+include buildout213.cfg
+include buildout4.cfg
 include tox.ini
 
 recursive-include src *.py
