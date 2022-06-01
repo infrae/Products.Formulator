@@ -32,16 +32,16 @@ def convert_unicode(struct, encoding):
     in case of a dictionary only converts the values, not the keys
     """
 
-    if isinstance(struct, type('')):
+    if isinstance(struct, str):
         return unicode(struct, encoding)
 
-    if isinstance(struct, type([])):
+    if isinstance(struct, list):
         return [convert_unicode(x, encoding) for x in struct]
 
-    if isinstance(struct, type(())):
+    if isinstance(struct, tuple):
         return tuple([convert_unicode(x, encoding) for x in struct])
 
-    if isinstance(struct, type({})):
+    if isinstance(struct, dict):
         new_dict = {}
         for k, v in struct.items():
             new_dict[k] = convert_unicode(v, encoding)
@@ -52,7 +52,7 @@ def convert_unicode(struct, encoding):
 
 
 # for converting (sub)field keys into html ids
-key_to_id_re = re.compile('([\\.\\:_ ]+)')
+key_to_id_re = re.compile(r'([\.\:_ ]+)')
 # for pulling the value of an 'id' attribute out of an 'extra' parameter
 # this should work for:
 # |onclick="blah" id="ASDF"|

@@ -68,7 +68,7 @@ class PatternChecker:
         regex = self._escape_special_characters(pattern)
         for symbol in [NUMBERSYMBOL, CHARSYMBOL, NUMCHARSYMBOL]:
             regex = re.sub(
-                symbol + '{1,}\\*?',
+                symbol + r'{1,}\*?',
                 self._replace_symbol_by_regex,
                 regex)
         return '^ *' + regex + ' *$'
@@ -94,8 +94,8 @@ class PatternChecker:
         """
         # same as string.strip, but since I am using re everywhere here,
         # why not use it now too?
-        value = re.sub('^\\s*', '', value)
-        value = re.sub('\\s*$', '', value)
+        value = re.sub(r'^\s*', '', value)
+        value = re.sub(r'\s*$', '', value)
         # make out of several white spaces, one whitespace...
         value = re.sub('  *', ' ', value)
         return value

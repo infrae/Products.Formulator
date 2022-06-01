@@ -235,8 +235,8 @@ class EmailValidator(StringValidator):
     # some custom script if needed), and of course no characters that
     # don't belong in an e-mail address.
     pattern = re.compile(
-        '^[0-9a-zA-Z_&.%+-]+@([0-9a-zA-Z]([0-9a-zA-Z-]*[0-9a-zA-Z])?\\.)'
-        '+[a-zA-Z]{2,6}$')
+        r'^[0-9a-zA-Z_&.%+-]+@([0-9a-zA-Z]([0-9a-zA-Z-]*[0-9a-zA-Z])?\.)'
+        r'+[a-zA-Z]{2,6}$')
 
     def check(self, field, value, failover=False):
         value = StringValidator.check(self, field, value, failover)

@@ -223,8 +223,7 @@ class SerializeTestCase(unittest.TestCase):
             self.assertEquals(1, len(e.errors))
             text2 = e.errors[0].error_text
 
-        self.assertEquals(
-            unicode(text1), unicode(text2))  # noqa: F821 undefined name
+        self.assertEquals(unicode(text1), unicode(text2))
 
     def test_fieldValueTypes(self):
         """ test checking if the field values are of the proper type.

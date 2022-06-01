@@ -22,9 +22,11 @@ def read_file(filename):
 setup(name='Products.Formulator',
       version=version,
       description="Form library for Zope 2",
-      long_description=read_file("README.rst") +
-      read_file("CREDITS.rst") +
-      read_file("CHANGES.rst"),
+      long_description=(
+          read_file("README.rst")
+          + read_file("CREDITS.rst")
+          + read_file("CHANGES.rst")
+      ),
       classifiers=[
           "Framework :: Zope :: 2",
           "License :: OSI Approved :: BSD License",

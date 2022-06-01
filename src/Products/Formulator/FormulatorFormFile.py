@@ -29,7 +29,7 @@ class FormulatorFormFile(Item_w__name__, ZMIForm):
         if _prefix is None:
             # in Zope 2.7, could use getConfiguration()
             _prefix = SOFTWARE_HOME  # noqa: F821 undefined name
-        elif not isinstance(_prefix, type('')):
+        elif not isinstance(_prefix, str):
             _prefix = package_home(_prefix)
         name = kw.get('__name__')
         basepath, ext = os.path.splitext(filename)
@@ -58,14 +58,12 @@ class FormulatorFormFile(Item_w__name__, ZMIForm):
         self.set_xml(text)
 
     security.declareProtected('View management screens', 'refresh_form')
-
     def refresh_form(self):
         """Trigger refresh check explicitly.
         """
         self._refresh_check()
 
     security.declareProtected('View', 'has_field')
-
     def has_field(self, id, include_disabled):
         """Check whether the form has a field of a certain id.
         """
@@ -74,7 +72,6 @@ class FormulatorFormFile(Item_w__name__, ZMIForm):
             'has_field')(self, id, include_disabled)
 
     security.declareProtected('View', 'get_field')
-
     def get_field(self, id, include_disabled):
         """Get a field of a certain id.
         """
@@ -83,7 +80,6 @@ class FormulatorFormFile(Item_w__name__, ZMIForm):
             'get_field')(self, id, include_disabled)
 
     security.declareProtected('View', 'get_fields')
-
     def get_fields(self, include_disabled=0):
         """Get all the fields for all groups (in display order).
         """
@@ -92,7 +88,6 @@ class FormulatorFormFile(Item_w__name__, ZMIForm):
             'get_fields')(self, include_disabled)
 
     security.declareProtected('View', 'get_field_ids')
-
     def get_field_ids(self, include_disabled=0):
         """Get all the ids of the fields in the form.
         """
@@ -101,14 +96,12 @@ class FormulatorFormFile(Item_w__name__, ZMIForm):
             'get_field_ids')(self, include_disabled)
 
     security.declareProtected('View', 'get_fields_in_group')
-
     def get_fields_in_group(self, group, include_disabled=0):
         self._refresh_check()
         return FormulatorFormFile.inheritedAttribute(
             'get_fields_in_group')(self, group, include_disabled)
 
     security.declareProtected('View', 'get_groups')
-
     def get_groups(self, include_empty=0):
         """Get a list of all groups, in display order.
         """
@@ -117,7 +110,6 @@ class FormulatorFormFile(Item_w__name__, ZMIForm):
             'get_groups')(self, include_empty)
 
     security.declareProtected('View', 'render')
-
     def render(self, dict=None, REQUEST=None):
         """Render form.
         """
@@ -126,7 +118,6 @@ class FormulatorFormFile(Item_w__name__, ZMIForm):
             'render')(self, dict, REQUEST)
 
     security.declareProtected('View', 'render_view')
-
     def render_view(self, dict=None):
         """Render contents (default simplistic way).
         """

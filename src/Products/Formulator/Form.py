@@ -68,7 +68,6 @@ class Form:
         self.unicode_mode = unicode_mode
 
     security.declareProtected('View', 'test_form')
-
     def test_form(self, context=None, bad_fields=[]):
         all_invalid_fields = set(['name', 'action'])
         all_invalid_fields.update(bad_fields)
@@ -101,7 +100,6 @@ class Form:
 
     # MANIPULATORS
     security.declareProtected('Change Formulator Forms', 'field_added')
-
     def field_added(self, field_id, group=None):
         """A field was added to the form.
         """
@@ -119,7 +117,6 @@ class Form:
             self._p_changed = True
 
     security.declareProtected('Change Formulator Forms', 'field_removed')
-
     def field_removed(self, field_id):
         """A field was removed from the form.
         """
@@ -130,7 +127,6 @@ class Form:
                 break  # should be done as soon as we found it once
 
     security.declareProtected('Change Formulator Forms', 'move_field_up')
-
     def move_field_up(self, field_id, group):
         groups = self.groups
         field_list = groups[group]
@@ -143,7 +139,6 @@ class Form:
         return 1
 
     security.declareProtected('Change Formulator Forms', 'move_field_down')
-
     def move_field_down(self, field_id, group):
         groups = self.groups
         field_list = groups[group]
@@ -156,7 +151,6 @@ class Form:
         return 1
 
     security.declareProtected('Change Formulator Forms', 'move_field_group')
-
     def move_field_group(self, field_ids, from_group, to_group):
         """Moves a field from one group to the other.
         """
@@ -176,7 +170,6 @@ class Form:
         return 1
 
     security.declareProtected('Change Formulator Forms', 'add_group')
-
     def add_group(self, group):
         """Add a new group.
         """
@@ -190,7 +183,6 @@ class Form:
         return 1
 
     security.declareProtected('Change Formulator Forms', 'remove_group')
-
     def remove_group(self, group):
         """Remove a group.
         """
@@ -209,7 +201,6 @@ class Form:
         return 1
 
     security.declareProtected('Change Formulator Forms', 'rename_group')
-
     def rename_group(self, group, name):
         """Rename a group.
         """
@@ -227,7 +218,6 @@ class Form:
         return 1
 
     security.declareProtected('Change Formulator Forms', 'move_group_up')
-
     def move_group_up(self, group):
         """Move a group up in the group list.
         """
@@ -241,7 +231,6 @@ class Form:
         return 1
 
     security.declareProtected('Change Formulator Forms', 'move_group_down')
-
     def move_group_down(self, group):
         """Move a group down in the group list.
         """
@@ -256,7 +245,6 @@ class Form:
 
     # ACCESSORS
     security.declareProtected('View', 'get_fields')
-
     def get_fields(self, include_disabled=0):
         """Get all fields for all groups (in the display order).
         """
@@ -266,7 +254,6 @@ class Form:
         return result
 
     security.declareProtected('View', 'get_field_ids')
-
     def get_field_ids(self, include_disabled=0):
         """Get all the ids of the fields in the form.
         """
@@ -276,7 +263,6 @@ class Form:
         return result
 
     security.declareProtected('View', 'get_fields_in_group')
-
     def get_fields_in_group(self, group, include_disabled=0):
         """Get all fields in a group (in the display order).
         """
@@ -291,7 +277,6 @@ class Form:
         return result
 
     security.declareProtected('View', 'has_field')
-
     def has_field(self, id, include_disabled):
         """Check whether the form has a field of a certain id.
         """
@@ -299,7 +284,6 @@ class Form:
         pass
 
     security.declareProtected('View', 'get_field')
-
     def get_field(self, id, include_disabled):
         """Get a field of a certain id.
         """
@@ -307,7 +291,6 @@ class Form:
         pass
 
     security.declareProtected('View', 'get_groups')
-
     def get_groups(self, include_empty=0):
         """Get a list of all groups, in display order.
 
@@ -320,7 +303,6 @@ class Form:
                 if self.get_fields_in_group(group)]
 
     security.declareProtected('View', 'get_form_encoding')
-
     def get_form_encoding(self):
         """Get the encoding the form is in. Should be the same as the
         encoding of the page, if specified, for unicode to work. Default
@@ -329,28 +311,24 @@ class Form:
         return getattr(self, 'encoding', 'UTF-8')
 
     security.declareProtected('View', 'get_stored_encoding')
-
     def get_stored_encoding(self):
         """Get the encoding of the stored field properties.
         """
         return getattr(self, 'stored_encoding', 'ISO-8859-1')
 
     security.declareProtected('View', 'get_unicode_mode')
-
     def get_unicode_mode(self):
         """Get unicode mode information.
         """
         return getattr(self, 'unicode_mode', 0)
 
     security.declareProtected('View', 'get_i18n_domain')
-
     def get_i18n_domain(self):
         """Get i18n domain, if any.
         """
         return getattr(self, 'i18n_domain', '')
 
     security.declareProtected('View', 'render')
-
     def render(self, dict=None, REQUEST=None):
         """Render form in a default way.
         """
@@ -379,7 +357,6 @@ class Form:
         return result.getvalue()
 
     security.declareProtected('View', 'render_view')
-
     def render_view(self, dict=None):
         """Render contents (default simplistic way).
         """
@@ -402,7 +379,6 @@ class Form:
         return result.getvalue()
 
     security.declareProtected('View', 'validate')
-
     def validate(self, REQUEST):
         """Validate all enabled fields in this form. Stop validating and
         pass up ValidationError if any occurs.
@@ -422,7 +398,6 @@ class Form:
         return result
 
     security.declareProtected('View', 'validate_to_request')
-
     def validate_to_request(self, REQUEST):
         """Validation, stop validating as soon as error.
         """
@@ -432,7 +407,6 @@ class Form:
         return result
 
     security.declareProtected('View', 'validate_all')
-
     def validate_all(self, REQUEST):
         """Validate all enabled fields in this form, catch any ValidationErrors
         if they occur and raise a FormValidationError in the end if any
@@ -459,7 +433,6 @@ class Form:
         return result
 
     security.declareProtected('View', 'validate_all_to_request')
-
     def validate_all_to_request(self, REQUEST):
         """Validation, continue validating all fields, catch errors.
         Everything that could be validated will be added to REQUEST.
@@ -477,7 +450,6 @@ class Form:
         return result
 
     security.declareProtected('View', 'session_store')
-
     def session_store(self, session, REQUEST):
         """Store form data in REQUEST into session.
         """
@@ -487,7 +459,6 @@ class Form:
             data.set(id, REQUEST[id])
 
     security.declareProtected('View', 'session_retrieve')
-
     def session_retrieve(self, session, REQUEST):
         """Retrieve form data from session into REQUEST.
         """
@@ -497,7 +468,6 @@ class Form:
             REQUEST.set(id, data.get(id))
 
     security.declareProtected('View', 'header')
-
     def header(self):
         """Starting form tag.
         """
@@ -533,21 +503,18 @@ class Form:
             ' value="1" />' % res)
 
     security.declareProtected('View', 'footer')
-
     def footer(self):
         """Closing form tag.
         """
         return "</form>"
 
     security.declareProtected('Change Formulator Forms', 'get_xml')
-
     def get_xml(self):
         """Get this form in XML serialization.
         """
         return formToXML(self)
 
     security.declareProtected('Change Formulator Forms', 'set_xml')
-
     def set_xml(self, xml, override_encoding=None):
         """change form according to xml"""
         XMLToForm(xml, self, override_encoding)
@@ -568,7 +535,6 @@ class Form:
     management_page_charset = ComputedAttribute(_management_page_charset)
 
     security.declareProtected('View', 'set_encoding_header')
-
     def set_encoding_header(self):
         """Set the encoding in the RESPONSE object.
 
@@ -603,7 +569,6 @@ class BasicForm(Persistent, Acquisition.Implicit, Form):
         self.fields = {}
 
     security.declareProtected('Change Formulator Forms', 'add_field')
-
     def add_field(self, field, group=None):
         """Add a field to the form to a certain group.
         """
@@ -614,7 +579,6 @@ class BasicForm(Persistent, Acquisition.Implicit, Form):
         self.fields = self.fields
 
     security.declareProtected('Change Formulator Forms', 'add_fields')
-
     def add_fields(self, fields, group=None):
         """Add a number of fields to the form at once (in a group).
         """
@@ -622,7 +586,6 @@ class BasicForm(Persistent, Acquisition.Implicit, Form):
             self.add_field(field, group)
 
     security.declareProtected('Change Formulator Forms', 'remove_field')
-
     def remove_field(self, field):
         """Remove field from form.
         """
@@ -633,7 +596,6 @@ class BasicForm(Persistent, Acquisition.Implicit, Form):
         self.fields = self.fields
 
     security.declareProtected('View', 'has_field')
-
     def has_field(self, id, include_disabled=0):
         """Check whether the form has a field of a certain id.
         If disabled fields are not included, pretend they're not there.
@@ -644,7 +606,6 @@ class BasicForm(Persistent, Acquisition.Implicit, Form):
         return include_disabled or field.get_value('enabled')
 
     security.declareProtected('View', 'get_field')
-
     def get_field(self, id, include_disabled=0):
         """get a field of a certain id."""
         field = self.fields[id]
@@ -842,7 +803,6 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
     #                  self.objectValues())
 
     security.declareProtected('View', 'has_field')
-
     def has_field(self, id, include_disabled=0):
         """Check whether the form has a field of a certain id.
         """
@@ -852,7 +812,6 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
         return include_disabled or field.get_value('enabled')
 
     security.declareProtected('View', 'get_field')
-
     def get_field(self, id, include_disabled=0):
         """Get a field of a certain id
         """
@@ -864,7 +823,6 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
         raise FieldDisabledError("Field %s disabled" % id, field)
 
     security.declareProtected('Change Formulator Forms', 'manage_addField')
-
     def manage_addField(self, id, title, fieldname, REQUEST=None, **options):
         """Add a new field to the form.
         id        -- the id of the field to add
@@ -892,7 +850,6 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
     # security declaration for the generic "add field" form,
     # which is set as a class attribute in "initializeForm" later on
     security.declareProtected('Change Formulator Forms', 'fieldAdd')
-
     def fieldAdd(self):
         """Dummy implementation, set in initializeForm later on.
 
@@ -915,7 +872,6 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
     formXML = DTMLFile('dtml/formXML', globals())
 
     security.declareProtected('Change Formulator Forms', 'manage_editXML')
-
     def manage_editXML(self, form_data, REQUEST):
         """Change form using XML.
         """
@@ -924,7 +880,6 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
                             manage_tabs_message="Changed form")
 
     security.declareProtected('Change Formulator Forms', 'manage_settings')
-
     def manage_settings(self, REQUEST):
         """Change settings in settings screen.
         """
@@ -968,7 +923,6 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
                                  manage_tabs_message=message)
 
     security.declareProtected('Change Formulator Forms', 'manage_refresh')
-
     def manage_refresh(self, REQUEST):
         """Refresh internal data structures of this form.
         FIXME: this doesn't work right now
@@ -977,7 +931,6 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
         REQUEST.RESPONSE.redirect('manage_main')
 
     security.declarePrivate('_get_field_ids')
-
     def _get_field_ids(self, group, REQUEST):
         """Get the checked field_ids that we're operating on
         """
@@ -989,7 +942,6 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
 
     security.declareProtected('View management screens',
                               'get_group_rows')
-
     def get_group_rows(self):
         """Get the groups in rows (for the order screen).
         """
@@ -1008,7 +960,6 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
         return result
 
     security.declareProtected('View', 'get_largest_group_length')
-
     def get_largest_group_length(self):
         """Get the largest group length available; necessary for
         'order' screen user interface.
@@ -1022,7 +973,6 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
 
     security.declareProtected('Change Formulator Forms',
                               'manage_move_field_up')
-
     def manage_move_field_up(self, group, REQUEST):
         """Moves up a field in a group.
         """
@@ -1037,7 +987,6 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
 
     security.declareProtected('Change Formulator Forms',
                               'manage_move_field_down')
-
     def manage_move_field_down(self, group, REQUEST):
         """Moves down a field in a group.
         """
@@ -1052,7 +1001,6 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
 
     security.declareProtected('Change Formulator Forms',
                               'manage_move_group')
-
     def manage_move_group(self, group, to_group, REQUEST):
         """Moves fields to a different group.
         """
@@ -1070,7 +1018,6 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
 
     security.declareProtected('Change Formulator Forms',
                               'manage_add_group')
-
     def manage_add_group(self, new_group, REQUEST):
         """Adds a new group.
         """
@@ -1085,7 +1032,6 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
 
     security.declareProtected('Change Formulator Forms',
                               'manage_remove_group')
-
     def manage_remove_group(self, group, REQUEST):
         """Removes group.
         """
@@ -1098,7 +1044,6 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
 
     security.declareProtected('Change Formulator Forms',
                               'manage_rename_group')
-
     def manage_rename_group(self, group, REQUEST):
         """Renames group.
         """
@@ -1116,7 +1061,6 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
 
     security.declareProtected('Change Formulator Forms',
                               'manage_move_group_up')
-
     def manage_move_group_up(self, group, REQUEST):
         """Move a group up.
         """
@@ -1129,7 +1073,6 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
 
     security.declareProtected('Change Formulator Forms',
                               'manage_move_group_down')
-
     def manage_move_group_down(self, group, REQUEST):
         """Move a group down.
         """
@@ -1142,7 +1085,6 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
 
     security.declareProtected('Add Formulator Fields',
                               'hack_method')
-
     def hack_method(self):
         """This method does nothing, but is a hack to make
         'Add Formulator Fields' exist in Zope as a permission.

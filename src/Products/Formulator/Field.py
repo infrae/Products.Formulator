@@ -56,7 +56,6 @@ class Field:
         self.message_values = message_values
 
     security.declareProtected('Change Formulator Fields', 'initialize_values')
-
     def initialize_values(self, dict):
         """Initialize values for properties, defined by fields in
         associated form.
@@ -68,9 +67,7 @@ class Field:
             values[id] = value
         self.values = values
 
-    security.declareProtected('Change Formulator Fields',
-                              'initialize_tales')
-
+    security.declareProtected('Change Formulator Fields', 'initialize_tales')
     def initialize_tales(self):
         """Initialize tales expressions for properties (to nothing).
         """
@@ -82,7 +79,6 @@ class Field:
 
     security.declareProtected('Change Formulator Fields',
                               'initialize_overrides')
-
     def initialize_overrides(self):
         """Initialize overrides for properties (to nothing).
         """
@@ -93,7 +89,6 @@ class Field:
         self.overrides = overrides
 
     security.declareProtected('Access contents information', 'has_value')
-
     def has_value(self, id):
         """Return true if the field defines such a value.
         """
@@ -103,7 +98,6 @@ class Field:
             return 0
 
     security.declareProtected('Access contents information', 'get_orig_value')
-
     def get_orig_value(self, id):
         """Get value for id; don't do any override calculation.
         """
@@ -113,7 +107,6 @@ class Field:
             return self.form.get_field(id).get_value('default')
 
     security.declareProtected('Access contents information', 'get_value')
-
     def get_value(self, id, **kw):
         """Get value for id.
 
@@ -168,26 +161,22 @@ class Field:
             return ''
 
     security.declareProtected('View management screens', 'get_override')
-
     def get_override(self, id):
         """Get override method for id (not wrapped)."""
         return self.overrides.get(id, "")
 
     security.declareProtected('View management screens', 'get_tales')
-
     def get_tales(self, id):
         """Get tales expression method for id."""
         return self.tales.get(id, "")
 
     security.declareProtected('Access contents information', 'is_required')
-
     def is_required(self):
         """Check whether this field is required (utility function)
         """
         return self.has_value('required') and self.get_value('required')
 
     security.declareProtected('View management screens', 'get_error_names')
-
     def get_error_names(self):
         """Get error messages.
         """
@@ -195,7 +184,6 @@ class Field:
 
     security.declareProtected('Access contents information',
                               'generate_field_key')
-
     def generate_field_key(self, validation=0):
         """Generate the key used to render the field in the form.
         """
@@ -210,7 +198,6 @@ class Field:
 
     security.declareProtected('Access contents information',
                               'generate_field_key')
-
     def generate_field_html_id(self, key=None, validation=0):
         """Generate the html id used to render the field in the form.
            The id is generated as follows:
@@ -283,7 +270,6 @@ class Field:
         return '%s.subfield_%s_%s:record' % (self.field_record, self.id, id)
 
     security.declareProtected('View management screens', 'get_error_message')
-
     def get_error_message(self, name, want_message_id=True):
         try:
             # look up message in field
@@ -311,7 +297,6 @@ class Field:
             return result
 
     security.declarePrivate('_render_helper')
-
     def _render_helper(self, key, value, REQUEST):
         value = self._get_default(key, value, REQUEST)
         if self.get_value('hidden'):
@@ -320,7 +305,6 @@ class Field:
             return self.widget.render(self, key, value, REQUEST)
 
     security.declarePrivate('_get_default')
-
     def _get_default(self, key, value, REQUEST):
         if value is not None:
             return value
@@ -340,7 +324,6 @@ class Field:
         return value
 
     security.declareProtected('View', 'render')
-
     def render(self, value=None, REQUEST=None):
         """Render the field widget.
         value -- the value the field should have (for instance
@@ -354,14 +337,12 @@ class Field:
         return self._render_helper(self.generate_field_key(), value, REQUEST)
 
     security.declareProtected('View', 'render_view')
-
     def render_view(self, value):
         """Render value to be viewed.
         """
         return self.widget.render_view(self, value)
 
     security.declareProtected('View', 'render_from_request')
-
     def render_from_request(self, REQUEST):
         """Convenience method; render the field widget from REQUEST
         (unvalidated data), or default if no raw data is found.
@@ -369,7 +350,6 @@ class Field:
         return self._render_helper(self.generate_field_key(), None, REQUEST)
 
     security.declareProtected('View', 'render_sub_field')
-
     def render_sub_field(self, id, value=None, REQUEST=None):
         """Render a sub field, as part of complete rendering of widget in
         a form. Works like render() but for sub field.
@@ -378,7 +358,6 @@ class Field:
             self.generate_subfield_key(id), value, REQUEST)
 
     security.declareProtected('View', 'render_sub_field_from_request')
-
     def render_sub_field_from_request(self, id, REQUEST):
         """Convenience method; render the field widget from REQUEST
         (unvalidated data), or default if no raw data is found.
@@ -387,7 +366,6 @@ class Field:
             self.generate_subfield_key(id), None, REQUEST)
 
     security.declarePrivate('_validate_helper')
-
     def _validate_helper(self, key, REQUEST):
         value = self.validator.validate(self, key, REQUEST)
         # now call external validator after all other validation
@@ -397,7 +375,6 @@ class Field:
         return value
 
     security.declareProtected('View', 'validate')
-
     def validate(self, REQUEST):
         """Validate/transform the field.
         """
@@ -405,7 +382,6 @@ class Field:
             self.generate_field_key(validation=1), REQUEST)
 
     security.declareProtected('View', 'need_validate')
-
     def need_validate(self, REQUEST):
         """Return true if validation is needed for this field.
         """
@@ -413,7 +389,6 @@ class Field:
             self, self.generate_field_key(validation=1), REQUEST)
 
     security.declareProtected('View', 'validate_sub_field')
-
     def validate_sub_field(self, id, REQUEST):
         """Validates a subfield (as part of field validation).
         """
@@ -433,7 +408,6 @@ class ZMIField(
     """Base class for a field implemented as a Python (file) product.
     """
     security = ClassSecurityInfo()
-
     security.declareObjectProtected('View')
 
     # the various tabs of a field
@@ -451,7 +425,6 @@ class ZMIField(
     ) + OFS.SimpleItem.SimpleItem.manage_options
 
     security.declareProtected('View', 'title')
-
     def title(self):
         """The title of this field."""
         return self.get_value('title')
@@ -461,7 +434,6 @@ class ZMIField(
     manage_main = DTMLFile('dtml/fieldEdit', globals())
 
     security.declareProtected('Change Formulator Fields', 'manage_edit')
-
     def manage_edit(self, REQUEST):
         """Submit Field edit form.
         """
@@ -485,7 +457,6 @@ class ZMIField(
                                     manage_tabs_message=message)
 
     security.declareProtected('Change Formulator Fields', 'manage_edit_xmlrpc')
-
     def manage_edit_xmlrpc(self, map):
         """Edit Field Properties through XMLRPC
         """
@@ -522,7 +493,6 @@ class ZMIField(
     manage_overrideForm = DTMLFile('dtml/fieldOverride', globals())
 
     security.declareProtected('Change Formulator Forms', 'manage_override')
-
     def manage_override(self, REQUEST):
         """Change override methods.
         """
@@ -556,7 +526,6 @@ class ZMIField(
     manage_talesForm = DTMLFile('dtml/fieldTales', globals())
 
     security.declareProtected('Change Formulator Forms', 'manage_tales')
-
     def manage_tales(self, REQUEST):
         """Change TALES expressions.
         """
@@ -587,7 +556,6 @@ class ZMIField(
             self.tales = self.tales
 
     security.declareProtected('Change Formulator Forms', 'manage_tales_xmlrpc')
-
     def manage_tales_xmlrpc(self, map):
         """Change TALES expressions through XMLRPC.
         """
@@ -615,7 +583,6 @@ class ZMIField(
     fieldDescription = DTMLFile('dtml/fieldDescription', globals())
 
     security.declareProtected('Change Formulator Fields', 'manage_messages')
-
     def manage_messages(self, REQUEST):
         """Change message texts.
         """
@@ -636,19 +603,16 @@ class ZMIField(
                                             manage_tabs_message=message)
 
     security.declareProtected('View', 'index_html')
-
     def index_html(self, REQUEST):
         """Render this field.
         """
         return self.render(REQUEST=REQUEST)
 
     security.declareProtected('Access contents information', '__getitem__')
-
     def __getitem__(self, key):
         return self.get_value(key)
 
     security.declareProtected('View management screens', 'isTALESAvailable')
-
     def isTALESAvailable(self):
         """Return true only if TALES is available.
         """

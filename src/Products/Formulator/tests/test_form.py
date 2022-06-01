@@ -307,18 +307,18 @@ class FormTestCase(unittest.TestCase):
 
     def test_render_hidden(self):
         # test that rendering fields hidden does produce
-        # meaningful results; i.e. such which may still lead to successfull
+        # meaningful results; i.e. such which may still lead to successful
         # validation when submitting a form with hidden fields
         # this has been broken for DateTimeFields, and fields
         # which allowed multiple values
-        self.form.manage_addProduct['Formulator']\
-                 .manage_addField('date_time', 'Test Field', 'DateTimeField')
-        self.form.manage_addProduct['Formulator']\
-            .manage_addField('multi_list', 'Test Field', 'MultiListField')
-        self.form.manage_addProduct['Formulator'] .manage_addField(
+        self.form.manage_addProduct['Formulator'].manage_addField(
+            'date_time', 'Test Field', 'DateTimeField')
+        self.form.manage_addProduct['Formulator'].manage_addField(
+            'multi_list', 'Test Field', 'MultiListField')
+        self.form.manage_addProduct['Formulator'].manage_addField(
             'check_boxes', 'Test Field', 'MultiCheckBoxField')
-        self.form.manage_addProduct['Formulator']\
-            .manage_addField('lines', 'Test Field', 'LinesField')
+        self.form.manage_addProduct['Formulator'].manage_addField(
+            'lines', 'Test Field', 'LinesField')
 
         self.form.date_time.values['default'] = DateTime(1970, 1, 1,)
         self.form.date_time.values['hidden'] = 1
@@ -511,7 +511,7 @@ class FormTestCase(unittest.TestCase):
     def test_add_unicode_form(self):
         # test bugfix when adding a form with a non-ascii title
         # and the unicode flag set
-        self.root.manage_addProduct['Formulator'] .manage_add(
+        self.root.manage_addProduct['Formulator'].manage_add(
             'form2', 'Test Form b\xef\xbf\xbdr', unicode_mode=1)
         form2 = self.root.form2
         self.assertEquals(1, form2.get_unicode_mode())
@@ -521,7 +521,7 @@ class FormTestCase(unittest.TestCase):
     def test_add_unicode_field(self):
         # test bugfix when adding a field with a non-ascii title
         # to a form with the unicode flag set
-        self.root.manage_addProduct['Formulator'] .manage_add(
+        self.root.manage_addProduct['Formulator'].manage_add(
             'form2', 'Test Form b\xef\xbf\xbdr', unicode_mode=1)
         form2 = self.root.form2
         self.assertEquals(1, form2.get_unicode_mode())

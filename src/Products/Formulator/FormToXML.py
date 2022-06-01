@@ -45,15 +45,15 @@ def formToXML(form, prologue=1):
                 if value is None:
                     continue
                 # convert boolean to int
-                if isinstance(value, types.BooleanType):
+                if isinstance(value, bool):
                     value = value and 1 or 0
-                if isinstance(value, type(1.1)):
+                if isinstance(value, float):
                     write('          <%s type="float">%s</%s>\n' %
                           (key, escape(str(value)), key))
-                if isinstance(value, type(1)):
+                if isinstance(value, int):
                     write('          <%s type="int">%s</%s>\n' %
                           (key, escape(str(value)), key))
-                elif isinstance(value, types.ListType):
+                elif isinstance(value, list):
                     write('          <%s type="list">%s</%s>\n' %
                           (key, escape(str(value)), key))
                 elif IInterface.providedBy(value):
@@ -62,7 +62,7 @@ def formToXML(form, prologue=1):
                 elif callable(value):
                     write('          <%s type="method">%s</%s>\n' %
                           (key, escape(str(value.method_name)), key))
-                elif isinstance(value, type(DateTime())):
+                elif isinstance(value, DateTime):
                     write('          <%s type="datetime">%s</%s>\n' %
                           (key, escape(str(value)), key))
                 else:

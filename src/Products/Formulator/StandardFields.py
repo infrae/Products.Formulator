@@ -162,8 +162,7 @@ class DateTimeField(ZMIField):
     validator = Validator.DateTimeValidatorInstance
 
     def __init__(self, id, **kw):
-        # icky but necessary...
-        ZMIField.__init__(*(self, id), **kw)
+        ZMIField.__init__(self, id, **kw)
 
         input_style = self.get_value('input_style')
         if input_style == 'text':

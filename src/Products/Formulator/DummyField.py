@@ -41,5 +41,5 @@ class DummyField(Implicit):
     def get_real_field(self):
         """Get an actual field for this property.
         """
-        return FieldRegistry.get_field_class(
-            self.desired_meta_class)(*(self.id,), **self.kw)
+        field_class = FieldRegistry.get_field_class(self.desired_meta_class)
+        return field_class(self.id, **self.kw)

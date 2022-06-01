@@ -1015,10 +1015,10 @@ setTimeout(function(){Calendar.setup({inputField : '%s_hiddeninput',
                 type='hidden',
                 id=html_id +
                 '_hiddeninput',
-                onchange='var pattern = /(\\d{4})\\/(\\d{2})\\/(\\d{2})'
-                         ' (\\d{2}):(\\d{2}) (am|pm)/;'
-                         ' if (pattern.exec(this.value)) {'
-                         ' document.getElementById("' +
+                onchange=r'var pattern = /(\d{4})\/(\d{2})\/(\d{2})'
+                         r' (\d{2}):(\d{2}) (am|pm)/;'
+                         r' if (pattern.exec(this.value)) {'
+                         r' document.getElementById("' +
                 year_id +
                 '").value = RegExp.$1; document.getElementById("' +
                 month_id +
@@ -1045,10 +1045,10 @@ setTimeout(function(){Calendar.setup({inputField : '%s_hiddeninput',
                 type='hidden',
                 id=html_id +
                 '_hiddeninput',
-                onchange='var pattern = /(\\d{4})\\/(\\d{2})\\/(\\d{2})'
-                         ' (\\d{2}):(\\d{2}) (am|pm)/;'
-                         ' if (pattern.exec(this.value)) {'
-                         ' document.getElementById("' +
+                onchange=r'var pattern = /(\d{4})\/(\d{2})\/(\d{2})'
+                         r' (\d{2}):(\d{2}) (am|pm)/;'
+                         r' if (pattern.exec(this.value)) {'
+                         r' document.getElementById("' +
                 year_id +
                 '").value = RegExp.$1; document.getElementById("' +
                 month_id +
