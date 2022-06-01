@@ -28,7 +28,8 @@ jobs:
         # [Python version, tox env]
         - ["2.7",   "lint"]
         - ["2.7",   "py27"]
-        - ["2.7",   "coverage"]
+        # Disable coverage until we support Python 3 as coveralls requires this:
+        # - ["2.7",   "coverage"]
 
     runs-on: ${{ matrix.os }}-latest
     name: ${{ matrix.config[1] }}
