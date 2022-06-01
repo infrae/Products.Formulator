@@ -780,6 +780,7 @@ class DateTimeValidatorTestCase(ValidatorTestCase):
                   'subfield_f_minute': '61'})
 
     def test_serializeValue(self):
+        # This test expects that the default timezone is CET.
         handler = FakeSaxHandler()
         value = self.v.validate(
             DateTimeField('f', allow_empty_time=1),
