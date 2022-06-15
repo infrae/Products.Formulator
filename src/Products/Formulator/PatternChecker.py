@@ -79,7 +79,7 @@ class PatternChecker:
         """
         pattern = self._escape_special_characters(pattern)
         _symbols = '[' + NUMBERSYMBOL + CHARSYMBOL + NUMCHARSYMBOL + ']'
-        re_obj = re.compile(_symbols + '{1,}\\*?')
+        re_obj = re.compile(_symbols + r'{1,}\*?')
         values = []
         for res in result.groups():
             match = re_obj.search(pattern)
