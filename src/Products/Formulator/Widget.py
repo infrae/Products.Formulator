@@ -994,6 +994,9 @@ setTimeout(function(){Calendar.setup({inputField : '%s_hiddeninput',
                     use_ampm and '12' or '24',
                     start_day,
                 )
+
+        js_dt_pattern = r'/(\d{4})\/(\d{2})\/(\d{2}) (\d{2}):(\d{2}) (am|pm)/'
+        js_assign_value = 'document.getElementById("{}").value = RegExp.${};'
         if not field.get_value('date_only'):
             time_result = (field.render_sub_field('hour', hour, REQUEST) +
                            field.get_value('time_separator') +
@@ -1008,32 +1011,23 @@ setTimeout(function(){Calendar.setup({inputField : '%s_hiddeninput',
             ampm_id = field.sub_form.get_field('ampm').generate_field_html_id(
                 "subfield_" + field.id + "_ampm")
             if use_ampm:
-                time_result += '&nbsp;' + field.render_sub_field('ampm',
-                                                                 ampm, REQUEST)
+                time_result += '&nbsp;' + field.render_sub_field(
+                    'ampm', ampm, REQUEST)
             calendar_popup += calendar_picker and render_element(
                 'input',
                 type='hidden',
-                id=html_id +
-                '_hiddeninput',
-                onchange=r'var pattern = /(\d{4})\/(\d{2})\/(\d{2})'
-                         r' (\d{2}):(\d{2}) (am|pm)/;'
-                         r' if (pattern.exec(this.value)) {'
-                         r' document.getElementById("' +
-                year_id +
-                '").value = RegExp.$1; document.getElementById("' +
-                month_id +
-                '").value = RegExp.$2; ' +
-                select_day +
-                ' document.getElementById("' +
-                hour_id +
-                '").value = RegExp.$4; document.getElementById("' +
-                minute_id +
-                '").value = RegExp.$5; ' +
-                str(
-                    use_ampm and 'document.getElementById("' +
-                    ampm_id +
-                    '").value = RegExp.$6;' or '') +
-                ' }') or ''
+                id=html_id + '_hiddeninput',
+                onchange=(
+                    'var pattern = ' + js_dt_pattern + ';'
+                    'if (pattern.exec(this.value)) {'
+                    + js_assign_value.format(year_id, 1)
+                    + js_assign_value.format(month_id, 2)
+                    + select_day
+                    + js_assign_value.format(hour_id, 4)
+                    + js_assign_value.format(minute_id, 5)
+                    + (use_ampm and js_assign_value.format(ampm_id, 6) or '')
+                    + ' }')
+            ) or ''
             return (
                 date_result
                 + '&nbsp;&nbsp;&nbsp;'
@@ -1043,18 +1037,15 @@ setTimeout(function(){Calendar.setup({inputField : '%s_hiddeninput',
             calendar_popup += calendar_picker and render_element(
                 'input',
                 type='hidden',
-                id=html_id +
-                '_hiddeninput',
-                onchange=r'var pattern = /(\d{4})\/(\d{2})\/(\d{2})'
-                         r' (\d{2}):(\d{2}) (am|pm)/;'
-                         r' if (pattern.exec(this.value)) {'
-                         r' document.getElementById("' +
-                year_id +
-                '").value = RegExp.$1; document.getElementById("' +
-                month_id +
-                '").value = RegExp.$2; ' +
-                select_day +
-                ' }') or ''
+                id=html_id + '_hiddeninput',
+                onchange=(
+                    'var pattern = ' + js_dt_pattern + ';'
+                    ' if (pattern.exec(this.value)) {'
+                    + js_assign_value.format(year_id, 1)
+                    + js_assign_value.format(month_id, 2)
+                    + select_day
+                    + ' }')
+            ) or ''
             return date_result + calendar_popup
 
     def render_hidden(self, field, key, value, REQUEST):
