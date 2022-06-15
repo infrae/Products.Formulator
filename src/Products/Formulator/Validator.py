@@ -8,7 +8,7 @@ from urllib import urlopen
 
 from DateTime import DateTime
 from urlparse import urljoin
-from ZPublisher.TaintedString import TaintedString
+from AccessControl.tainted import TaintedString
 
 from Products.Formulator import PatternChecker
 from Products.Formulator.DummyField import fields

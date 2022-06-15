@@ -9,7 +9,7 @@ from urllib import quote
 import Acquisition
 # Zope
 from AccessControl import ClassSecurityInfo
-from AccessControl.Role import RoleManager
+from OFS.role import RoleManager
 from Acquisition import aq_base
 from App.class_init import InitializeClass
 from App.Dialogs import MessageDialog

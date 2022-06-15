@@ -6,6 +6,8 @@ Changes
 
 - Run tests in GitHub Actions.
 
+- Fix deprecation warnings.
+
 
 1.15.5 (2013/10/08)
 -------------------
