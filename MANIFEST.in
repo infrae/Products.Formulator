@@ -1,1 +1,17 @@
-recursive-include Products *.dtml *.gif *.html *.mo *.po *.pot *.py *.txt *.zcml
+# Generated from:
+# https://github.com/zopefoundation/meta/tree/master/config/zope-product
+include *.rst
+include *.txt
+include buildout.cfg
+include buildout213.cfg
+include buildout4.cfg
+include tox.ini
+
+recursive-include src *.py
+recursive-include src *.dtml
+recursive-include src *.gif
+recursive-include src *.html
+recursive-include src *.po
+recursive-include src *.pot
+recursive-include src *.txt
+recursive-include src *.zcml
