@@ -1,7 +1,7 @@
 Changes
 =======
 
-1.16 (unreleased)
+1.16 (2022-06-16)
 -----------------
 
 - Run tests in GitHub Actions.
