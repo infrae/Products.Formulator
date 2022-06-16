@@ -28,6 +28,7 @@ setup(name='Products.Formulator',
           + read_file("CHANGES.rst")
       ),
       classifiers=[
+          "Development Status :: 5 - Production/Stable",
           "Framework :: Zope :: 2",
           "License :: OSI Approved :: BSD License",
           "Programming Language :: Python",
