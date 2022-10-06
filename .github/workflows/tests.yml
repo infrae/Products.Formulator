@@ -27,7 +27,7 @@ jobs:
         - ubuntu
         config:
         # [Python version, tox env]
-        - ["2.7",   "lint"]
+        - ["3.7",   "lint"]
         - ["2.7",   "py27"]
         # Disable coverage until we support Python 3 as coveralls requires this:
         # - ["2.7",   "coverage"]
