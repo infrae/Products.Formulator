@@ -6,9 +6,9 @@ from threading import Thread
 from types import StringTypes
 from urllib import urlopen
 
+from AccessControl.tainted import TaintedString
 from DateTime import DateTime
 from urlparse import urljoin
-from AccessControl.tainted import TaintedString
 
 from Products.Formulator import PatternChecker
 from Products.Formulator.DummyField import fields

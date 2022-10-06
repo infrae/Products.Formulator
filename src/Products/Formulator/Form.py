@@ -9,7 +9,6 @@ from urllib import quote
 import Acquisition
 # Zope
 from AccessControl import ClassSecurityInfo
-from OFS.role import RoleManager
 from Acquisition import aq_base
 from App.class_init import InitializeClass
 from App.Dialogs import MessageDialog
@@ -19,6 +18,7 @@ from OFS.CopySupport import CopyError
 from OFS.CopySupport import eNotSupported
 from OFS.ObjectManager import ObjectManager
 from OFS.PropertyManager import PropertyManager
+from OFS.role import RoleManager
 from OFS.SimpleItem import Item
 from Persistence import Persistent
 # String
