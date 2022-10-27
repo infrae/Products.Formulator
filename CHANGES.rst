@@ -1,10 +1,13 @@
 Changes
 =======
 
-1.17 (unreleased)
+2.0 (unreleased)
 -----------------
 
-- Nothing changed yet.
+Backwards incompatible changes
+++++++++++++++++++++++++++++++
+
+- Remove support for Zope 2 help system.
 
 
 1.16 (2022-06-16)

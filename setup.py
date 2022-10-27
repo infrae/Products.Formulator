@@ -6,7 +6,7 @@ from setuptools import find_packages
 from setuptools import setup
 
 
-version = '1.17.dev0'
+version = '2.0.dev0'
 
 
 tests_require = [
