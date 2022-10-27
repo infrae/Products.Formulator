@@ -3,19 +3,15 @@
 # See also LICENSE.txt
 
 import string
-import sys
 from urllib import quote
 
 import Acquisition
 # Zope
 from AccessControl import ClassSecurityInfo
+from AccessControl.class_init import InitializeClass
 from Acquisition import aq_base
-from App.class_init import InitializeClass
-from App.Dialogs import MessageDialog
 from App.special_dtml import DTMLFile
 from ComputedAttribute import ComputedAttribute
-from OFS.CopySupport import CopyError
-from OFS.CopySupport import eNotSupported
 from OFS.ObjectManager import ObjectManager
 from OFS.PropertyManager import PropertyManager
 from OFS.role import RoleManager
@@ -760,47 +756,6 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
         this method (original defined in ObjectManager).
         """
         return self._meta_types
-
-    def manage_renameObject(self, id, new_id, REQUEST=None):
-        """Rename a particular sub-object, the *old* way.
-        FIXME: hack that could be removed once Zope 2.4.x
-        goes back to a useful semantics..."""
-        try:
-            self._checkId(new_id)
-        except BaseException:
-            raise CopyError(MessageDialog(
-                title='Invalid Id',
-                message=sys.exc_info()[1],
-                action='manage_main'))
-        ob = self._getOb(id)
-        if not ob.cb_isMoveable():
-            raise CopyError(eNotSupported % id)
-        self._verifyObjectPaste(ob)
-        try:
-            ob._notifyOfCopyTo(self, op=1)
-        except BaseException:
-            raise CopyError(MessageDialog(
-                title='Rename Error',
-                message=sys.exc_info()[1],
-                action='manage_main'))
-        self._delObject(id)
-        ob = aq_base(ob)
-        ob._setId(new_id)
-
-        # Note - because a rename always keeps the same context, we
-        # can just leave the ownership info unchanged.
-        self._setObject(new_id, ob, set_owner=0)
-
-        if REQUEST is not None:
-            return self.manage_main(self, REQUEST, update_menu=1)
-        return None
-
-    # security.declareProtected('View', 'get_fields_raw')
-    # def get_fields_raw(self):
-    #    """Get all fields, in arbitrary order.
-    #    """
-    #    return filter(lambda obj: hasattr(obj.aq_explicit, 'is_field'),
-    #                  self.objectValues())
 
     security.declareProtected('View', 'has_field')
     def has_field(self, id, include_disabled=0):

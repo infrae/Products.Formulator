@@ -9,6 +9,21 @@ Backwards incompatible changes
 
 - Remove support for Zope 2 help system.
 
+- Stop testing Zope 2 compatibility. This release should still work with Zope 2
+  but the testing infrastructure was modernized to use ``plone.testing``
+  instead of ``infrae.testing`` and ``infrae.wsgi`` to be more future proof.
+  Expect this to be the last release working on Zope 2.
+
+Features
+++++++++
+
+- Support Zope 4.
+
+Other changes
++++++++++++++
+
+- Remove (test) dependencies of ``five.grok``, ``infrae.wsgi`` and
+  ``infrae.testing``.
 
 1.16 (2022-06-16)
 -----------------
@@ -35,10 +50,10 @@ Backwards incompatible changes
 
 - Formulator Widgets will now return unicode when it is possible.
 
-- ``zeam.form`` extrators have been updated to have the same Acquisition
+- ``zeam.form`` extractors have been updated to have the same Acquisition
   wrapping than the ``zeam.form`` widgets.
 
-- Dependencies got properly defined in ``setup.py`` to facilate the
+- Dependencies got properly defined in ``setup.py`` to facilitate the
   installation of the product.
 
 1.15.3 (2013/05/23)

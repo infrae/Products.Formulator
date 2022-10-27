@@ -1,7 +1,11 @@
 <configure
    xmlns="http://namespaces.zope.org/zope">
 
-  <include package="five.grok" />
+
+  <exclude package="zope.contentprovider" />
+
+  <include package="grokcore.component" file="meta.zcml"/>
+  <include package="Products.Five" />
   <include package="zeam.form.base" />
   <include package="Products.Formulator" />
 

@@ -440,8 +440,8 @@ class SerializeTestCase(unittest.TestCase):
         XMLToForm(xml, form2)
 
         self.assertEqualForms(form, form2)
-        self.failIf(form2.has_field('another_field'))
-        self.failIf('another_field' in form2.objectIds())
+        self.assertFalse(form2.has_field('another_field'))
+        self.assertFalse('another_field' in form2.objectIds())
 
     def test_serializeDeserializeEncodedMessages(self):
         # test for serializing and deserializing XML with non-ascii text in

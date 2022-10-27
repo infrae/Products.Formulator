@@ -10,12 +10,7 @@ to be created inside a product but used outside it.
 """
 
 from AccessControl import ClassSecurityInfo
-
-
-try:
-    from App.class_init import InitializeClass  # Zope 2.12
-except ImportError:
-    from Globals import InitializeClass  # Zope < 2.12
+from AccessControl.class_init import InitializeClass
 
 from Products.Formulator import StandardFields
 from Products.Formulator.Form import BasicForm

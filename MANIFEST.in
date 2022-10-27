@@ -4,7 +4,6 @@ include *.rst
 include *.txt
 include buildout-base.cfg
 include buildout.cfg
-include buildout213.cfg
 include buildout4.cfg
 include tox.ini
 
