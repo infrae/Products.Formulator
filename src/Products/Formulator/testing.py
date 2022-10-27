@@ -32,7 +32,7 @@ class FormulatorLayer(Layer):
     }
 
     def login(self, username):
-        """login with the given id."""
+        """Login with the given id."""
         userfolder = self['app'].acl_users
         plone.testing.zope.login(userfolder, username)
 
