@@ -2,8 +2,10 @@ Formulator
 ==========
 
 Formulator is a tool to help with the creation and validation of web
-forms. Form fields are stored as objects in Zope 2, in a special Form
+forms. Form fields are stored as objects in Zope 4, in a special Form
 folder.
+
+.. caution:: This package is not actively maintained.
 
 .. contents::
 

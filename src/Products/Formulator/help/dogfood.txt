@@ -57,11 +57,6 @@ The following files are in play (in 'Products/Formulator'):
     product (Formulator Form addable) with Zope itself. Somewhat more
     complicated than the average Product __init__.py.
 
-  'FieldHelpTopic.py'
-
-    Used to make the Zope help system automatically generate help for
-    each field class.
-
   'HelperFields.py'
 
     Collects helper (internal) fields together for easy importing.

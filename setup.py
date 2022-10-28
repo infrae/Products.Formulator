@@ -6,11 +6,12 @@ from setuptools import find_packages
 from setuptools import setup
 
 
-version = '1.17.dev0'
+version = '2.0.dev0'
 
 
 tests_require = [
-    'infrae.wsgi [test]',
+    'Products.PythonScripts',
+    'plone.testing',
 ]
 
 
@@ -21,7 +22,7 @@ def read_file(filename):
 
 setup(name='Products.Formulator',
       version=version,
-      description="Form library for Zope 2",
+      description="Form library for Zope 4",
       long_description=(
           read_file("README.rst")
           + read_file("CREDITS.rst")
@@ -29,13 +30,13 @@ setup(name='Products.Formulator',
       ),
       classifiers=[
           "Development Status :: 5 - Production/Stable",
-          "Framework :: Zope :: 2",
+          "Framework :: Zope :: 4",
           "License :: OSI Approved :: BSD License",
           "Programming Language :: Python",
           "Programming Language :: Python :: 2.7",
           "Topic :: Software Development :: Libraries :: Python Modules",
       ],
-      keywords='form generator zope2',
+      keywords='form generator zope4',
       author='Martijn Faassen and community',
       author_email='info@infrae.com',
       url='https://github.com/infrae/Products.Formulator',
@@ -46,24 +47,17 @@ setup(name='Products.Formulator',
       include_package_data=True,
       zip_safe=False,
       install_requires=[
+          'grokcore.component',
           'setuptools',
-          'five.grok',
-          'zope.interface',
           'zope.component',
           'zope.i18nmessageid',
+          'zope.interface',
           'zope.cachedescriptors',
           'zeam.form.base',
+          'zeam.form.base < 1.4; python_version=="2.7"',
       ],
       tests_require=tests_require,
       extras_require={
           'test': tests_require,
-          'zope2': [
-              'zeam.form.base < 1.4',
-              'five.localsitemanager < 3',
-              'grokcore.viewlet < 3',
-              'grokcore.annotation < 3',
-              'grokcore.site < 3',
-              'grokcore.view < 3',
-          ]
       },
       )

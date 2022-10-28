@@ -6,8 +6,6 @@ import os
 import OFS
 from App.ImageFile import ImageFile
 
-from Products.Formulator.FieldHelpTopic import FieldHelpTopic
-
 
 class FieldRegistry:
     """A registry of fields, maintaining a dictionary with
@@ -43,30 +41,6 @@ class FieldRegistry:
         # set up the icon if a filename is supplied
         if icon:
             setupIcon(field_class, icon, 'Formulator')
-
-    def registerFieldHelp(self, context):
-        """Register field help topics.
-        context -- product registration context object
-        """
-        # get help folder for product
-        help = context.getProductHelp()
-
-        for field_name, field_class in self._fields.items():
-            # don't register help for internal fields
-            if (hasattr(field_class, 'internal_field') and
-                    getattr(field_class, 'internal_field')):
-                continue
-
-            # register help topic
-            ht = FieldHelpTopic(field_name,
-                                "Formulator Field - %s" % field_name,
-                                field_class)
-
-            # if we already know the field, don't reregister
-            if field_name in help.objectIds('Help Topic'):
-                continue
-            # register help topic
-            context.registerHelpTopic(field_name, ht)
 
     def initializeFields(self):
         """Initialize all field classes in field forms to use actual field

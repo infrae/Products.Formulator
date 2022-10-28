@@ -4,8 +4,8 @@
 
 import unittest
 
+from AccessControl.tainted import TaintedString
 from DateTime import DateTime
-from ZPublisher.TaintedString import TaintedString
 
 from Products.Formulator import Validator
 from Products.Formulator.StandardFields import DateTimeField

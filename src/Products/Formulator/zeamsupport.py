@@ -3,7 +3,7 @@
 # See also LICENSE.txt
 
 
-from five import grok
+import grokcore.component as grok
 from zeam.form.base import NO_VALUE
 from zeam.form.base import Error
 from zeam.form.base import Field

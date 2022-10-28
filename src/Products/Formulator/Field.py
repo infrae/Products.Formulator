@@ -3,13 +3,13 @@
 # See also LICENSE.txt
 
 import Acquisition
-import OFS
+import OFS.SimpleItem
 import zope.cachedescriptors.property
 from AccessControl import ClassSecurityInfo
+from AccessControl.class_init import InitializeClass
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from Acquisition.interfaces import IAcquirer
-from App.class_init import InitializeClass
 from App.special_dtml import DTMLFile
 from Persistence import Persistent
 from Products.PageTemplates.Expressions import SecureModuleImporter

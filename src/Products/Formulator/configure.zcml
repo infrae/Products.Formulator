@@ -4,7 +4,7 @@
    xmlns:zcml="http://namespaces.zope.org/zcml"
    xmlns:grok="http://namespaces.zope.org/grok">
 
-  <include package="five.grok" />
+  <include package="grokcore.component" file="meta.zcml"/>
 
   <!-- Grok packages if required -->
   <grok:grok
