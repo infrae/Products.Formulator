@@ -331,7 +331,8 @@ class SerializeTestCase(unittest.TestCase):
         request.form['field_float_field'] = '2.71828'
         request.form['subfield_date_field_month'] = '11'
         request.form['subfield_date_field_day'] = '11'
-        request.form['subfield_date_field_year'] = '2022'
+        # This field only allows ten years in the future, today 2023-03-14
+        request.form['subfield_date_field_year'] = '2033'
         request.form['subfield_date_field_hour'] = '09'
         request.form['subfield_date_field_minute'] = '59'
         request.form['field_list_field'] = 'bar'
