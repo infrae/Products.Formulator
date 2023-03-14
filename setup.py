@@ -10,7 +10,7 @@ version = '2.0.dev0'
 
 
 tests_require = [
-    'Products.PythonScripts',
+    'Products.PythonScripts < 5.0; python_version=="2.7"',
     'plone.testing',
 ]
 
@@ -47,7 +47,10 @@ setup(name='Products.Formulator',
       include_package_data=True,
       zip_safe=False,
       install_requires=[
+          'grokcore.chameleon < 4.0; python_version=="2.7"',  # transitive
           'grokcore.component',
+          'grokcore.component < 4.0; python_version=="2.7"',
+          'grokcore.view < 4.0; python_version=="2.7"',  # transitive
           'setuptools',
           'zope.component',
           'zope.i18nmessageid',
