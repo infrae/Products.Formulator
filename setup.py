@@ -51,6 +51,7 @@ setup(name='Products.Formulator',
           'grokcore.component',
           'grokcore.component < 4.0; python_version=="2.7"',
           'grokcore.view < 4.0; python_version=="2.7"',  # transitive
+          'martian < 2.0; python_version=="2.7"',  # transitive
           'setuptools',
           'zope.component',
           'zope.i18nmessageid',
