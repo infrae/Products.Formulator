@@ -4,7 +4,7 @@ Changes
 2.1 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Fix HTML quoting for values containing ``"``.
 
 
 2.0 (2023-03-14)

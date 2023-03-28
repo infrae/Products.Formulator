@@ -47,9 +47,9 @@ class WidgetTestCase(unittest.TestCase):
         self.root.form.manage_addField('text_field', 'Name', 'StringField')
         self.assertEqual(
             self.root.form.text_field.render(
-                value=u"<élèves />"),
+                value=u'<élève"s />'),
             u'<div><input id="field-text-field" name="field_text_field"'
-            u' size="20" type="text" value="&lt;élèves /&gt;" /></div>')
+            u' size="20" type="text" value="&lt;élève&quot;s /&gt;" /></div>')
         self.assertEqual(
             self.root.form.text_field.render_view(value=u"<élèves />"),
             u'&lt;élèves /&gt;')
@@ -74,9 +74,10 @@ class WidgetTestCase(unittest.TestCase):
         self.root.form.manage_addField('life_field', 'Life', 'TextAreaField')
         self.assertEqual(
             self.root.form.life_field.render(
-                value=u"<b>élèves</b>"),
+                value=u'<b>élèv"es"</b>'),
             u'<div><textarea cols="40" id="field-life-field"'
-            u' name="field_life_field" rows="5">&lt;b&gt;élèves&lt;/b&gt;'
+            u' name="field_life_field" rows="5">'
+            u'&lt;b&gt;élèv&quot;es&quot;&lt;/b&gt;'
             u'</textarea></div>')
         self.assertEqual(
             self.root.form.life_field.render_view(value=u"<b>élèves</b>"),

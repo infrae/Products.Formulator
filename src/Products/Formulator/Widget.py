@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2013  Infrae. All rights reserved.
 # See also LICENSE.txt
-import cgi
 import operator
 import string
 
 from DateTime import DateTime
+from DocumentTemplate.html_quote import html_quote
 
 from Products.Formulator.DummyField import fields
 from Products.Formulator.helpers import id_value_re
@@ -249,7 +249,7 @@ class TextAreaWidget(Widget):
               'css_class': css_class,
               'cols': width,
               'rows': height,
-              'contents': cgi.escape(value)}
+              'contents': html_quote(value)}
         if not extra or not id_value_re.search(extra):
             kw['id'] = field.generate_field_html_id(key)
         contents = render_element("textarea", **kw)
@@ -1199,4 +1199,4 @@ def render_value(value, separator=None):
         if not isinstance(separator, unicode):
             separator = unicode(separator, 'utf-8')
         value = separator.join(value)
-    return cgi.escape(render_unicode(value))
+    return html_quote(render_unicode(value))
