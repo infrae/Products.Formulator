@@ -48,6 +48,9 @@ setup(name='Products.Formulator',
       zip_safe=False,
       install_requires=[
           'grokcore.chameleon < 4.0; python_version=="2.7"',  # transitive
+          'DocumentTemplate',
+          'DocumentTemplate < 4.0; python_version=="2.7"',
+          'grokcore.component < 4.0; python_version=="2.7"',
           'grokcore.component',
           'grokcore.component < 4.0; python_version=="2.7"',
           'grokcore.view < 4.0; python_version=="2.7"',  # transitive
