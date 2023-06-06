@@ -487,7 +487,7 @@ class LinesValidator(StringBaseValidator):
             self.raise_error('too_long', field)
 
         # split input into separate lines
-        value = value.split(b"\n")
+        value = value.split("\n")
         return self.check(field, value, key + '_novalidate' in REQUEST)
 
     def serializeValue(self, field, value, producer):

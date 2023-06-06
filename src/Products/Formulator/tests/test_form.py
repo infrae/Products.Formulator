@@ -466,7 +466,7 @@ class FormTestCase(unittest.TestCase):
         list_field = self.form.list_field
         lines_field = self.form.lines_field
         # just to make sure
-        self.assert_(list_field.get_unicode_mode())
+        self.assertTrue(list_field.get_unicode_mode())
 
         # the list field has the most complicated setting:
         # a list of 2-tuples for the 'items'

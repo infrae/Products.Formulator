@@ -11,11 +11,12 @@ seq_types = [list, tuple]
 
 
 def ensure_unicode(value, convert=True, encoding='utf-8'):
-    if convert:
+    if six.PY3 or convert:
         if not isinstance(value, six.text_type):
             if not isinstance(value, six.binary_type):
                 value = str(value)
-            value = six.text_type(value, encoding)
+            else:
+                value = six.text_type(value, encoding)
     elif isinstance(value, six.text_type):
         value = value.encode(encoding)
     elif not isinstance(value, (six.binary_type, six.text_type)):

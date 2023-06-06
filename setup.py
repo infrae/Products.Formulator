@@ -48,6 +48,7 @@ setup(name='Products.Formulator',
       include_package_data=True,
       zip_safe=False,
       install_requires=[
+          'AccessControl',
           'grokcore.chameleon < 4.0; python_version=="2.7"',  # transitive
           'DocumentTemplate',
           'DocumentTemplate < 4.0; python_version=="2.7"',
