@@ -3,18 +3,18 @@
 # See also LICENSE.txt
 import re
 from threading import Thread
-from types import StringTypes
-from urllib import urlopen
+from six.moves.urllib.request import urlopen
 
 from AccessControl.tainted import TaintedString
 from DateTime import DateTime
-from urlparse import urljoin
+from six.moves.urllib.parse import urljoin
 
 from Products.Formulator import PatternChecker
 from Products.Formulator.DummyField import fields
 from Products.Formulator.Errors import ValidationError
 from Products.Formulator.helpers import ensure_unicode
 from Products.Formulator.i18n import translate as _
+import six
 
 
 try:
@@ -73,7 +73,7 @@ class ValidatorBase:
         """Given a field, a value and a context, unserialize the XML
         value for the field.
         """
-        if isinstance(value, basestring):
+        if isinstance(value, six.string_types):
             data = value
         else:
             # We have an lxml node
@@ -161,7 +161,7 @@ class StringBaseValidator(Validator):
     def serializeValue(self, field, value, producer):
         # if our value is not a string type, the SAX lib won't eat it,
         # therefore convert to string first
-        if type(value) not in (str, unicode):
+        if not isinstance(value, six.string_types):
             value = str(value)
         producer.characters(value)
 
@@ -302,7 +302,7 @@ class BooleanValidator(Validator):
         producer.characters(value_string)
 
     def deserializeValue(self, field, value, context=None):
-        if not isinstance(value, basestring):
+        if not isinstance(value, six.string_types):
             value = value.text
         if value == 'True':
             return True
@@ -487,7 +487,7 @@ class LinesValidator(StringBaseValidator):
             self.raise_error('too_long', field)
 
         # split input into separate lines
-        value = value.split("\n")
+        value = value.split(b"\n")
         return self.check(field, value, key + '_novalidate' in REQUEST)
 
     def serializeValue(self, field, value, producer):
@@ -606,7 +606,7 @@ class MultiSelectionValidator(Validator):
         encoding = field.get_form_encoding()
 
         # Convert everything to unicode if necessary
-        value = map(lambda v: ensure_unicode(v, convert, encoding), value)
+        value = [ensure_unicode(v, convert, encoding) for v in value]
 
         if not failover:
             # Possible values
@@ -667,7 +667,7 @@ class FileValidator(Validator):
 
     def validate(self, field, key, REQUEST):
         f = REQUEST.get(key, None)
-        if type(f) in StringTypes:
+        if isinstance(f, six.string_types):
             self.raise_error('incorrect_enctype', field)
         if field.get_value('required'):
             if f.filename == '':
@@ -895,7 +895,7 @@ class DateTimeValidator(Validator):
             producer.characters(value_string)
 
     def deserializeValue(self, field, value, context=None):
-        if isinstance(value, basestring):
+        if isinstance(value, six.string_types):
             value = value.strip()
         else:
             value = value.text

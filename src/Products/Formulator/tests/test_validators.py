@@ -10,6 +10,8 @@ from DateTime import DateTime
 from Products.Formulator import Validator
 from Products.Formulator.StandardFields import DateTimeField
 from Products.Formulator.testing import FunctionalLayer
+import six
+from six.moves import range
 
 
 class TestField:
@@ -80,7 +82,7 @@ class StringValidatorTestCase(ValidatorTestCase):
 
     def test_encoding(self):
         utf8_string = 'M\303\274ller'  # this is a M&uuml;ller
-        unicode_string = unicode(utf8_string, 'utf-8')
+        unicode_string = six.text_type(utf8_string, 'utf-8')
         result = self.v.validate(
             TestField('f', max_length=0, truncate=0, required=0, unicode=1),
             'f', {'f': utf8_string})

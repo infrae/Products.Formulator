@@ -14,12 +14,10 @@ class PatternCheckerTest(unittest.TestCase):
         self.val = PatternChecker()
 
     def assertValueMatches(self, patterns, value):
-        self.assertEquals(value,
-                          self.val.validate_value(patterns, value))
+        self.assertEqual(value, self.val.validate_value(patterns, value))
 
     def assertValueChanged(self, patterns, value, result):
-        self.assertEquals(result,
-                          self.val.validate_value(patterns, value))
+        self.assertEqual(result, self.val.validate_value(patterns, value))
 
     def test_some_patterns(self):
         vOk = self.assertValueMatches

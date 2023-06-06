@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2013  Infrae. All rights reserved.
 # See also LICENSE.txt
-import types
-from cgi import escape
+try:
+    from html import escape
+except ImportError:
+    from cgi import escape  # PY2
 
 from DateTime import DateTime
-from StringIO import StringIO
+from six import StringIO
 from zope.interface.interfaces import IInterface
+import six
 
 
 def formToXML(form, prologue=1):
@@ -66,16 +69,15 @@ def formToXML(form, prologue=1):
                     write('          <%s type="datetime">%s</%s>\n' %
                           (key, escape(str(value)), key))
                 else:
-                    if type(value) not in (
-                            types.StringType, types.UnicodeType):
+                    if not isinstance(
+                            value, (six.binary_type, six.text_type)):
                         value = str(value)
                     write('          <%s>%s</%s>\n'
                           % (key, escape(value), key))
             write('        </values>\n')
 
             write('        <tales>\n')
-            items = field.tales.items()
-            items.sort()
+            items = sorted(field.tales.items())
             for key, value in items:
                 if value:
                     write('          <%s>%s</%s>\n' %
@@ -88,13 +90,15 @@ def formToXML(form, prologue=1):
                 # don't want to trigger translation in serialization
                 message_text = field.get_error_message(message_key,
                                                        want_message_id=False)
+                message_text = escape(message_text)
+                message_key = escape(message_key)
                 # we don't want unicode here
                 if not form.unicode_mode:
-                    if isinstance(message_text, unicode):
+                    if six.PY2 and isinstance(message_text, six.text_type):
                         message_text = message_text.encode(
                             form.stored_encoding)
                 write('          <message name="%s">%s</message>\n' %
-                      (escape(message_key), escape(message_text)))
+                      (message_key, message_text))
             write('        </messages>\n')
             write('      </field>\n')
         write('      </fields>\n')
@@ -105,4 +109,8 @@ def formToXML(form, prologue=1):
     if form.unicode_mode:
         return f.getvalue().encode('UTF-8')
     else:
-        return unicode(f.getvalue(), form.stored_encoding).encode('UTF-8')
+        if six.PY3:
+            return f.getvalue().encode('UTF-8')
+        else:
+            return six.text_type(
+                f.getvalue(), form.stored_encoding).encode('UTF-8')

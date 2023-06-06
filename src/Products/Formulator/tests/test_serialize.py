@@ -15,6 +15,7 @@ from Products.Formulator.MethodField import Method
 from Products.Formulator.testing import FunctionalLayer
 from Products.Formulator.testing import TestRequest
 from Products.Formulator.XMLToForm import XMLToForm
+import six
 
 
 class SerializeTestCase(unittest.TestCase):
@@ -135,8 +136,8 @@ class SerializeTestCase(unittest.TestCase):
         """ test that the two forms are equal (except for their ids) """
         # in case of failures the messages could be nicer ...
 
-        self.assertEquals(map(lambda x: x.getId(), form1.get_fields()),
-                          map(lambda x: x.getId(), form2.get_fields()))
+        self.assertEquals([x.getId() for x in form1.get_fields()],
+                          [x.getId() for x in form2.get_fields()])
         for field in form1.get_fields():
             self.assert_(form2.has_field(field.getId()))
             field2 = getattr(form2, field.getId())
@@ -223,7 +224,7 @@ class SerializeTestCase(unittest.TestCase):
             self.assertEquals(1, len(e.errors))
             text2 = e.errors[0].error_text
 
-        self.assertEquals(unicode(text1), unicode(text2))
+        self.assertEquals(six.text_type(text1), six.text_type(text2))
 
     def test_fieldValueTypes(self):
         """ test checking if the field values are of the proper type.

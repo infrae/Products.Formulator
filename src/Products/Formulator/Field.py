@@ -14,7 +14,7 @@ from App.special_dtml import DTMLFile
 from Persistence import Persistent
 from Products.PageTemplates.Expressions import SecureModuleImporter
 from zope.i18nmessageid import MessageFactory
-from zope.interface import implements
+import zope.interface
 
 from Products.Formulator.Errors import ValidationError
 from Products.Formulator.helpers import convert_unicode
@@ -22,14 +22,15 @@ from Products.Formulator.helpers import id_value_re
 from Products.Formulator.helpers import key_to_id_re
 from Products.Formulator.interfaces import IField
 from Products.Formulator.Widget import MultiItemsWidget
+import six
 
 
+@zope.interface.implementer(IField)
 class Field:
     """Base class of all fields.
     A field is an object consisting of a widget and a validator.
     """
     security = ClassSecurityInfo()
-    implements(IField)
 
     # this is a field
     is_field = 1
@@ -286,7 +287,7 @@ class Field:
             if not want_message_id:
                 try:
                     # convert message id into unicode string
-                    result = unicode(result)
+                    result = six.text_type(result)
                 except AttributeError:
                     pass
             return result
@@ -591,7 +592,7 @@ class ZMIField(
         for message_key in self.get_error_names():
             message = REQUEST[message_key]
             if unicode_mode:
-                message = unicode(message, 'UTF-8')
+                message = six.text_type(message, 'UTF-8')
             # only save message if we're indeed changing from original
             if getattr(self.validator, message_key) != message:
                 messages[message_key] = message

@@ -63,8 +63,8 @@ def initializeFieldForm(field_class):
     """Initialize the properties (fields and values) on a particular
     field class. Also add the tales and override methods.
     """
-    from DummyField import fields
-    from Form import BasicForm
+    from Products.Formulator.DummyField import fields
+    from Products.Formulator.Form import BasicForm
 
     form = BasicForm()
     override_form = BasicForm()

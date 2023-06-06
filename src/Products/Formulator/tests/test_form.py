@@ -72,9 +72,9 @@ class FormTestCase(unittest.TestCase):
         items2 = list_field.render()
 
         # test render
-        self.assertEquals(items1, items2)
+        self.assertEqual(items1, items2)
         # test render_view
-        self.assertEquals('ok', list_field.render_view('ok'))
+        self.assertEqual('ok', list_field.render_view('ok'))
         # test validation ... fake request with a dictionary ...
         list_field.validate({'field_list_field': 'ok'})
 
@@ -83,7 +83,7 @@ class FormTestCase(unittest.TestCase):
         list_field.overrides['items'] = Method('override_test')
         items2 = list_field.render()
 
-        self.assertEquals(items1, items2)
+        self.assertEqual(items1, items2)
 
         # missing: if returning a list of int,
         # rendering does work here, but validation fails.
@@ -98,7 +98,7 @@ class FormTestCase(unittest.TestCase):
         list_field.tales['items'] = TALESMethod("python:[42, 88]")
         items2 = list_field.render()
 
-        self.assertEquals(items1, items2)
+        self.assertEqual(items1, items2)
 
         list_field.validate({'field_list_field': '42'})
 
@@ -121,14 +121,14 @@ class FormTestCase(unittest.TestCase):
 
         list_field.tales['items'] = TALESMethod("python:('foo', 'bar')")
 
-        self.assertEquals(('foo', 'bar'), list_field.get_value('items'))
+        self.assertEqual(('foo', 'bar'), list_field.get_value('items'))
 
         items2 = list_field.render(('foo',))
 
         # test render
-        self.assertEquals(items1, items2)
+        self.assertEqual(items1, items2)
         # test render_view
-        self.assertEquals("foo", list_field.render_view(('foo',)))
+        self.assertEqual("foo", list_field.render_view(('foo',)))
 
     def test_items_is_sequence_bis(self):
         """ test that a multi list values widget renders correctly,
@@ -145,17 +145,17 @@ class FormTestCase(unittest.TestCase):
         list_boxes.values['items'] = \
             [(u'\xe4', u'A uml'), (u'\xfc', u'U uml')]
         request = TestRequest()
-        request.form['key'] = ['\xc3\xa4', '\xc3\xbc']
+        request.form['key'] = [b'\xc3\xa4', b'\xc3\xbc']
         items = list_boxes._get_default(key='key', value=None,
                                         REQUEST=request)
-        self.assertEquals([u'\xe4', u'\xfc'], items)
+        self.assertEqual([u'\xe4', u'\xfc'], items)
 
         # same with latin-1 (we should not hardcode utf-8)
         self.form.encoding = "latin-1"
         request.form['key'] = ['\xe4', '\xfc']
         items = list_boxes._get_default(key='key', value=None,
                                         REQUEST=request)
-        self.assertEquals([u'\xe4', u'\xfc'], items)
+        self.assertEqual([u'\xe4', u'\xfc'], items)
 
     def test_lines_field_rendering(self):
         """ line fields should both accept lists / tuples
@@ -185,7 +185,7 @@ class FormTestCase(unittest.TestCase):
         text = [child for child in textareas[0].childNodes
                 if child.nodeType == child.TEXT_NODE]
 
-        self.assertEquals('Text', ''.join(map(lambda n: n.nodeValue, text)))
+        self.assertEqual('Text', ''.join([n.nodeValue for n in text]))
 
         field.values['hidden'] = 'checked'
         rendered = field.render(REQUEST=request)
@@ -202,7 +202,7 @@ class FormTestCase(unittest.TestCase):
 
         result = self.form.validate_all(
             {'field_int_field': '3'})
-        self.assertEquals({'int_field': 3}, result)
+        self.assertEqual({'int_field': 3}, result)
 
     def test_labels_with_direct_validation(self):
         """ PloneFormMailer calls validate() directly on each field,
@@ -224,17 +224,17 @@ class FormTestCase(unittest.TestCase):
         css_matcher = re.compile('class="([^"]*)"')
 
         # initially no css class is set
-        self.assertEquals(0, len(css_matcher.findall(field.render())))
+        self.assertEqual(0, len(css_matcher.findall(field.render())))
 
         # edit the field, bypassing validation ...
         field._edit({'css_class': 'some_class'})
 
         # now we should have five matches for the five subfields ...
         css_matches = css_matcher.findall(field.render())
-        self.assertEquals(10, len(css_matches))
+        self.assertEqual(10, len(css_matches))
         # ... and all have the given value:
         for m in css_matches:
-            self.assertEquals('some_class', m)
+            self.assertEqual('some_class', m)
 
         # change the input style: the css needs to be
         # propagated to the newly created subfields
@@ -244,21 +244,21 @@ class FormTestCase(unittest.TestCase):
 
         # still the css classes should remain the same
         css_matches = css_matcher.findall(field.render())
-        self.assertEquals(7, len(css_matches))
+        self.assertEqual(7, len(css_matches))
         for m in css_matches:
-            self.assertEquals('some_class', m)
+            self.assertEqual('some_class', m)
 
         # now just change to another value:
         field._edit({'css_class': 'other_class'})
         css_matches = css_matcher.findall(field.render())
-        self.assertEquals(7, len(css_matches))
+        self.assertEqual(7, len(css_matches))
         for m in css_matches:
-            self.assertEquals('other_class', m)
+            self.assertEqual('other_class', m)
 
         # and clear the css_class field:
         field._edit({'css_class': ''})
         css_matches = css_matcher.findall(field.render())
-        self.assertEquals(0, len(css_matches))
+        self.assertEqual(0, len(css_matches))
 
     def _helper_render_datetime(
             self,
@@ -272,7 +272,7 @@ class FormTestCase(unittest.TestCase):
                     if child.nodeType == child.ELEMENT_NODE]
         if type != 'hidden':
             # They are wrapped in divs if not hidden
-            self.assertEquals(len(elements), len(expected_values))
+            self.assertEqual(len(elements), len(expected_values))
             inputs = []
             for element in elements:
                 inputs.extend([child for child in element.childNodes
@@ -280,14 +280,14 @@ class FormTestCase(unittest.TestCase):
         else:
             inputs = elements
 
-        self.assertEquals(len(expected_values.keys()), len(inputs))
+        self.assertEqual(len(list(expected_values.keys())), len(inputs))
         values = {}
         for input in inputs:
-            self.assertEquals('input', input.nodeName)
-            self.assertEquals(type, input.getAttribute('type'))
+            self.assertEqual('input', input.nodeName)
+            self.assertEqual(type, input.getAttribute('type'))
             self.assertFalse(input.childNodes)
             values[input.getAttribute('name')] = input.getAttribute('value')
-        self.assertEquals(expected_values, values)
+        self.assertEqual(expected_values, values)
 
     def _helper_render_hidden_list(self, expected_name, expected_values,
                                    rendered):
@@ -296,12 +296,12 @@ class FormTestCase(unittest.TestCase):
         dom = parseString('<dummy>%s</dummy>' % rendered)
         elements = [child for child in dom.documentElement.childNodes
                     if child.nodeType == child.ELEMENT_NODE]
-        self.assertEquals(len(expected_values), len(elements))
+        self.assertEqual(len(expected_values), len(elements))
         for child in elements:
-            self.assertEquals('input', child.nodeName)
-            self.assertEquals('hidden', child.getAttribute('type'))
-            self.assertEquals(expected_name, child.getAttribute('name'))
-            self.assertEquals(expected_values.pop(0),
+            self.assertEqual('input', child.nodeName)
+            self.assertEqual('hidden', child.getAttribute('type'))
+            self.assertEqual(expected_name, child.getAttribute('name'))
+            self.assertEqual(expected_values.pop(0),
                               child.getAttribute('value'))
             self.assertFalse(child.childNodes)
 
@@ -393,7 +393,7 @@ class FormTestCase(unittest.TestCase):
             field.values['items'] = [('Alpha', 'a'),
                                      ('Beta', 'b'),
                                      ('Gamma', 'c'), ]
-            self.assertEquals('Gamma', field.render_view('c'), msg=field.id)
+            self.assertEqual('Gamma', field.render_view('c'), msg=field.id)
 
         for field in self.form.multi_list, self.form.check_boxes:
             field.values['items'] = [('Alpha', 'a'),
@@ -401,10 +401,10 @@ class FormTestCase(unittest.TestCase):
                                      ('Gamma', 'c'), ]
 
             field.values['view_separator'] = '|||'
-            self.assertEquals('Gamma', field.render_view(['c']))
-            self.assertEquals('|||'.join(('Alpha', 'Gamma')),
+            self.assertEqual('Gamma', field.render_view(['c']))
+            self.assertEqual('|||'.join(('Alpha', 'Gamma')),
                               field.render_view(['a', 'c']))
-            self.assertEquals('', field.render_view([]))
+            self.assertEqual('', field.render_view([]))
 
     def test_default_to_now_does_not_overwrite_request_values(self):
         self.form.manage_addField(
@@ -442,15 +442,15 @@ class FormTestCase(unittest.TestCase):
         checkbox_field.values['default'] = 1
 
         rendered = checkbox_field.render()
-        self.assert_(-1 != rendered.find('checked="checked"'))
+        self.assertNotEqual(-1, rendered.find('checked="checked"'))
 
         request = TestRequest()
         rendered = checkbox_field.render_from_request(request)
-        self.assert_(-1 != rendered.find('checked="checked"'))
+        self.assertNotEqual(-1, rendered.find('checked="checked"'))
 
         request.form['formulator_submission'] = '1'
         rendered = checkbox_field.render_from_request(request)
-        self.assertEquals(-1, rendered.find('checked="checked"'))
+        self.assertEqual(-1, rendered.find('checked="checked"'))
 
     def test_edit_listitem(self):
         """ if eding a list item via ZMI (or xml rpc) in unicode mode
@@ -471,32 +471,32 @@ class FormTestCase(unittest.TestCase):
         # the list field has the most complicated setting:
         # a list of 2-tuples for the 'items'
         request = TestRequest(form={
-            'field_title': 'Title\xc3\xbc',
-            'field_default': 'item\xc3\xbc',
-            'field_items': 'item\xc3\xbc | item_ue\nitem2 | item2',
+            'field_title': b'Title\xc3\xbc',
+            'field_default': b'item\xc3\xbc',
+            'field_items': b'item\xc3\xbc | item_ue\nitem2 | item2',
             'field_size': '7',
         })
         list_field.manage_edit(request)
-        self.assertEquals(u'item\xfc',
-                          list_field.get_value('default'))
+        self.assertEqual(u'item\xfc',
+                         list_field.get_value('default'))
         expected_items = [(u'item\xfc', u'item_ue'), ('item2', 'item2')]
-        self.assertEquals(expected_items,
+        self.assertEqual(expected_items,
                           list_field.get_value('items'))
 
-        self.assertEquals(7, list_field.get_value('size'))
+        self.assertEqual(7, list_field.get_value('size'))
 
         # the lines field has a plain list of string as 'default'
         request = TestRequest(form={
-            'field_title': 'Title\xc3\xbc',
-            'field_default': 'item\xc3\xbc\nitem2',
+            'field_title': b'Title\xc3\xbc',
+            'field_default': b'item\xc3\xbc\nitem2',
             'field_width': '40',
             'field_height': '5',
-            'field_view_separator': 'sep \xc3\xbc',
+            'field_view_separator': b'sep \xc3\xbc',
         })
         lines_field.manage_edit(request)
-        self.assertEquals(u'Title\xfc',
+        self.assertEqual(u'Title\xfc',
                           lines_field.get_value('title'))
-        self.assertEquals([u'item\xfc', u'item2'],
+        self.assertEqual([u'item\xfc', u'item2'],
                           lines_field.get_value('default'))
 
     def test_tales_none(self):
@@ -506,17 +506,17 @@ class FormTestCase(unittest.TestCase):
         self.form.manage_addField('text', 'Text Field', 'StringField')
         text = self.form.text
         text.tales['default'] = TALESMethod('nothing')
-        self.assertEquals(1, text.render().count('value=""'))
+        self.assertEqual(1, text.render().count('value=""'))
 
     def test_add_unicode_form(self):
         # test bugfix when adding a form with a non-ascii title
         # and the unicode flag set
         self.root.manage_addProduct['Formulator'].manage_add(
-            'form2', 'Test Form b\xef\xbf\xbdr', unicode_mode=1)
+            'form2', b'Test Form b\xef\xbf\xbdr', unicode_mode=1)
         form2 = self.root.form2
-        self.assertEquals(1, form2.get_unicode_mode())
-        self.assertEquals(type(u' '), type(form2.title))
-        self.assertEquals(u'Test Form b\ufffdr', form2.title)
+        self.assertEqual(1, form2.get_unicode_mode())
+        self.assertEqual(type(u' '), type(form2.title))
+        self.assertEqual(u'Test Form b\ufffdr', form2.title)
 
     def test_add_unicode_field(self):
         # test bugfix when adding a field with a non-ascii title
@@ -524,12 +524,12 @@ class FormTestCase(unittest.TestCase):
         self.root.manage_addProduct['Formulator'].manage_add(
             'form2', 'Test Form b\xef\xbf\xbdr', unicode_mode=1)
         form2 = self.root.form2
-        self.assertEquals(1, form2.get_unicode_mode())
+        self.assertEqual(1, form2.get_unicode_mode())
 
-        form2.manage_addField('testfield', 'Test field b\xef\xbf\xbdr',
+        form2.manage_addField('testfield', b'Test field b\xef\xbf\xbdr',
                               'StringField')
-        self.assertEquals(type(u' '), type(form2.testfield.title()))
-        self.assertEquals(u'Test field b\ufffdr', form2.testfield.title())
-        self.assertEquals(
+        self.assertEqual(type(u' '), type(form2.testfield.title()))
+        self.assertEqual(u'Test field b\ufffdr', form2.testfield.title())
+        self.assertEqual(
             u'Test field b\ufffdr',
             form2.testfield.get_value('title'))

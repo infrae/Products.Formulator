@@ -29,8 +29,8 @@ jobs:
         # [Python version, tox env]
         - ["3.7",   "lint"]
         - ["2.7",   "py27"]
-        # Disable coverage until we support Python 3 as coveralls requires this:
-        # - ["2.7",   "coverage"]
+        - ["3.7",   "py37"]
+        - ["3.7",   "coverage"]
 
     runs-on: ${{ matrix.os }}-latest
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name

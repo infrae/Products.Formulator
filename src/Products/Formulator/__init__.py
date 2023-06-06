@@ -2,6 +2,13 @@
 # Copyright (c) 2013  Infrae. All rights reserved.
 # See also LICENSE.txt
 
+import warnings
+warnings.filterwarnings(
+    "ignore",
+    message="Deprecated call to `pkg_resources.declare_namespace",
+    category=DeprecationWarning)
+
+
 from AccessControl import allow_module
 
 from Products.Formulator import EmailLinesField

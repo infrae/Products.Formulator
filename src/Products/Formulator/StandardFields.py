@@ -9,6 +9,7 @@ from Products.Formulator import Widget
 from Products.Formulator.Field import ZMIField
 from Products.Formulator.Form import BasicForm
 from Products.Formulator.MethodField import BoundMethod
+from six.moves import range
 
 
 class StringField(ZMIField):
