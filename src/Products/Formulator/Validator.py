@@ -3,18 +3,19 @@
 # See also LICENSE.txt
 import re
 from threading import Thread
+
+import six
+from six.moves.urllib.parse import urljoin
 from six.moves.urllib.request import urlopen
 
 from AccessControl.tainted import TaintedString
 from DateTime import DateTime
-from six.moves.urllib.parse import urljoin
 
 from Products.Formulator import PatternChecker
 from Products.Formulator.DummyField import fields
 from Products.Formulator.Errors import ValidationError
 from Products.Formulator.helpers import ensure_unicode
 from Products.Formulator.i18n import translate as _
-import six
 
 
 try:
@@ -487,7 +488,10 @@ class LinesValidator(StringBaseValidator):
             self.raise_error('too_long', field)
 
         # split input into separate lines
-        value = value.split("\n")
+        if isinstance(value, bytes):
+            value = value.split(b"\n")
+        else:
+            value = value.split("\n")
         return self.check(field, value, key + '_novalidate' in REQUEST)
 
     def serializeValue(self, field, value, producer):

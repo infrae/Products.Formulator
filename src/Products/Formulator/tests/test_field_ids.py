@@ -39,7 +39,7 @@ class FieldIdsTestCase(unittest.TestCase):
 
         sf.field_record = 'silva-extra'
         self.assertEqual('silva-extra-text-record',
-                          sf.generate_field_html_id())
+                         sf.generate_field_html_id())
 
         sf.field_record = None
 

@@ -302,7 +302,7 @@ class FormTestCase(unittest.TestCase):
             self.assertEqual('hidden', child.getAttribute('type'))
             self.assertEqual(expected_name, child.getAttribute('name'))
             self.assertEqual(expected_values.pop(0),
-                              child.getAttribute('value'))
+                             child.getAttribute('value'))
             self.assertFalse(child.childNodes)
 
     def test_render_hidden(self):
@@ -403,7 +403,7 @@ class FormTestCase(unittest.TestCase):
             field.values['view_separator'] = '|||'
             self.assertEqual('Gamma', field.render_view(['c']))
             self.assertEqual('|||'.join(('Alpha', 'Gamma')),
-                              field.render_view(['a', 'c']))
+                             field.render_view(['a', 'c']))
             self.assertEqual('', field.render_view([]))
 
     def test_default_to_now_does_not_overwrite_request_values(self):
@@ -481,7 +481,7 @@ class FormTestCase(unittest.TestCase):
                          list_field.get_value('default'))
         expected_items = [(u'item\xfc', u'item_ue'), ('item2', 'item2')]
         self.assertEqual(expected_items,
-                          list_field.get_value('items'))
+                         list_field.get_value('items'))
 
         self.assertEqual(7, list_field.get_value('size'))
 
@@ -495,9 +495,9 @@ class FormTestCase(unittest.TestCase):
         })
         lines_field.manage_edit(request)
         self.assertEqual(u'Title\xfc',
-                          lines_field.get_value('title'))
+                         lines_field.get_value('title'))
         self.assertEqual([u'item\xfc', u'item2'],
-                          lines_field.get_value('default'))
+                         lines_field.get_value('default'))
 
     def test_tales_none(self):
         # test that a TALES default of None is rendered

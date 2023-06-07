@@ -2,17 +2,21 @@
 # Copyright (c) 2013  Infrae. All rights reserved.
 # See also LICENSE.txt
 
+import six
+
 from Products.Formulator import Validator
 from Products.Formulator import Widget
 from Products.Formulator.DummyField import fields
 from Products.Formulator.Field import ZMIField
-import six
 
 
 def split_value(value):
     result = []
     for line in value:
-        elements = line.split(b"|")
+        if isinstance(line, bytes):
+            elements = line.split(b"|")
+        else:
+            elements = line.split("|")
         if len(elements) >= 2:
             text, value = elements[:2]
         else:

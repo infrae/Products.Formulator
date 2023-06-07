@@ -3,8 +3,9 @@
 # See also LICENSE.txt
 import re
 
-from Acquisition import aq_base
 import six
+
+from Acquisition import aq_base
 
 
 seq_types = [list, tuple]

@@ -3,13 +3,14 @@
 # See also LICENSE.txt
 import operator
 
+import six
+
 from DateTime import DateTime
 from DocumentTemplate.html_quote import html_quote
 
 from Products.Formulator.DummyField import fields
 from Products.Formulator.helpers import id_value_re
 from Products.Formulator.helpers import is_sequence
-import six
 
 
 class Widget:

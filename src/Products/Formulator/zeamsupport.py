@@ -3,6 +3,8 @@
 # See also LICENSE.txt
 
 
+import six
+
 import grokcore.component as grok
 from zeam.form.base import NO_VALUE
 from zeam.form.base import Error
@@ -17,7 +19,6 @@ from zope.interface.interface import Specification
 
 from Products.Formulator.Errors import ValidationError
 from Products.Formulator.interfaces import IForm
-import six
 
 
 def decode(value):

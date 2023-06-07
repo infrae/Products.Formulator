@@ -4,14 +4,15 @@
 
 import unittest
 
+import six
+from six.moves import range
+
 from AccessControl.tainted import TaintedString
 from DateTime import DateTime
 
 from Products.Formulator import Validator
 from Products.Formulator.StandardFields import DateTimeField
 from Products.Formulator.testing import FunctionalLayer
-import six
-from six.moves import range
 
 
 class TestField:
@@ -288,7 +289,7 @@ class SelectionValidatorTestCase(ValidatorTestCase):
             TestField(
                 'f', required=1, unicode=True, items=[
                     (u'Some \xc3\x84 here', u'\xe4'), (u'Some B then', u'b')]),
-            'f', {'f': '\xc3\xa4'})
+            'f', {'f': b'\xc3\xa4'})
         self.assertEqual(u'\xe4', result)
 
     def test_invalid_items(self):
@@ -326,7 +327,7 @@ class MultiSelectionValidatorTestCase(ValidatorTestCase):
             TestField(
                 'f', required=1, unicode=True, items=[
                     (u'Some \xc3\x84 here', u'\xe4'), (u'Some B then', u'b')]),
-            'f', {'f': '\xc3\xa4'})
+            'f', {'f': b'\xc3\xa4'})
         self.assertEqual([u'\xe4'], result)
 
     def test_invalid_items(self):

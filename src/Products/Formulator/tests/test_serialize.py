@@ -5,6 +5,8 @@
 import re
 import unittest
 
+import six
+
 from DateTime import DateTime
 
 from Products.Formulator.Errors import FormValidationError
@@ -15,7 +17,6 @@ from Products.Formulator.MethodField import Method
 from Products.Formulator.testing import FunctionalLayer
 from Products.Formulator.testing import TestRequest
 from Products.Formulator.XMLToForm import XMLToForm
-import six
 
 
 class SerializeTestCase(unittest.TestCase):
@@ -122,13 +123,13 @@ class SerializeTestCase(unittest.TestCase):
   </groups>
 </form>'''  # noqa: E501 line too long
         XMLToForm(xml, form)
-        s = formToXML(form)
-        f = open('output1.txt', 'w')
-        f.write(s)
+        b = formToXML(form)
+        f = open('output1.txt', 'wb')
+        f.write(b)
         f.close()
         form2 = ZMIForm('another', 'Something')
         XMLToForm(xml, form2)
-        f = open('output2.txt', 'w')
+        f = open('output2.txt', 'wb')
         f.write(formToXML(form2))
         f.close()
 

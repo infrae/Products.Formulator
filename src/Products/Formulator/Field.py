@@ -2,9 +2,12 @@
 # Copyright (c) 2013  Infrae. All rights reserved.
 # See also LICENSE.txt
 
+import six
+
 import Acquisition
 import OFS.SimpleItem
 import zope.cachedescriptors.property
+import zope.interface
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from Acquisition import aq_inner
@@ -14,7 +17,6 @@ from App.special_dtml import DTMLFile
 from Persistence import Persistent
 from Products.PageTemplates.Expressions import SecureModuleImporter
 from zope.i18nmessageid import MessageFactory
-import zope.interface
 
 from Products.Formulator.Errors import ValidationError
 from Products.Formulator.helpers import convert_unicode
@@ -22,7 +24,6 @@ from Products.Formulator.helpers import id_value_re
 from Products.Formulator.helpers import key_to_id_re
 from Products.Formulator.interfaces import IField
 from Products.Formulator.Widget import MultiItemsWidget
-import six
 
 
 @zope.interface.implementer(IField)

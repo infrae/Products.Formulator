@@ -6,10 +6,11 @@ try:
 except ImportError:
     from cgi import escape  # PY2
 
-from DateTime import DateTime
-from six import StringIO
-from zope.interface.interfaces import IInterface
 import six
+from six import StringIO
+
+from DateTime import DateTime
+from zope.interface.interfaces import IInterface
 
 
 def formToXML(form, prologue=1):

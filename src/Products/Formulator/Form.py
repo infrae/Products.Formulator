@@ -2,10 +2,11 @@
 # Copyright (c) 2013  Infrae. All rights reserved.
 # See also LICENSE.txt
 
+from six import StringIO
+from six.moves import range
 from six.moves.urllib.parse import quote
 
 import Acquisition
-# Zope
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from Acquisition import aq_base
@@ -16,8 +17,6 @@ from OFS.PropertyManager import PropertyManager
 from OFS.role import RoleManager
 from OFS.SimpleItem import Item
 from Persistence import Persistent
-# String
-from six import StringIO
 from zope.interface import implementer
 
 from Products.Formulator.DummyField import fields
@@ -30,7 +29,6 @@ from Products.Formulator.helpers import ensure_unicode
 from Products.Formulator.interfaces import IForm
 from Products.Formulator.Widget import render_tag
 from Products.Formulator.XMLToForm import XMLToForm
-from six.moves import range
 
 
 @implementer(IForm)

@@ -3,6 +3,9 @@
 # See also LICENSE.txt
 
 import warnings
+
+
+# ignore some annoying warning in the test run:
 warnings.filterwarnings(
     "ignore",
     message="Deprecated call to `pkg_resources.declare_namespace",

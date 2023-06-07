@@ -2,6 +2,8 @@
 # Copyright (c) 2013  Infrae. All rights reserved.
 # See also LICENSE.txt
 
+from six.moves import range
+
 from DateTime import DateTime
 
 from Products.Formulator import Validator
@@ -9,7 +11,6 @@ from Products.Formulator import Widget
 from Products.Formulator.Field import ZMIField
 from Products.Formulator.Form import BasicForm
 from Products.Formulator.MethodField import BoundMethod
-from six.moves import range
 
 
 class StringField(ZMIField):
