@@ -26,7 +26,7 @@ def decode(value):
     it in an optional fashion.
     """
     if not isinstance(value, six.text_type):
-        if isinstance(value, str):
+        if isinstance(value, bytes):
             return value.decode('utf-8')
         return six.text_type(value)
     return value
