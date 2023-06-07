@@ -124,12 +124,12 @@ class SerializeTestCase(unittest.TestCase):
 </form>'''  # noqa: E501 line too long
         XMLToForm(xml, form)
         b = formToXML(form)
-        f = open('output1.txt', 'wb')
+        f = open('output1.txt', 'w')
         f.write(b)
         f.close()
         form2 = ZMIForm('another', 'Something')
         XMLToForm(xml, form2)
-        f = open('output2.txt', 'wb')
+        f = open('output2.txt', 'w')
         f.write(formToXML(form2))
         f.close()
 
@@ -394,7 +394,10 @@ class SerializeTestCase(unittest.TestCase):
 
         # get the external validator from the output
         # XXX this could be more elegant, I guess ...
-        xml_decoded = xml.decode('utf-8')
+        if six.PY2:
+            xml_decoded = xml.decode('utf-8')
+        else:
+            xml_decoded = xml
         for line in xml_decoded.split('\n'):
             m = re.match(
                 r'\s*<external_validator type="method">(.*?)'

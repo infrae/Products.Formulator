@@ -107,11 +107,8 @@ def formToXML(form, prologue=1):
     write('  </groups>\n')
     write('</form>')
 
-    if form.unicode_mode:
+    if six.PY3:
+        return f.getvalue()
+    elif form.unicode_mode:
         return f.getvalue().encode('UTF-8')
-    else:
-        if six.PY3:
-            return f.getvalue().encode('UTF-8')
-        else:
-            return six.text_type(
-                f.getvalue(), form.stored_encoding).encode('UTF-8')
+    return six.text_type(f.getvalue(), form.stored_encoding).encode('UTF-8')
