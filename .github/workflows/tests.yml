@@ -59,7 +59,7 @@ jobs:
         pip install tox
     - name: Install dependencies buildout cannot install
       if: ${{ matrix.config[0] == '2.7'}}
-      run: pip install BTrees
+      run: pip install persistent BTrees
     # Enable tmux debugging of manually-triggered workflows if the input option was provided
     - name: Start tmux session if debugging is enabled
       uses: lhotari/action-upterm@v1
