@@ -4,7 +4,7 @@ Changes
 2.1 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Port to Python 3, supporting Python 3.7 up to 3.11.
 
 
 2.0.1 (2023-03-28)

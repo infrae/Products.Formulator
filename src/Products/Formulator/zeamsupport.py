@@ -3,6 +3,8 @@
 # See also LICENSE.txt
 
 
+import six
+
 import grokcore.component as grok
 from zeam.form.base import NO_VALUE
 from zeam.form.base import Error
@@ -23,10 +25,10 @@ def decode(value):
     """Helper to ensure we have unicode everywhere, as Formulator use
     it in an optional fashion.
     """
-    if not isinstance(value, unicode):
-        if isinstance(value, str):
+    if not isinstance(value, six.text_type):
+        if isinstance(value, bytes):
             return value.decode('utf-8')
-        return unicode(value)
+        return six.text_type(value)
     return value
 
 
@@ -60,8 +62,8 @@ class IFormulatorWidget(interfaces.IFieldWidget):
     pass
 
 
+@grok.implementer(IFormulatorField)
 class FormulatorField(Field):
-    grok.implements(IFormulatorField)
 
     def __init__(self, field, form):
         self._form = form
@@ -104,10 +106,10 @@ class FormulatorField(Field):
         self._customizations.update(customizations)
 
 
+@grok.implementer(IFormulatorWidget)
 class FormulatorWidget(object):
     """Bind a Formulator field to a data.
     """
-    grok.implements(IFormulatorWidget)
     order = 0
     alternateLayout = False
     defaultHtmlAttributes = set([])
@@ -206,8 +208,8 @@ grok.global_adapter(
     name=u"display")
 
 
+@grok.implementer(interfaces.IWidgetExtractor)
 class FormulatorExtractor(grok.MultiAdapter):
-    grok.implements(interfaces.IWidgetExtractor)
     grok.provides(interfaces.IWidgetExtractor)
     grok.adapts(
         IFormulatorField,
@@ -231,8 +233,8 @@ class FormulatorExtractor(grok.MultiAdapter):
         return {}
 
 
+@grok.implementer(interfaces.IFieldFactory)
 class FormulatorFieldFactory(grok.Adapter):
-    grok.implements(interfaces.IFieldFactory)
     grok.context(IForm)
 
     def __init__(self, form):

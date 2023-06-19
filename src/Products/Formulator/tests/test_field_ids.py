@@ -28,18 +28,18 @@ class FieldIdsTestCase(unittest.TestCase):
     def test_field_html_id(self):
         # test standard use-case
         sf = self.form.text
-        self.assertEquals('field-text', sf.generate_field_html_id())
-        self.assertEquals('field-text', sf.html_id)
+        self.assertEqual('field-text', sf.generate_field_html_id())
+        self.assertEqual('field-text', sf.html_id)
 
     def test_html_id_with_field_record(self):
         # SilvaMetadata uses a 'field_record' to add uniqueness
         # to the field key, so test that as well
         sf = self.form.text
-        self.assertEquals('field-text', sf.generate_field_html_id())
+        self.assertEqual('field-text', sf.generate_field_html_id())
 
         sf.field_record = 'silva-extra'
-        self.assertEquals('silva-extra-text-record',
-                          sf.generate_field_html_id())
+        self.assertEqual('silva-extra-text-record',
+                         sf.generate_field_html_id())
 
         sf.field_record = None
 
@@ -47,10 +47,10 @@ class FieldIdsTestCase(unittest.TestCase):
         # the form name can be used to add uniqueness as well
         # to the field key, so test that as well
         sf = self.form.text
-        self.assertEquals('field-text', sf.generate_field_html_id())
+        self.assertEqual('field-text', sf.generate_field_html_id())
 
         self.form.name = 'test'
-        self.assertEquals('testfield-text', sf.generate_field_html_id())
+        self.assertEqual('testfield-text', sf.generate_field_html_id())
         self.form.name = ''
 
     def test_html_id_in_extra(self):
@@ -58,15 +58,15 @@ class FieldIdsTestCase(unittest.TestCase):
         # is used if present.  Also test the regular expression
         sf = self.form.text
         sf.values['extra'] = 'id="HTML"'
-        self.assertEquals('HTML', sf.generate_field_html_id())
+        self.assertEqual('HTML', sf.generate_field_html_id())
         sf.values['extra'] = "id='HTML'"
-        self.assertEquals('HTML', sf.generate_field_html_id())
+        self.assertEqual('HTML', sf.generate_field_html_id())
         sf.values['extra'] = 'class="blah123" id="HTML"'
-        self.assertEquals('HTML', sf.generate_field_html_id())
+        self.assertEqual('HTML', sf.generate_field_html_id())
         sf.values['extra'] = 'formid="asdf" id="HTML"'
-        self.assertEquals('HTML', sf.generate_field_html_id())
+        self.assertEqual('HTML', sf.generate_field_html_id())
         sf.values['extra'] = 'id="HTML" formid="asdf"'
-        self.assertEquals('HTML', sf.generate_field_html_id())
+        self.assertEqual('HTML', sf.generate_field_html_id())
 
 
 def test_suite():

@@ -3,22 +3,25 @@
 # See also LICENSE.txt
 import re
 
+import six
+
 from Acquisition import aq_base
 
 
-seq_types = [type([]), type(())]
+seq_types = [list, tuple]
 
 
 def ensure_unicode(value, convert=True, encoding='utf-8'):
-    if convert:
-        if not isinstance(value, unicode):
-            if not isinstance(value, str):
+    if six.PY3 or convert:
+        if not isinstance(value, six.text_type):
+            if not isinstance(value, six.binary_type):
                 value = str(value)
-            value = unicode(value, encoding)
-    elif isinstance(value, unicode):
+            else:
+                value = six.text_type(value, encoding)
+    elif isinstance(value, six.text_type):
         value = value.encode(encoding)
-    elif not isinstance(value, basestring):
-        value = str(value)
+    elif not isinstance(value, (six.binary_type, six.text_type)):
+        value = str(value).encode(encoding)
     return value
 
 
@@ -32,8 +35,8 @@ def convert_unicode(struct, encoding):
     in case of a dictionary only converts the values, not the keys
     """
 
-    if isinstance(struct, str):
-        return unicode(struct, encoding)
+    if isinstance(struct, six.binary_type):
+        return six.text_type(struct, encoding)
 
     if isinstance(struct, list):
         return [convert_unicode(x, encoding) for x in struct]

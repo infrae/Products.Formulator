@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2013  Infrae. All rights reserved.
 # See also LICENSE.txt
+import six
+
 from DateTime import DateTime
 from zope.component import getUtility
 from zope.interface.interfaces import IInterface
@@ -71,7 +73,9 @@ def XMLToForm(s, form, override_encoding=None):
             # empty <fields> element
             continue
         for entry in group.first.fields.elements.field:
-            id = str(encode(entry.first.id.text, encoding))
+            id = encode(entry.first.id.text, encoding)
+            if six.PY2:
+                id = str(id)
             meta_type = encode(entry.first.type.text, encoding)
             try:
                 form._delObject(id)
@@ -147,7 +151,7 @@ def XMLToForm(s, form, override_encoding=None):
 
 
 def encode(text, encoding):
-    if encoding is None:
+    if six.PY3 or encoding is None:
         return text
     else:
         return text.encode(encoding)

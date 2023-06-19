@@ -5,6 +5,8 @@
 import re
 import unittest
 
+import six
+
 from DateTime import DateTime
 
 from Products.Formulator.Errors import FormValidationError
@@ -121,9 +123,9 @@ class SerializeTestCase(unittest.TestCase):
   </groups>
 </form>'''  # noqa: E501 line too long
         XMLToForm(xml, form)
-        s = formToXML(form)
+        b = formToXML(form)
         f = open('output1.txt', 'w')
-        f.write(s)
+        f.write(b)
         f.close()
         form2 = ZMIForm('another', 'Something')
         XMLToForm(xml, form2)
@@ -135,32 +137,32 @@ class SerializeTestCase(unittest.TestCase):
         """ test that the two forms are equal (except for their ids) """
         # in case of failures the messages could be nicer ...
 
-        self.assertEquals(map(lambda x: x.getId(), form1.get_fields()),
-                          map(lambda x: x.getId(), form2.get_fields()))
+        self.assertEqual([x.getId() for x in form1.get_fields()],
+                         [x.getId() for x in form2.get_fields()])
         for field in form1.get_fields():
-            self.assert_(form2.has_field(field.getId()))
+            self.assertTrue(form2.has_field(field.getId()))
             field2 = getattr(form2, field.getId())
             # test if values are the same
-            self.assertEquals(field.values, field2.values)
+            self.assertEqual(field.values, field2.values)
             # test if default renderings are the same
-            self.assertEquals(field.render(), field2.render())
+            self.assertEqual(field.render(), field2.render())
 
-        self.assertEquals(form1.title, form2.title)
-        # self.assertEquals(form1.row_lenght, form2.row_lenght) # not
+        self.assertEqual(form1.title, form2.title)
+        # self.assertEqual(form1.row_lenght, form2.row_lenght) # not
         # initialized ?
-        self.assertEquals(form1.name, form2.name)
-        self.assertEquals(form1.action, form2.action)
-        self.assertEquals(form1.method, form2.method)
-        self.assertEquals(form1.enctype, form2.enctype)
-        self.assertEquals(form1.encoding, form2.encoding)
-        self.assertEquals(form1.stored_encoding, form2.stored_encoding)
-        self.assertEquals(form1.unicode_mode, form2.unicode_mode)
-        self.assertEquals(form1.i18n_domain, form2.i18n_domain)
+        self.assertEqual(form1.name, form2.name)
+        self.assertEqual(form1.action, form2.action)
+        self.assertEqual(form1.method, form2.method)
+        self.assertEqual(form1.enctype, form2.enctype)
+        self.assertEqual(form1.encoding, form2.encoding)
+        self.assertEqual(form1.stored_encoding, form2.stored_encoding)
+        self.assertEqual(form1.unicode_mode, form2.unicode_mode)
+        self.assertEqual(form1.i18n_domain, form2.i18n_domain)
 
-        self.assertEquals(form1.get_groups(), form2.get_groups())
+        self.assertEqual(form1.get_groups(), form2.get_groups())
 
         # if we have forgotten something, this will usually remind us ;-)
-        self.assertEquals(form1.render(), form2.render())
+        self.assertEqual(form1.render(), form2.render())
 
     def test_escaping(self):
         """ test if the necessary elements are escaped in the XML.
@@ -213,17 +215,17 @@ class SerializeTestCase(unittest.TestCase):
             form.validate_all(request)
             self.fail('form should fail in validation')
         except FormValidationError as e:
-            self.assertEquals(1, len(e.errors))
+            self.assertEqual(1, len(e.errors))
             text1 = e.errors[0].error_text
 
         try:
             form2.validate_all(request)
             self.fail('form2 should fail in validation')
         except FormValidationError as e:
-            self.assertEquals(1, len(e.errors))
+            self.assertEqual(1, len(e.errors))
             text2 = e.errors[0].error_text
 
-        self.assertEquals(unicode(text1), unicode(text2))
+        self.assertEqual(six.text_type(text1), six.text_type(text2))
 
     def test_fieldValueTypes(self):
         """ test checking if the field values are of the proper type.
@@ -351,13 +353,13 @@ class SerializeTestCase(unittest.TestCase):
             # XXX only render first error ...
             self.fail('error when editing form1, field %s; error message: %s' %
                       (e.errors[0].field_id, e.errors[0].error_text))
-        self.assertEquals(result1, result2)
-        self.assertEquals(42, result2['int_field'])
-        self.assertEquals(2.71828, result2['float_field'])
+        self.assertEqual(result1, result2)
+        self.assertEqual(42, result2['int_field'])
+        self.assertEqual(2.71828, result2['float_field'])
 
         # check link field timeout value
-        self.assertEquals(link_field.get_value('check_timeout'),
-                          form2.link_field.get_value('check_timeout'))
+        self.assertEqual(link_field.get_value('check_timeout'),
+                         form2.link_field.get_value('check_timeout'))
 
         # XXX not tested: equal form validation failure on invalid input
 
@@ -384,15 +386,19 @@ class SerializeTestCase(unittest.TestCase):
         form.string_field.values['external_validator'] = Method('test_dtml')
 
         # test that the override works:
-        self.assertEquals('ok',
-                          form.string_field.get_value('external_validator')())
+        self.assertEqual('ok',
+                         form.string_field.get_value('external_validator')())
 
         # now serialize it:
         xml = formToXML(form)
 
         # get the external validator from the output
         # XXX this could be more elegant, I guess ...
-        for line in xml.split('\n'):
+        if six.PY2:
+            xml_decoded = xml.decode('utf-8')
+        else:
+            xml_decoded = xml
+        for line in xml_decoded.split('\n'):
             m = re.match(
                 r'\s*<external_validator type="method">(.*?)'
                 r'</external_validator>\s*',
@@ -401,15 +407,15 @@ class SerializeTestCase(unittest.TestCase):
                 break
         else:
             self.fail('external_validator not found in xml')
-        self.assertEquals('test_dtml', m.group(1))
+        self.assertEqual('test_dtml', m.group(1))
 
         # deserialize it
         self.root.manage_addProduct['Formulator'] \
             .manage_add('form2', 'Test Form')
         form2 = self.root.form2
         XMLToForm(xml, form2)
-        self.assertEquals('ok',
-                          form2.string_field.get_value('external_validator')())
+        self.assertEqual('ok',
+                         form2.string_field.get_value('external_validator')())
 
     def test_serializeDateTimeValues(self):
         form = ZMIForm('test', 'DateTime')

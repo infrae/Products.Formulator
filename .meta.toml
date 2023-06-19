@@ -17,18 +17,19 @@ with-sphinx-doctests = false
 use-flake8 = true
 
 [coverage]
-fail-under = 76
+fail-under = 77
 
 [flake8]
 additional-config = [
     "# E301 expected 1 blank line, found 0",
+    "# E402 module level import not at top of file",
     "# F401 imported but unused",
     "per-file-ignores =",
     "    src/Products/Formulator/HelperFields.py: F401",
     "    src/Products/Formulator/Field.py: E301",
     "    src/Products/Formulator/Form.py: E301",
     "    src/Products/Formulator/FormulatorFormFile.py: E301",
-    "    src/Products/Formulator/ProductForm.py: E301",
+    "    src/Products/Formulator/__init__.py: E402",
     "# F821 undefined name (unicode, basestring)",
     "extend-ignore = F821",
     ]

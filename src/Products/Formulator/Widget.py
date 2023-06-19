@@ -2,7 +2,8 @@
 # Copyright (c) 2013  Infrae. All rights reserved.
 # See also LICENSE.txt
 import operator
-import string
+
+import six
 
 from DateTime import DateTime
 from DocumentTemplate.html_quote import html_quote
@@ -288,7 +289,7 @@ class LinesTextAreaWidget(TextAreaWidget):
 
     def render(self, field, key, value, REQUEST):
         if is_sequence(value):
-            value = string.join(value, "\n")
+            value = "\n".join(value)
         return TextAreaWidget.render(self, field, key, value, REQUEST)
 
     def render_view(self, field, value):
@@ -573,7 +574,7 @@ class ListWidget(SingleItemsWidget):
         kw = {'name': key,
               'css_class': field.get_value('css_class'),
               'size': field.get_value('size'),
-              'contents': string.join(rendered_items, "\n"),
+              'contents': "\n".join(rendered_items),
               'extra': extra}
         if not extra or not id_value_re.search(extra):
             kw['id'] = field.generate_field_html_id(key)
@@ -622,7 +623,7 @@ class MultiListWidget(MultiItemsWidget):
               'multiple': None,
               'css_class': field.get_value('css_class'),
               'size': field.get_value('size'),
-              'contents': string.join(rendered_items, "\n"),
+              'contents': "\n".join(rendered_items),
               'extra': extra}
         if not extra or not id_value_re.search(extra):
             kw['id'] = field.generate_field_html_id(key)
@@ -674,9 +675,9 @@ class RadioWidget(SingleItemsWidget):
         rendered_items = self.render_items(field, key, value, REQUEST)
         orientation = field.get_value('orientation')
         if orientation == 'horizontal':
-            return string.join(rendered_items, "&nbsp;&nbsp;")
+            return "&nbsp;&nbsp;".join(rendered_items)
         else:
-            return string.join(rendered_items, "<br />")
+            return "<br />".join(rendered_items)
 
     def render_item(self, text, value, key, css_class, extra_item, html_id):
         kw = {'type': "radio",
@@ -739,9 +740,9 @@ class MultiCheckBoxWidget(MultiItemsWidget):
         rendered_items = self.render_items(field, key, value, REQUEST)
         orientation = field.get_value('orientation')
         if orientation == 'horizontal':
-            return string.join(rendered_items, "&nbsp;&nbsp;")
+            return "&nbsp;&nbsp;".join(rendered_items)
         else:
-            return string.join(rendered_items, "<br />")
+            return "<br />".join(rendered_items)
 
     def render_item(self, text, value, key, css_class, extra_item, html_id):
         kw = {'type': "checkbox",
@@ -953,7 +954,7 @@ class DateTimeWidget(Widget):
             else:
                 result.append(field.render_sub_field(sub_field_name,
                                                      sub_field_value, REQUEST))
-        date_result = string.join(result, field.get_value('date_separator'))
+        date_result = field.get_value('date_separator').join(result)
 
         day_id = field.sub_form.get_field('day').generate_field_html_id(
             "subfield_" + field.id + "_day")
@@ -1110,7 +1111,7 @@ setTimeout(function(){Calendar.setup({inputField : '%s_hiddeninput',
             output = [day, month, year]
         elif order == 'mdy':
             output = [month, day, year]
-        date_result = string.join(output, field.get_value('date_separator'))
+        date_result = field.get_value('date_separator').join(output)
 
         if not field.get_value('date_only'):
             time_result = hour + field.get_value('time_separator') + minute
@@ -1152,10 +1153,10 @@ LabelWidgetInstance = LabelWidget()
 
 
 def render_unicode(value):
-    if not isinstance(value, unicode):
+    if not isinstance(value, six.text_type):
         if isinstance(value, str):
             return value.decode('utf-8', 'replace')
-        return unicode(value)
+        return six.text_type(value)
     return value
 
 
@@ -1196,7 +1197,7 @@ def render_value(value, separator=None):
     if value is None:
         return u''
     if separator is not None and isinstance(value, (list, tuple)):
-        if not isinstance(separator, unicode):
-            separator = unicode(separator, 'utf-8')
+        if not isinstance(separator, six.text_type):
+            separator = six.text_type(separator, 'utf-8')
         value = separator.join(value)
     return html_quote(render_unicode(value))

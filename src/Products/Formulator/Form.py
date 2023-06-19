@@ -2,11 +2,11 @@
 # Copyright (c) 2013  Infrae. All rights reserved.
 # See also LICENSE.txt
 
-import string
-from urllib import quote
+from six import StringIO
+from six.moves import range
+from six.moves.urllib.parse import quote
 
 import Acquisition
-# Zope
 from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from Acquisition import aq_base
@@ -17,9 +17,7 @@ from OFS.PropertyManager import PropertyManager
 from OFS.role import RoleManager
 from OFS.SimpleItem import Item
 from Persistence import Persistent
-# String
-from StringIO import StringIO
-from zope.interface import implements
+from zope.interface import implementer
 
 from Products.Formulator.DummyField import fields
 from Products.Formulator.Errors import FieldDisabledError
@@ -33,11 +31,11 @@ from Products.Formulator.Widget import render_tag
 from Products.Formulator.XMLToForm import XMLToForm
 
 
+@implementer(IForm)
 class Form:
     """Form base class.
     """
     security = ClassSecurityInfo()
-    implements(IForm)
 
     # need to make settings form upgrade
     encoding = 'UTF-8'
@@ -786,7 +784,7 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
         fieldname -- the name of the field (meta_type) to add
         Result    -- empty string
         """
-        title = string.strip(title)
+        title = title.strip()
         if not title:
             title = id  # title is always required, use id if not provided
         if self.get_unicode_mode():
@@ -841,10 +839,10 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
         try:
             result = self.settings_form.validate_all(REQUEST)
         except FormValidationError as e:
-            message = "Validation error(s).<br />" + string.join(
-                map(lambda error: "%s: %s" % (
+            message = "Validation error(s).<br />" + "<br />".join(
+                ["%s: %s" % (
                     error.field.get_value('title'),
-                    error.error_text), e.errors), "<br />")
+                    error.error_text) for error in e.errors])
             return self.formSettings(self, REQUEST,
                                      manage_tabs_message=message)
         # if we need to switch encoding, get xml representation before setting
@@ -903,7 +901,7 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
         row_length = self.row_length
         groups = self.get_groups(include_empty=1)
         # get the amount of rows
-        rows = len(groups) / row_length
+        rows = len(groups) // row_length
         # if we would have extra groups not in a row, add a row
         if len(groups) % self.row_length != 0:
             rows = rows + 1
@@ -962,7 +960,7 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
         field_ids = self._get_field_ids(group, REQUEST)
         if (to_group != 'Move to:' and
                 self.move_field_group(field_ids, group, to_group)):
-            fields = string.join(field_ids, ", ")
+            fields = ", ".join(field_ids)
             message = "Fields %s transferred from %s to %s." % (fields,
                                                                 group,
                                                                 to_group)
@@ -976,7 +974,7 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
     def manage_add_group(self, new_group, REQUEST):
         """Adds a new group.
         """
-        group = string.strip(new_group)
+        group = new_group.strip()
         if (group and group != 'Select group' and
                 self.add_group(group)):
             message = "Group %s created." % (group)
@@ -1003,7 +1001,7 @@ class ZMIForm(ObjectManager, PropertyManager, RoleManager, Item, Form):
         """Renames group.
         """
         if 'new_name' in REQUEST:
-            new_name = string.strip(REQUEST['new_name'])
+            new_name = REQUEST['new_name'].strip()
             if self.rename_group(group, new_name):
                 message = "Group %s renamed to %s." % (group, new_name)
             else:

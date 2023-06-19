@@ -2,6 +2,8 @@
 # Copyright (c) 2013  Infrae. All rights reserved.
 # See also LICENSE.txt
 
+from six.moves import range
+
 from DateTime import DateTime
 
 from Products.Formulator import Validator

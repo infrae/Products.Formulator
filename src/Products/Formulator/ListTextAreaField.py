@@ -2,6 +2,8 @@
 # Copyright (c) 2013  Infrae. All rights reserved.
 # See also LICENSE.txt
 
+import six
+
 from Products.Formulator import Validator
 from Products.Formulator import Widget
 from Products.Formulator.DummyField import fields
@@ -11,7 +13,10 @@ from Products.Formulator.Field import ZMIField
 def split_value(value):
     result = []
     for line in value:
-        elements = line.split("|")
+        if isinstance(line, bytes):
+            elements = line.split(b"|")
+        else:
+            elements = line.split("|")
         if len(elements) >= 2:
             text, value = elements[:2]
         else:
@@ -32,7 +37,7 @@ class ListTextAreaWidget(Widget.TextAreaWidget):
     def render(self, field, key, value, REQUEST):
         if value is None:
             value = field.get_value('default')
-        if isinstance(value, basestring):
+        if isinstance(value, six.string_types):
             # This happens while redisplaying a value from the request
             # i.e. _get_default(field, None, request)
             value = split_value(value.splitlines())

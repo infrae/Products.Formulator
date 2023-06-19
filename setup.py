@@ -10,6 +10,7 @@ version = '2.1.dev0'
 
 
 tests_require = [
+    'Products.PythonScripts',
     'Products.PythonScripts < 5.0; python_version=="2.7"',
     'plone.testing',
 ]
@@ -34,6 +35,11 @@ setup(name='Products.Formulator',
           "License :: OSI Approved :: BSD License",
           "Programming Language :: Python",
           "Programming Language :: Python :: 2.7",
+          "Programming Language :: Python :: 3.7",
+          "Programming Language :: Python :: 3.8",
+          "Programming Language :: Python :: 3.9",
+          "Programming Language :: Python :: 3.10",
+          "Programming Language :: Python :: 3.11",
           "Topic :: Software Development :: Libraries :: Python Modules",
       ],
       keywords='form generator zope4',
@@ -47,6 +53,7 @@ setup(name='Products.Formulator',
       include_package_data=True,
       zip_safe=False,
       install_requires=[
+          'AccessControl',
           'grokcore.chameleon < 4.0; python_version=="2.7"',  # transitive
           'DocumentTemplate',
           'DocumentTemplate < 4.0; python_version=="2.7"',
@@ -56,6 +63,7 @@ setup(name='Products.Formulator',
           'grokcore.view < 4.0; python_version=="2.7"',  # transitive
           'martian < 2.0; python_version=="2.7"',  # transitive
           'setuptools',
+          'six',
           'zope.component',
           'zope.i18nmessageid',
           'zope.interface',

@@ -21,7 +21,7 @@ NOTE: for multi-item inputs (e.g. Radios and Checkboxes),  individual input fiel
 <dtml-if fields>
 <tr>
 <td colspan="4" class="form-title">
-  <dtml-var "_.string.capitalize(group)"> properties
+  <dtml-var "group.capitalize()"> properties
 </td>
 </tr>
 
@@ -71,6 +71,3 @@ NOTE: for multi-item inputs (e.g. Radios and Checkboxes),  individual input fiel
 
 </dtml-let>
 <dtml-var manage_page_footer>
-
-
-
