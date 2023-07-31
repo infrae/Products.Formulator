@@ -1,7 +1,7 @@
 Changes
 =======
 
-2.1 (unreleased)
+2.1 (2023-07-31)
 ----------------
 
 - Port to Python 3, supporting Python 3.7 up to 3.11.
